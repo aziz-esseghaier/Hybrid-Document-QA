@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project data and large outputs (small results files stay tracked)
+/data/
+/results/*/artifacts/
+*.snapshot

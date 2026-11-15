@@ -1,0 +1,84 @@
+# ViDoRe datasets, pinned to a Hub revision (commit hash) so every run uses the same data.
+# role:   test = ViDoRe V3 (report only), dev = ViDoRe V2 + French ViDoRe V1 (make every choice here).
+# format: which loader adapter reads the files (see src/doc_qa/evaluation/vidore.py).
+# language: query language, for datasets whose queries have no language column.
+
+datasets:
+  # --- Test: the 8 public ViDoRe V3 datasets ---
+  v3_computer_science:
+    repo: vidore/vidore_v3_computer_science
+    revision: d5cc75883d92e294f0c0fc2662551c9708a06ebc
+    role: test
+    format: v3
+  v3_energy:
+    repo: vidore/vidore_v3_energy
+    revision: caec06d3c73434d635f710f93bcd898331c59f20
+    role: test
+    format: v3
+  v3_finance_en:
+    repo: vidore/vidore_v3_finance_en
+    revision: 7f432c176d82e27546501ad8064a713ac3071809
+    role: test
+    format: v3
+  v3_finance_fr:
+    repo: vidore/vidore_v3_finance_fr
+    revision: 1d808daa08032ffecdf62da151a7f7a8fe2bd0c9
+    role: test
+    format: v3
+  v3_hr:
+    repo: vidore/vidore_v3_hr
+    revision: 0cdf0979f2c5a0fd3e335e6373b9da48a9fe3bc3
+    role: test
+    format: v3
+  v3_industrial:
+    repo: vidore/vidore_v3_industrial
+    revision: e26c864724f5dd71a3d7d739272d95637764cee9
+    role: test
+    format: v3
+  v3_pharmaceuticals:
+    repo: vidore/vidore_v3_pharmaceuticals
+    revision: 3abd4aa8a9445fb5538a78a19ba50bd57bd22b5c
+    role: test
+    format: v3
+  v3_physics:
+    repo: vidore/vidore_v3_physics
+    revision: a0de276f515acc044b72cae8de53a44bb5a8f1f5
+    role: test
+    format: v3
+
+  # --- Dev: ViDoRe V2 ---
+  v2_esg_reports:
+    repo: vidore/esg_reports_v2
+    revision: 87538b12b20b67a2b4326638921301f87f0cbaf0
+    role: dev
+    format: v2
+  v2_esg_reports_human:
+    repo: vidore/esg_reports_human_labeled_v2
+    revision: 5a338c329bf1608ac46ac2808060d44bcd92d521
+    role: dev
+    format: v2_human
+    language: en
+  v2_economics_reports:
+    repo: vidore/economics_reports_v2
+    revision: 76fe40166ba07b1bf50457f5c6057cacdd045f10
+    role: dev
+    format: v2
+  v2_biomedical_lectures:
+    repo: vidore/biomedical_lectures_v2
+    revision: c4754665734e38742b191f0c28d504e8558d0462
+    role: dev
+    format: v2
+
+  # --- Dev: French datasets of ViDoRe V1 ---
+  v1_shiftproject:
+    repo: vidore/shiftproject_test
+    revision: 6e6223b3839a3f4e62d676e70a1b715ee520cc66
+    role: dev
+    format: v1_qa
+    language: fr
+  v1_tabfquad:
+    repo: vidore/tabfquad_test_subsampled
+    revision: 16c8e633612fbda7400bfcbbc31d61a7534f580f
+    role: dev
+    format: v1_qa
+    language: fr

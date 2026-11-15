@@ -1,0 +1,22 @@
+# M0: check the dev datasets (ViDoRe V1/V2) against the test set (ViDoRe V3) for overlap.
+name: m0_overlap
+datasets_config: configs/datasets.yaml
+exclusions_config: configs/dev_exclusions.yaml
+languages: [en, fr]
+
+# Page images. pHash distance = number of differing bits out of 64 (0 = same look, ~32 = unrelated).
+phash_max_distance: 8
+# Skip pairs whose width/height ratios differ by more than this (relative), e.g. a slide vs a portrait page.
+max_aspect_ratio_diff: 0.05
+
+# Document titles (normalized file names), compared with difflib's similarity ratio (0 to 1).
+title_min_ratio: 0.85
+
+# A dev dataset losing more than this share of its queries counts as a large overlap, to discuss.
+large_overlap_query_share: 0.2
+
+# Side-by-side images saved for manual review (closest pairs first).
+max_pair_images: 200
+
+# Processes used to hash page images. null = all CPU cores.
+workers: null

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doc-qa"
+version = "0.1.0"
+description = "Question answering over English and French PDFs, with hybrid retrieval and page citations."
+readme = "README.md"
+requires-python = ">=3.10"
+# Packages Kaggle preinstalls get ranges, so pip keeps the pinned Kaggle image's versions
+# instead of reinstalling them under its PyTorch stack. Packages Kaggle lacks get exact pins.
+# Every run records the exact versions in run_info.json.
+dependencies = [
+    "huggingface_hub>=0.24",
+    "imagehash==4.3.2",
+    "numpy>=1.26",
+    "pillow>=10.0",
+    "pyarrow>=14.0",
+    "python-dotenv>=0.21",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
