@@ -15,7 +15,7 @@ dependencies = [
     "huggingface_hub>=0.24",
     "imagehash==4.3.2",
     "numpy>=1.26",
-    "pillow>=10.0",
+    "pillow>=10.1",
     "pyarrow>=14.0",
     "python-dotenv>=0.21",
     "pyyaml>=6.0",

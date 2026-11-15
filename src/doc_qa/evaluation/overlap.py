@@ -1,9 +1,14 @@
 """Find dev pages and documents that also appear in the test set.
 
-Two page fingerprints are used:
+Two page fingerprints find candidate pairs:
 - exact hash: SHA-256 of the decoded RGB pixels. Catches identical renders, whatever the file encoding.
 - perceptual hash (pHash): a 64-bit fingerprint of the page's coarse layout. Catches the same page rendered
   at another resolution, which the exact hash misses (each ViDoRe version rendered its own images).
+
+Each candidate pair is then verified, because both fingerprints also match pages that merely look alike:
+- nearly blank pages (end pages, section breaks) look the same in every document, so they are skipped;
+- the other pairs are compared pixel by pixel, after cropping each page to its content and shrinking both
+  to the same small grid. Only pairs with a high correlation count as the same page.
 """
 
 from __future__ import annotations
@@ -16,9 +21,10 @@ from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import astuple, dataclass
 from difflib import SequenceMatcher
+from functools import partial
 from itertools import islice
 from pathlib import Path
-from typing import Iterable, Iterator
+from typing import Any, Callable, Iterable, Iterator
 
 import imagehash
 import numpy as np
@@ -74,10 +80,34 @@ def _batched(items: Iterable, size: int) -> Iterator[list]:
         yield batch
 
 
-def hash_pages(images: Iterable[tuple[str, bytes]], workers: int | None = None, batch_size: int = 256) -> list[PageHash]:
-    """Hash page images in parallel on CPU processes.
+def _map_images(
+    fn: Callable[[bytes], Any], images: Iterable[tuple[str, bytes]], workers: int | None, batch_size: int
+) -> Iterator[tuple[str, Any]]:
+    """Apply a function to page images in parallel on CPU processes.
 
     Images are sent in bounded batches, so memory stays small however many pages there are.
+
+    Args:
+        fn (Callable[[bytes], Any]): Function of the encoded image. Must be picklable (module level).
+        images (Iterable[tuple[str, bytes]]): (page id, image bytes) pairs.
+        workers (int | None): Number of processes; None uses all CPU cores, 1 runs in this process.
+        batch_size (int): Images in memory at once.
+
+    Returns:
+        Iterator[tuple[str, Any]]: (page id, result) pairs, in input order.
+    """
+    if workers == 1:
+        for page_id, data in images:
+            yield page_id, fn(data)
+        return
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        for batch in _batched(images, batch_size):
+            ids = [page_id for page_id, _ in batch]
+            yield from zip(ids, pool.map(fn, [data for _, data in batch], chunksize=8))
+
+
+def hash_pages(images: Iterable[tuple[str, bytes]], workers: int | None = None, batch_size: int = 256) -> list[PageHash]:
+    """Hash page images in parallel on CPU processes.
 
     Args:
         images (Iterable[tuple[str, bytes]]): (page id, image bytes) pairs.
@@ -87,17 +117,7 @@ def hash_pages(images: Iterable[tuple[str, bytes]], workers: int | None = None, 
     Returns:
         list[PageHash]: One entry per image, in input order.
     """
-    results: list[PageHash] = []
-    if workers == 1:
-        for page_id, data in images:
-            results.append(PageHash(page_id, *hash_image_bytes(data)))
-        return results
-    with ProcessPoolExecutor(max_workers=workers) as pool:
-        for batch in _batched(images, batch_size):
-            ids = [page_id for page_id, _ in batch]
-            hashes = pool.map(hash_image_bytes, [data for _, data in batch], chunksize=8)
-            results.extend(PageHash(page_id, *h) for page_id, h in zip(ids, hashes))
-    return results
+    return [PageHash(page_id, *h) for page_id, h in _map_images(hash_image_bytes, images, workers, batch_size)]
 
 
 def save_hashes(hashes: list[PageHash], path: Path) -> None:
@@ -186,6 +206,98 @@ def find_phash_matches(
         for i, j in zip(*np.nonzero((distance <= max_distance) & same_shape)):
             matches.append((block[i].page_id, test[j].page_id, int(distance[i, j])))
     return sorted(matches, key=lambda m: (m[2], m[0], m[1]))
+
+
+# ---------------------------------------------------------------- verification of candidate pairs
+
+
+@dataclass(frozen=True, eq=False)
+class PageView:
+    """A page reduced for pixel comparison."""
+
+    ink_share: float  # share of pixels that stand out from the background (0 = blank page)
+    pixels: np.ndarray  # (size, size) uint8 grayscale image of the page's content box
+
+
+def page_view(data: bytes, size: int = 128, contrast: int = 40) -> PageView:
+    """Measure how much content a page has, and shrink its content box to a fixed grid.
+
+    The background is the most common gray level. Pixels differing from it by more than `contrast` are ink.
+    Cropping to the box around the ink removes margin and border differences between two renders of the
+    same page; shrinking to a small grid removes resolution and compression differences.
+
+    Args:
+        data (bytes): PNG or JPEG bytes.
+        size (int): Side of the output grid in pixels.
+        contrast (int): Gray-level difference (0 to 255) from the background that counts as ink.
+
+    Returns:
+        PageView: Ink share and the shrunk content box.
+    """
+    with Image.open(io.BytesIO(data)) as image:
+        gray = image.convert("L")
+    pixels = np.asarray(gray)
+    background = int(np.bincount(pixels.ravel(), minlength=256).argmax())
+    ink = np.abs(pixels.astype(np.int16) - background) > contrast
+    rows, cols = np.flatnonzero(ink.any(axis=1)), np.flatnonzero(ink.any(axis=0))
+    if rows.size:
+        gray = gray.crop((int(cols[0]), int(rows[0]), int(cols[-1]) + 1, int(rows[-1]) + 1))
+    return PageView(float(ink.mean()), np.asarray(gray.resize((size, size), Image.BOX)))
+
+
+def page_views(
+    images: Iterable[tuple[str, bytes]], size: int = 128, workers: int | None = None, batch_size: int = 64
+) -> dict[str, PageView]:
+    """Compute `page_view` for many pages in parallel on CPU processes.
+
+    Args:
+        images (Iterable[tuple[str, bytes]]): (page id, image bytes) pairs.
+        size (int): Side of the output grid in pixels.
+        workers (int | None): Number of processes; None uses all CPU cores, 1 runs in this process.
+        batch_size (int): Images in memory at once.
+
+    Returns:
+        dict[str, PageView]: View of each page, by page id.
+    """
+    return dict(_map_images(partial(page_view, size=size), images, workers, batch_size))
+
+
+def pixel_correlation(a: np.ndarray, b: np.ndarray) -> float:
+    """Compute the Pearson correlation of two images of the same shape.
+
+    Args:
+        a (np.ndarray): First image.
+        b (np.ndarray): Second image.
+
+    Returns:
+        float: Correlation from -1 to 1; 1 means the same image up to brightness and contrast. 0 if either
+            image is uniform.
+    """
+    x = a.astype(np.float64).ravel()
+    y = b.astype(np.float64).ravel()
+    x -= x.mean()
+    y -= y.mean()
+    denominator = np.sqrt((x @ x) * (y @ y))
+    return float(x @ y / denominator) if denominator > 0 else 0.0
+
+
+def verify_pair(dev: PageView, test: PageView, min_ink_share: float, min_correlation: float) -> tuple[str, float | None]:
+    """Decide whether a candidate pair is really the same page.
+
+    Args:
+        dev (PageView): The dev page.
+        test (PageView): The test page.
+        min_ink_share (float): Pages with less ink than this are nearly blank: no evidence either way.
+        min_correlation (float): Smallest pixel correlation counted as the same page.
+
+    Returns:
+        tuple[str, float | None]: Status ("blank", "rejected" or "confirmed") and the correlation (None for
+            blank pages).
+    """
+    if min(dev.ink_share, test.ink_share) < min_ink_share:
+        return "blank", None
+    correlation = pixel_correlation(dev.pixels, test.pixels)
+    return ("confirmed" if correlation >= min_correlation else "rejected"), correlation
 
 
 # ---------------------------------------------------------------- document matching

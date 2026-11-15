@@ -1,8 +1,10 @@
-"""Tests for page hashing and dev/test matching."""
+"""Tests for page hashing, pair verification and dev/test matching."""
 
 import io
+import random
 
-from PIL import Image, ImageDraw
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
 from doc_qa.core.schemas import Document
 from doc_qa.evaluation.overlap import (
@@ -14,8 +16,13 @@ from doc_qa.evaluation.overlap import (
     hash_pages,
     load_hashes,
     normalize_title,
+    page_view,
+    page_views,
     save_hashes,
+    verify_pair,
 )
+
+WORDS = "the energy report shows growth of renewable capacity in europe while demand fell across sectors".split()
 
 
 def make_page(layout: str, size: tuple[int, int] = (850, 1100)) -> Image.Image:
@@ -33,11 +40,50 @@ def make_page(layout: str, size: tuple[int, int] = (850, 1100)) -> Image.Image:
     return page
 
 
+def make_text_page(seed: int, size: tuple[int, int] = (850, 1100)) -> Image.Image:
+    """Draw a synthetic text page: a heading, 48 lines of random words and a page number.
+
+    Pages with different seeds share the same layout (margins, line spacing) but not the same text.
+    """
+    rng = random.Random(seed)
+    w, h = size
+    page = Image.new("RGB", size, "white")
+    draw = ImageDraw.Draw(page)
+    font = ImageFont.load_default(size=14)
+    draw.text((0.1 * w, 0.06 * h), f"Chapter {seed}", fill="black", font=ImageFont.load_default(size=28))
+    for i in range(48):
+        line = ""
+        while draw.textlength(line + "longest ", font=font) < 0.8 * w:
+            line += rng.choice(WORDS) + " "
+        draw.text((0.1 * w, 0.14 * h + i * 0.78 * h / 48), line, fill="black", font=font)
+    draw.text((w / 2, 0.96 * h), "12", fill="black", font=font)
+    return page
+
+
+def make_blank_page(number: str, size: tuple[int, int] = (850, 1100)) -> Image.Image:
+    """Draw a nearly blank page: only a page number at the bottom."""
+    page = Image.new("RGB", size, "white")
+    ImageDraw.Draw(page).text((size[0] / 2, 0.96 * size[1]), number, fill="black", font=ImageFont.load_default(size=14))
+    return page
+
+
 def encode(image: Image.Image, fmt: str = "PNG", **kwargs) -> bytes:
     """Encode an image to bytes."""
     buffer = io.BytesIO()
     image.save(buffer, format=fmt, **kwargs)
     return buffer.getvalue()
+
+
+def rerender(page: Image.Image, scale: float, border: int = 0, crop: int = 0) -> bytes:
+    """Imitate another render of the same page: other margins, another resolution, JPEG compression."""
+    if crop:
+        page = page.crop((crop, crop, page.width, page.height))
+    if border:
+        framed = Image.new("RGB", (page.width + 2 * border, page.height + 2 * border), "white")
+        framed.paste(page, (border, border))
+        page = framed
+    resized = page.resize((round(page.width * scale), round(page.height * scale)), Image.LANCZOS)
+    return encode(resized, "JPEG", quality=75)
 
 
 def distance(a: str, b: str) -> int:
@@ -79,6 +125,38 @@ def test_hash_pages_in_parallel_matches_serial(tmp_path):
     assert hash_pages(images, workers=2, batch_size=3) == serial
     save_hashes(serial, tmp_path / "h.csv")
     assert load_hashes(tmp_path / "h.csv") == serial
+
+
+def test_ink_share_separates_blank_and_text_pages():
+    assert page_view(encode(Image.new("RGB", (850, 1100), "white"))).ink_share == 0
+    assert page_view(encode(make_blank_page("12"))).ink_share < 0.01
+    assert page_view(encode(make_text_page(1))).ink_share > 0.01
+
+
+def test_verify_pair_confirms_rerendered_page_only():
+    page = make_text_page(1)
+    original = page_view(encode(page))
+    for scale, border, crop in [(0.6, 0, 0), (1.5, 0, 0), (0.8, 40, 0), (0.7, 0, 10)]:
+        status, correlation = verify_pair(original, page_view(rerender(page, scale, border, crop)), 0.01, 0.9)
+        assert status == "confirmed", (scale, border, crop, correlation)
+
+    # Same layout, other text: the pHash can match, the pixels must not.
+    status, correlation = verify_pair(original, page_view(encode(make_text_page(2))), 0.01, 0.9)
+    assert status == "rejected" and correlation < 0.85
+
+    blank_12, blank_37 = page_view(encode(make_blank_page("12"))), page_view(encode(make_blank_page("37")))
+    assert verify_pair(blank_12, blank_37, 0.01, 0.9) == ("blank", None)
+
+
+def test_page_views_in_parallel_match_serial():
+    images = [(f"p/{i}", encode(make_text_page(i))) for i in range(3)]
+    serial = page_views(images, size=64, workers=1)
+    parallel = page_views(images, size=64, workers=2, batch_size=2)
+    assert list(parallel) == list(serial)
+    for page_id, view in serial.items():
+        assert parallel[page_id].ink_share == view.ink_share
+        np.testing.assert_array_equal(parallel[page_id].pixels, view.pixels)
+        assert view.pixels.shape == (64, 64)
 
 
 def test_title_matching():

@@ -9,14 +9,26 @@ phash_max_distance: 8
 # Skip pairs whose width/height ratios differ by more than this (relative), e.g. a slide vs a portrait page.
 max_aspect_ratio_diff: 0.05
 
+# Verification of each candidate pair: both hashes also match pages that merely look alike.
+# Pages with ink on less than this share of their pixels are nearly blank. They look alike in every document,
+# so they are skipped: no evidence either way.
+min_ink_share: 0.01
+# Each page is cropped to its content and shrunk to verify_size × verify_size gray pixels, then the two are
+# compared (Pearson correlation, -1 to 1). On synthetic pages, the same page re-rendered (resized, JPEG,
+# cropped margins, added border) scored 0.95 to 0.99; different pages with the same layout at most 0.75.
+verify_size: 128
+min_pixel_correlation: 0.9
+
 # Document titles (normalized file names), compared with difflib's similarity ratio (0 to 1).
 title_min_ratio: 0.85
 
 # A dev dataset losing more than this share of its queries counts as a large overlap, to discuss.
 large_overlap_query_share: 0.2
 
-# Side-by-side images saved for manual review (closest pairs first).
+# Side-by-side images saved for manual review: confirmed pairs, and the rejected pairs closest to the
+# threshold (to check that the filter doesn't drop real duplicates).
 max_pair_images: 200
+max_rejected_images: 20
 
 # Processes used to hash page images. null = all CPU cores.
 workers: null
