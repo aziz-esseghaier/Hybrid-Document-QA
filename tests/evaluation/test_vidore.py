@@ -1,4 +1,4 @@
-"""Tests for the ViDoRe loader's parsing and filtering."""
+"""Tests for the ViDoRe loaders."""
 
 from pathlib import Path
 

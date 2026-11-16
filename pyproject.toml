@@ -8,9 +8,7 @@ version = "0.1.0"
 description = "Question answering over English and French PDFs, with hybrid retrieval and page citations."
 readme = "README.md"
 requires-python = ">=3.10"
-# Packages Kaggle preinstalls get ranges, so pip keeps the pinned Kaggle image's versions
-# instead of reinstalling them under its PyTorch stack. Packages Kaggle lacks get exact pins.
-# Every run records the exact versions in run_info.json.
+# Ranges for packages preinstalled on Kaggle, exact pins otherwise. Exact versions go to run_info.json.
 dependencies = [
     "huggingface_hub>=0.24",
     "imagehash==4.3.2",

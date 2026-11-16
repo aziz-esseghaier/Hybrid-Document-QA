@@ -1,15 +1,4 @@
-"""Find dev pages and documents that also appear in the test set.
-
-Two page fingerprints find candidate pairs:
-- exact hash: SHA-256 of the decoded RGB pixels. Catches identical renders, whatever the file encoding.
-- perceptual hash (pHash): a 64-bit fingerprint of the page's coarse layout. Catches the same page rendered
-  at another resolution, which the exact hash misses (each ViDoRe version rendered its own images).
-
-Each candidate pair is then verified, because both fingerprints also match pages that merely look alike:
-- nearly blank pages (end pages, section breaks) look the same in every document, so they are skipped;
-- the other pairs are compared pixel by pixel, after cropping each page to its content and shrinking both
-  to the same small grid. Only pairs with a high correlation count as the same page.
-"""
+"""Dev/test overlap detection: page hashes, pixel verification, title matching."""
 
 from __future__ import annotations
 
@@ -32,7 +21,7 @@ from PIL import Image
 
 from doc_qa.core.schemas import Document
 
-# Number of set bits in each byte value, used to count differing bits between hashes.
+# Set bits per byte value.
 _POPCOUNT = np.array([bin(i).count("1") for i in range(256)], dtype=np.uint8)
 
 
@@ -42,7 +31,7 @@ class PageHash:
 
     page_id: str
     sha256: str
-    phash: str  # 16 hex characters = 64 bits
+    phash: str  # 64 bits as 16 hex chars
     width: int
     height: int
 
@@ -51,13 +40,13 @@ class PageHash:
 
 
 def hash_image_bytes(data: bytes) -> tuple[str, str, int, int]:
-    """Compute the exact and perceptual hashes of an encoded image.
+    """Compute the exact and perceptual hashes of an image.
 
     Args:
-        data (bytes): PNG or JPEG bytes.
+        data (bytes): Encoded image.
 
     Returns:
-        tuple[str, str, int, int]: (SHA-256 of size + RGB pixels, pHash as hex, width, height).
+        tuple[str, str, int, int]: SHA-256 of size + RGB pixels, pHash (hex), width, height.
     """
     with Image.open(io.BytesIO(data)) as image:
         rgb = image.convert("RGB")
@@ -69,11 +58,11 @@ def _batched(items: Iterable, size: int) -> Iterator[list]:
     """Split an iterable into lists of at most `size` items.
 
     Args:
-        items (Iterable): Items to split.
-        size (int): Maximum list length.
+        items (Iterable): Items.
+        size (int): Batch size.
 
     Returns:
-        Iterator[list]: Consecutive batches.
+        Iterator[list]: Batches.
     """
     it = iter(items)
     while batch := list(islice(it, size)):
@@ -83,18 +72,16 @@ def _batched(items: Iterable, size: int) -> Iterator[list]:
 def _map_images(
     fn: Callable[[bytes], Any], images: Iterable[tuple[str, bytes]], workers: int | None, batch_size: int
 ) -> Iterator[tuple[str, Any]]:
-    """Apply a function to page images in parallel on CPU processes.
-
-    Images are sent in bounded batches, so memory stays small however many pages there are.
+    """Apply `fn` to images in a process pool, in bounded batches.
 
     Args:
-        fn (Callable[[bytes], Any]): Function of the encoded image. Must be picklable (module level).
-        images (Iterable[tuple[str, bytes]]): (page id, image bytes) pairs.
-        workers (int | None): Number of processes; None uses all CPU cores, 1 runs in this process.
+        fn (Callable[[bytes], Any]): Picklable function of the encoded image.
+        images (Iterable[tuple[str, bytes]]): (page id, image bytes).
+        workers (int | None): Processes; None = all cores, 1 = in-process.
         batch_size (int): Images in memory at once.
 
     Returns:
-        Iterator[tuple[str, Any]]: (page id, result) pairs, in input order.
+        Iterator[tuple[str, Any]]: (page id, result), in input order.
     """
     if workers == 1:
         for page_id, data in images:
@@ -107,25 +94,25 @@ def _map_images(
 
 
 def hash_pages(images: Iterable[tuple[str, bytes]], workers: int | None = None, batch_size: int = 256) -> list[PageHash]:
-    """Hash page images in parallel on CPU processes.
+    """Hash page images in parallel.
 
     Args:
-        images (Iterable[tuple[str, bytes]]): (page id, image bytes) pairs.
-        workers (int | None): Number of processes; None uses all CPU cores, 1 runs in this process.
+        images (Iterable[tuple[str, bytes]]): (page id, image bytes).
+        workers (int | None): Processes; None = all cores, 1 = in-process.
         batch_size (int): Images in memory at once.
 
     Returns:
-        list[PageHash]: One entry per image, in input order.
+        list[PageHash]: One per image, in input order.
     """
     return [PageHash(page_id, *h) for page_id, h in _map_images(hash_image_bytes, images, workers, batch_size)]
 
 
 def save_hashes(hashes: list[PageHash], path: Path) -> None:
-    """Save page hashes to a CSV file.
+    """Save page hashes to CSV.
 
     Args:
-        hashes (list[PageHash]): The hashes.
-        path (Path): Output CSV file.
+        hashes (list[PageHash]): Hashes.
+        path (Path): Output file.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
@@ -135,30 +122,30 @@ def save_hashes(hashes: list[PageHash], path: Path) -> None:
 
 
 def load_hashes(path: Path) -> list[PageHash]:
-    """Load page hashes saved by `save_hashes`.
+    """Load page hashes from CSV.
 
     Args:
-        path (Path): CSV file.
+        path (Path): File written by `save_hashes`.
 
     Returns:
-        list[PageHash]: The hashes.
+        list[PageHash]: Hashes.
     """
     with path.open(newline="", encoding="utf-8") as f:
         return [PageHash(r["page_id"], r["sha256"], r["phash"], int(r["width"]), int(r["height"])) for r in csv.DictReader(f)]
 
 
-# ---------------------------------------------------------------- page matching
+# ---------------------------------------------------------------- candidate pairs
 
 
 def find_exact_matches(dev: list[PageHash], test: list[PageHash]) -> list[tuple[str, str]]:
-    """Find dev and test pages with identical pixels.
+    """Find dev/test pages with identical pixels.
 
     Args:
-        dev (list[PageHash]): Dev page hashes.
-        test (list[PageHash]): Test page hashes.
+        dev (list[PageHash]): Dev hashes.
+        test (list[PageHash]): Test hashes.
 
     Returns:
-        list[tuple[str, str]]: (dev page id, test page id) pairs.
+        list[tuple[str, str]]: (dev page id, test page id).
     """
     test_by_sha = defaultdict(list)
     for h in test:
@@ -173,18 +160,14 @@ def find_phash_matches(
     max_aspect_ratio_diff: float,
     chunk_size: int = 256,
 ) -> list[tuple[str, str, int]]:
-    """Find dev and test pages whose perceptual hashes differ by at most `max_distance` bits.
-
-    Compares every dev page with every test page, a block of dev pages at a time, with vectorized XOR and
-    bit counting. Pairs with clearly different shapes (width/height ratio) are skipped, because pHash
-    squeezes every image into a square and can confuse a slide with a portrait page.
+    """Find dev/test pages within `max_distance` pHash bits and with similar aspect ratios.
 
     Args:
-        dev (list[PageHash]): Dev page hashes.
-        test (list[PageHash]): Test page hashes.
-        max_distance (int): Largest Hamming distance (0 to 64) counted as a match.
-        max_aspect_ratio_diff (float): Largest relative difference of width/height ratios.
-        chunk_size (int): Dev pages compared at once. Bounds memory use.
+        dev (list[PageHash]): Dev hashes.
+        test (list[PageHash]): Test hashes.
+        max_distance (int): Max Hamming distance (0-64).
+        max_aspect_ratio_diff (float): Max relative difference of width/height.
+        chunk_size (int): Dev pages compared per block.
 
     Returns:
         list[tuple[str, str, int]]: (dev page id, test page id, distance), closest first.
@@ -208,31 +191,27 @@ def find_phash_matches(
     return sorted(matches, key=lambda m: (m[2], m[0], m[1]))
 
 
-# ---------------------------------------------------------------- verification of candidate pairs
+# ---------------------------------------------------------------- pixel verification
 
 
 @dataclass(frozen=True, eq=False)
 class PageView:
-    """A page reduced for pixel comparison."""
+    """Downscaled page used for pixel comparison."""
 
-    ink_share: float  # share of pixels that stand out from the background (0 = blank page)
-    pixels: np.ndarray  # (size, size) uint8 grayscale image of the page's content box
+    ink_share: float  # fraction of non-background pixels
+    pixels: np.ndarray  # (size, size) uint8, content box only
 
 
 def page_view(data: bytes, size: int = 128, contrast: int = 40) -> PageView:
-    """Measure how much content a page has, and shrink its content box to a fixed grid.
-
-    The background is the most common gray level. Pixels differing from it by more than `contrast` are ink.
-    Cropping to the box around the ink removes margin and border differences between two renders of the
-    same page; shrinking to a small grid removes resolution and compression differences.
+    """Measure a page's ink and shrink its content box to a `size` x `size` grayscale grid.
 
     Args:
-        data (bytes): PNG or JPEG bytes.
-        size (int): Side of the output grid in pixels.
-        contrast (int): Gray-level difference (0 to 255) from the background that counts as ink.
+        data (bytes): Encoded image.
+        size (int): Output side in pixels.
+        contrast (int): Min gray-level difference from the background to count as ink.
 
     Returns:
-        PageView: Ink share and the shrunk content box.
+        PageView: Ink share and downscaled content box.
     """
     with Image.open(io.BytesIO(data)) as image:
         gray = image.convert("L")
@@ -248,30 +227,29 @@ def page_view(data: bytes, size: int = 128, contrast: int = 40) -> PageView:
 def page_views(
     images: Iterable[tuple[str, bytes]], size: int = 128, workers: int | None = None, batch_size: int = 64
 ) -> dict[str, PageView]:
-    """Compute `page_view` for many pages in parallel on CPU processes.
+    """Compute `page_view` for many pages in parallel.
 
     Args:
-        images (Iterable[tuple[str, bytes]]): (page id, image bytes) pairs.
-        size (int): Side of the output grid in pixels.
-        workers (int | None): Number of processes; None uses all CPU cores, 1 runs in this process.
+        images (Iterable[tuple[str, bytes]]): (page id, image bytes).
+        size (int): Output side in pixels.
+        workers (int | None): Processes; None = all cores, 1 = in-process.
         batch_size (int): Images in memory at once.
 
     Returns:
-        dict[str, PageView]: View of each page, by page id.
+        dict[str, PageView]: View per page id.
     """
     return dict(_map_images(partial(page_view, size=size), images, workers, batch_size))
 
 
 def pixel_correlation(a: np.ndarray, b: np.ndarray) -> float:
-    """Compute the Pearson correlation of two images of the same shape.
+    """Pearson correlation of two same-shape images.
 
     Args:
         a (np.ndarray): First image.
         b (np.ndarray): Second image.
 
     Returns:
-        float: Correlation from -1 to 1; 1 means the same image up to brightness and contrast. 0 if either
-            image is uniform.
+        float: Correlation in [-1, 1]; 0 if either image is uniform.
     """
     x = a.astype(np.float64).ravel()
     y = b.astype(np.float64).ravel()
@@ -282,17 +260,16 @@ def pixel_correlation(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def verify_pair(dev: PageView, test: PageView, min_ink_share: float, min_correlation: float) -> tuple[str, float | None]:
-    """Decide whether a candidate pair is really the same page.
+    """Classify a candidate pair as blank, rejected or confirmed.
 
     Args:
-        dev (PageView): The dev page.
-        test (PageView): The test page.
-        min_ink_share (float): Pages with less ink than this are nearly blank: no evidence either way.
-        min_correlation (float): Smallest pixel correlation counted as the same page.
+        dev (PageView): Dev page.
+        test (PageView): Test page.
+        min_ink_share (float): Pages below this are treated as blank.
+        min_correlation (float): Min pixel correlation for a match.
 
     Returns:
-        tuple[str, float | None]: Status ("blank", "rejected" or "confirmed") and the correlation (None for
-            blank pages).
+        tuple[str, float | None]: Status and correlation (None if blank).
     """
     if min(dev.ink_share, test.ink_share) < min_ink_share:
         return "blank", None
@@ -304,44 +281,43 @@ def verify_pair(dev: PageView, test: PageView, min_ink_share: float, min_correla
 
 
 def normalize_title(title: str) -> str:
-    """Normalize a document title or file name for comparison.
+    """Lowercase a title, drop the file extension and collapse punctuation to spaces.
 
     Args:
-        title (str): Title or file name, such as `Rapport_Shift-Project_2021.pdf`.
+        title (str): Title or file name.
 
     Returns:
-        str: Lowercase words separated by single spaces, without the file extension.
+        str: Normalized title.
     """
     text = re.sub(r"\.(pdf|png|jpe?g)$", "", title.strip().lower())
     return " ".join(re.sub(r"[\W_]+", " ", text).split())
 
 
 def _normalize_url(url: str) -> str:
-    """Normalize a URL for comparison (no scheme, no `www.`, no trailing slash, lowercase).
+    """Lowercase a URL and strip scheme, `www.` and trailing slash.
 
     Args:
-        url (str): The URL.
+        url (str): URL.
 
     Returns:
-        str: The normalized URL.
+        str: Normalized URL.
     """
     url = re.sub(r"^https?://(www\.)?", "", url.strip().lower())
     return url.rstrip("/")
 
 
 def find_title_matches(dev: list[Document], test: list[Document], min_ratio: float) -> list[tuple[str, str, float, str]]:
-    """Find dev and test documents with the same URL or similar titles.
+    """Find dev/test documents with the same URL or similar titles.
 
-    Titles made only of digits (TabFQuAD image numbers) or shorter than 5 characters are skipped: they
-    carry no meaning and would match by chance.
+    Titles that are numeric or shorter than 5 chars are ignored.
 
     Args:
         dev (list[Document]): Dev documents.
         test (list[Document]): Test documents.
-        min_ratio (float): Smallest difflib similarity (0 to 1) counted as a match.
+        min_ratio (float): Min difflib similarity (0-1).
 
     Returns:
-        list[tuple[str, str, float, str]]: (dev doc id, test doc id, similarity, "url" or "title").
+        list[tuple[str, str, float, str]]: (dev doc id, test doc id, similarity, "url" | "title").
     """
     def usable(title: str) -> bool:
         return len(title) >= 5 and not title.replace(" ", "").isdigit()
@@ -365,16 +341,16 @@ def find_title_matches(dev: list[Document], test: list[Document], min_ratio: flo
 
 
 def side_by_side(left: bytes, right: bytes, height: int = 900, gap: int = 20) -> Image.Image:
-    """Put two page images next to each other at the same height, for manual review.
+    """Place two images side by side at the same height.
 
     Args:
-        left (bytes): Encoded image shown on the left (the dev page).
-        right (bytes): Encoded image shown on the right (the test page).
-        height (int): Height of the output in pixels.
-        gap (int): White space between the two pages, in pixels.
+        left (bytes): Encoded left image (dev page).
+        right (bytes): Encoded right image (test page).
+        height (int): Output height in pixels.
+        gap (int): Gap in pixels.
 
     Returns:
-        Image.Image: The combined image.
+        Image.Image: Combined image.
     """
     pages = []
     for data in (left, right):

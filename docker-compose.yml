@@ -1,13 +1,12 @@
-# Local Qdrant. The image tag is the single source of the Qdrant version:
-# scripts/kaggle_setup.py reads it to download the same binary on Kaggle.
+# Local Qdrant. The image tag pins the Qdrant version used everywhere.
 services:
   qdrant:
     image: qdrant/qdrant:v1.20.1
     ports:
-      - "6333:6333" # REST API
-      - "6334:6334" # gRPC API
+      - "6333:6333" # REST
+      - "6334:6334" # gRPC
     volumes:
-      # Named volume, not a Windows bind mount: bind mounts through WSL2 can corrupt Qdrant's storage.
+      # Named volume: Windows bind mounts through WSL2 can corrupt Qdrant storage.
       - qdrant_storage:/qdrant/storage
     restart: unless-stopped
 

@@ -1,5 +1,3 @@
-# Dev documents removed because they overlap with the ViDoRe V3 test set.
-# Filled after reviewing results/m0_overlap (proposed_exclusions.yaml and the side-by-side images).
-# Each entry is a document id: "<dataset key>/<doc id>", as printed in the overlap report.
-# The loader removes all pages of these documents, and every dev query that points to one of them.
+# Dev documents removed for overlapping with the test set ("<dataset key>/<doc id>").
+# The loader drops their pages and every query pointing to them.
 documents: []

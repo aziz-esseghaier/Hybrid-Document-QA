@@ -1,11 +1,7 @@
-"""Download the pinned ViDoRe datasets into <DATA_ROOT>/raw/<dataset key>/.
-
-Only the test split's parquet files are downloaded. Files already present are skipped, so the script
-can be rerun after an interruption.
+"""Download the pinned ViDoRe test splits into <DATA_ROOT>/raw/<key>/. Resumable.
 
 Usage:
-    python scripts/download_data.py                 # all datasets in configs/datasets.yaml
-    python scripts/download_data.py --only v3_hr    # some datasets
+    python scripts/download_data.py [--only KEY ...]
 """
 
 from __future__ import annotations
@@ -19,10 +15,10 @@ from doc_qa.core.config import get_settings, load_yaml
 
 
 def folder_size_gb(path: Path) -> float:
-    """Compute the total size of the files in a folder.
+    """Total size of a folder's files.
 
     Args:
-        path (Path): The folder.
+        path (Path): Folder.
 
     Returns:
         float: Size in GB.
@@ -31,7 +27,7 @@ def folder_size_gb(path: Path) -> float:
 
 
 def main() -> None:
-    """Download the datasets listed in configs/datasets.yaml."""
+    """Download the datasets in configs/datasets.yaml."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--only", nargs="+", help="Dataset keys to download (default: all).")
     args = parser.parse_args()

@@ -1,1 +1,1 @@
-"""Shared building blocks: settings, schemas and run records."""
+"""Settings, schemas and run metadata."""

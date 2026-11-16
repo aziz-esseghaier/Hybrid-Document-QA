@@ -1,19 +1,10 @@
-"""Check the dev datasets (ViDoRe V1/V2) against the test set (ViDoRe V3) for overlap.
-
-Loads every dataset, hashes every page image, finds candidate dev/test page pairs (exact and perceptual
-hashes), verifies each pair pixel by pixel, compares document titles and URLs, and reports which dev
-documents to remove and what removing them costs.
+"""Check dev datasets (ViDoRe V1/V2) for overlap with the test set (ViDoRe V3).
 
 Usage:
-    python scripts/check_overlap.py --config configs/m0_overlap.yaml
+    python scripts/check_overlap.py --config configs/overlap.yaml
 
-Outputs, in <RESULTS_ROOT>/<config name>/:
-    config.yaml, run_info.json      what was run
-    report.md, report.json          the results
-    proposed_exclusions.yaml        flagged dev documents; review them, then copy the confirmed ids
-                                    into configs/dev_exclusions.yaml
-    artifacts/pairs/*.png           confirmed pairs side by side (dev left, test right)
-    artifacts/pairs_rejected/*.png  rejected pairs closest to the threshold, to check the filter
+Writes to <RESULTS_ROOT>/<name>/: config.yaml, run_info.json, report.md, report.json,
+proposed_exclusions.yaml, artifacts/pairs/ (confirmed), artifacts/pairs_rejected/ (closest rejected).
 """
 
 from __future__ import annotations
@@ -47,18 +38,16 @@ from doc_qa.evaluation.vidore import apply_exclusions, iter_page_images, load_be
 
 
 def page_hashes(bench: Benchmark, revision: str, cache_dir: Path, workers: int | None) -> list[PageHash]:
-    """Hash every page of a dataset, reusing cached hashes when they cover all its pages.
-
-    The cache file name contains the dataset revision, so new data is never matched with old hashes.
+    """Hash a dataset's pages, cached per dataset revision.
 
     Args:
-        bench (Benchmark): The dataset.
-        revision (str): The dataset's pinned Hub revision.
-        cache_dir (Path): Folder for the cached hash files.
-        workers (int | None): Hashing processes; None uses all CPU cores.
+        bench (Benchmark): Dataset.
+        revision (str): Dataset revision.
+        cache_dir (Path): Cache folder.
+        workers (int | None): Hashing processes; None = all cores.
 
     Returns:
-        list[PageHash]: One hash per page.
+        list[PageHash]: One per page.
     """
     path = cache_dir / f"{bench.name}@{revision[:12]}.csv"
     if path.exists():
@@ -72,13 +61,13 @@ def page_hashes(bench: Benchmark, revision: str, cache_dir: Path, workers: int |
 
 
 def summarize(bench: Benchmark) -> dict[str, Any]:
-    """Count a dataset's documents, pages, queries and judgments.
+    """Count a dataset's documents, pages, queries and qrels.
 
     Args:
-        bench (Benchmark): The dataset.
+        bench (Benchmark): Dataset.
 
     Returns:
-        dict[str, Any]: The counts, plus loading warnings.
+        dict[str, Any]: Counts and warnings.
     """
     languages = Counter(q.language for q in bench.queries.values())
     return {
@@ -97,14 +86,14 @@ def summarize(bench: Benchmark) -> dict[str, Any]:
 def collect_page_pairs(
     exact: list[tuple[str, str]], near: list[tuple[str, str, int]]
 ) -> list[dict[str, Any]]:
-    """Merge exact and perceptual matches into one list of page pairs, most certain first.
+    """Merge exact and pHash matches into one pair list, exact first, then by distance.
 
     Args:
-        exact (list[tuple[str, str]]): (dev page, test page) pairs with identical pixels.
-        near (list[tuple[str, str, int]]): (dev page, test page, pHash distance) pairs.
+        exact (list[tuple[str, str]]): (dev page, test page).
+        near (list[tuple[str, str, int]]): (dev page, test page, distance).
 
     Returns:
-        list[dict[str, Any]]: One dict per pair: dev_page, test_page, exact, phash_distance.
+        list[dict[str, Any]]: Pairs with dev_page, test_page, exact, phash_distance.
     """
     exact_set = set(exact)
     distance = {(d, t): dist for d, t, dist in near}
@@ -116,13 +105,13 @@ def collect_page_pairs(
 
 
 def _pages_by_dataset(pairs: list[dict[str, Any]]) -> dict[str, set[str]]:
-    """Group the page ids used by some pairs by dataset (the part of the id before the first slash).
+    """Group the pairs' page ids by dataset key.
 
     Args:
         pairs (list[dict[str, Any]]): Page pairs.
 
     Returns:
-        dict[str, set[str]]: Page ids per dataset key.
+        dict[str, set[str]]: Page ids per dataset.
     """
     needed: dict[str, set[str]] = defaultdict(set)
     for p in pairs:
@@ -132,12 +121,12 @@ def _pages_by_dataset(pairs: list[dict[str, Any]]) -> dict[str, set[str]]:
 
 
 def verify_pairs(pairs: list[dict[str, Any]], benches: list[Benchmark], cfg: dict[str, Any]) -> None:
-    """Verify each candidate pair, and store its status, ink share and pixel correlation in the pair dict.
+    """Add status, ink_share and correlation to each pair, in place.
 
     Args:
-        pairs (list[dict[str, Any]]): Candidate page pairs from `collect_page_pairs`.
-        benches (list[Benchmark]): All datasets, to read the images from.
-        cfg (dict[str, Any]): The experiment config: verify_size, min_ink_share, min_pixel_correlation, workers.
+        pairs (list[dict[str, Any]]): Candidate pairs.
+        benches (list[Benchmark]): All datasets.
+        cfg (dict[str, Any]): Config (verify_size, min_ink_share, min_pixel_correlation, workers).
     """
     by_name = {b.name: b for b in benches}
     views = {}
@@ -155,15 +144,15 @@ def verify_pairs(pairs: list[dict[str, Any]], benches: list[Benchmark], cfg: dic
 def flag_documents(
     pairs: list[dict[str, Any]], titles: list[tuple[str, str, float, str]], page_doc: dict[str, str]
 ) -> dict[str, dict[str, Any]]:
-    """Group the evidence by dev document. Every dev document with any evidence is flagged.
+    """Group matched pages and titles by dev document.
 
     Args:
-        pairs (list[dict[str, Any]]): Matched page pairs from `collect_page_pairs`.
-        titles (list[tuple[str, str, float, str]]): Matched documents from `find_title_matches`.
-        page_doc (dict[str, str]): Document id of every page id.
+        pairs (list[dict[str, Any]]): Confirmed page pairs.
+        titles (list[tuple[str, str, float, str]]): Title/URL matches.
+        page_doc (dict[str, str]): Page id -> document id.
 
     Returns:
-        dict[str, dict[str, Any]]: Evidence per flagged dev document id, sorted by id.
+        dict[str, dict[str, Any]]: Evidence per dev document id.
     """
     evidence: dict[str, dict[str, Any]] = defaultdict(
         lambda: {"test_documents": set(), "exact_pages": set(), "near_pages": set(), "title_matches": []}
@@ -188,15 +177,15 @@ def flag_documents(
 
 
 def removal_impact(dev: list[Benchmark], excluded: list[str], large_share: float) -> list[dict[str, Any]]:
-    """Measure what each dev dataset loses if the given documents are removed.
+    """Compute what each dev dataset loses if `excluded` documents are removed.
 
     Args:
         dev (list[Benchmark]): Dev datasets.
-        excluded (list[str]): Document ids to remove.
-        large_share (float): Share of lost queries above which the overlap counts as large.
+        excluded (list[str]): Document ids.
+        large_share (float): Lost-query share above which the overlap is large.
 
     Returns:
-        list[dict[str, Any]]: Per dataset: documents, pages and queries before and after, share lost, large flag.
+        list[dict[str, Any]]: Before/after counts per dataset.
     """
     rows = []
     for bench in dev:
@@ -216,14 +205,14 @@ def removal_impact(dev: list[Benchmark], excluded: list[str], large_share: float
 
 
 def _safe_name(page_id: str, max_len: int = 60) -> str:
-    """Turn a page id into a short, file-system-safe string.
+    """Make a page id file-name safe.
 
     Args:
-        page_id (str): The page id.
-        max_len (int): Maximum length kept.
+        page_id (str): Page id.
+        max_len (int): Max length (keeps the end).
 
     Returns:
-        str: The safe string.
+        str: Safe name.
     """
     return re.sub(r"[^\w.-]+", "_", page_id)[-max_len:]
 
@@ -231,19 +220,17 @@ def _safe_name(page_id: str, max_len: int = 60) -> str:
 def save_pair_images(
     pairs: list[dict[str, Any]], benches: list[Benchmark], out_dir: Path, subdir: str, limit: int
 ) -> int:
-    """Save the first `limit` page pairs side by side, and store each image's path in its pair dict.
-
-    The folder is emptied first, so images from an earlier run never mix with this run's.
+    """Save up to `limit` pairs side by side to artifacts/<subdir>/ (cleared first).
 
     Args:
-        pairs (list[dict[str, Any]]): Page pairs, in the order to save them.
-        benches (list[Benchmark]): All datasets, to read the images from.
-        out_dir (Path): The experiment's results folder.
-        subdir (str): Folder under artifacts/ for the images.
-        limit (int): Maximum number of images.
+        pairs (list[dict[str, Any]]): Pairs, in save order.
+        benches (list[Benchmark]): All datasets.
+        out_dir (Path): Experiment folder.
+        subdir (str): Folder under artifacts/.
+        limit (int): Max images.
 
     Returns:
-        int: Number of images saved.
+        int: Images saved.
     """
     pair_dir = out_dir / "artifacts" / subdir
     if pair_dir.exists():
@@ -269,11 +256,11 @@ def _md_table(headers: list[str], rows: list[list[Any]]) -> str:
     """Format a Markdown table.
 
     Args:
-        headers (list[str]): Column titles.
-        rows (list[list[Any]]): Cell values, one list per row.
+        headers (list[str]): Column names.
+        rows (list[list[Any]]): Rows.
 
     Returns:
-        str: The table.
+        str: Table.
     """
     lines = ["| " + " | ".join(headers) + " |", "|" + "---|" * len(headers)]
     lines += ["| " + " | ".join(str(c) for c in row) + " |" for row in rows]
@@ -281,14 +268,14 @@ def _md_table(headers: list[str], rows: list[list[Any]]) -> str:
 
 
 def verdict(flagged: dict[str, Any], impact: list[dict[str, Any]]) -> str:
-    """Summarize the outcome in one sentence.
+    """One-line verdict.
 
     Args:
         flagged (dict[str, Any]): Flagged dev documents.
         impact (list[dict[str, Any]]): Removal impact per dev dataset.
 
     Returns:
-        str: The verdict.
+        str: Verdict.
     """
     large = [r["dataset"] for r in impact if r["large"]]
     if not flagged:
@@ -302,15 +289,14 @@ def write_report(out_dir: Path, report: dict[str, Any]) -> None:
     """Write report.json, report.md and proposed_exclusions.yaml.
 
     Args:
-        out_dir (Path): The experiment's results folder.
-        report (dict[str, Any]): Everything the check found.
+        out_dir (Path): Experiment folder.
+        report (dict[str, Any]): Results.
     """
     (out_dir / "report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
     proposed = {"ids": list(report["flagged_documents"]), "evidence": report["flagged_documents"]}
     with (out_dir / "proposed_exclusions.yaml").open("w", encoding="utf-8") as f:
-        f.write("# Flagged dev documents. Check each one in artifacts/pairs/, then copy the confirmed ids\n")
-        f.write("# into configs/dev_exclusions.yaml.\n")
+        f.write("# Review artifacts/pairs/, then copy confirmed ids into configs/dev_exclusions.yaml.\n")
         yaml.safe_dump(proposed, f, sort_keys=False, allow_unicode=True)
 
     m, cfg = report["matches"], report["config"]
@@ -369,9 +355,9 @@ def write_report(out_dir: Path, report: dict[str, Any]) -> None:
 
 
 def main() -> None:
-    """Run the overlap check and write the report."""
+    """Run the overlap check."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--config", type=Path, default=Path("configs/m0_overlap.yaml"))
+    parser.add_argument("--config", type=Path, default=Path("configs/overlap.yaml"))
     args = parser.parse_args()
 
     settings = get_settings()
@@ -381,7 +367,7 @@ def main() -> None:
     write_run_info(out_dir, extra={"datasets": {k: {"repo": s["repo"], "revision": s["revision"]} for k, s in specs.items()}})
     (out_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
-    # 1. Load every dataset without exclusions: the check must see the raw dev set.
+    # Load without exclusions: the check needs the full dev set.
     benches = load_benchmarks(specs, settings.data_root / "raw", cfg["languages"])
     dev = [b for b in benches if b.role == "dev"]
     test = [b for b in benches if b.role == "test"]
@@ -389,13 +375,12 @@ def main() -> None:
     for s in summaries:
         print(f"{s['dataset']:<26} {s['role']:<4} pages={s['pages']:>5} queries={s['queries_en'] + s['queries_fr']:>5}")
 
-    # 2. Hash every page (cached per dataset revision).
     cache_dir = settings.data_root / "derived" / "page_hashes"
     hashes = {b.name: page_hashes(b, specs[b.name]["revision"], cache_dir, cfg["workers"]) for b in benches}
     dev_hashes = [h for b in dev for h in hashes[b.name]]
     test_hashes = [h for b in test for h in hashes[b.name]]
 
-    # 3. Find candidate page pairs with the hashes, then verify each pair pixel by pixel.
+    # Candidate pairs from hashes, then pixel verification.
     exact = find_exact_matches(dev_hashes, test_hashes)
     near = find_phash_matches(dev_hashes, test_hashes, cfg["phash_max_distance"], cfg["max_aspect_ratio_diff"])
     pairs = collect_page_pairs(exact, near)
@@ -404,7 +389,6 @@ def main() -> None:
     confirmed = [p for p in pairs if p["status"] == "confirmed"]
     rejected = sorted((p for p in pairs if p["status"] == "rejected"), key=lambda p: -p["correlation"])
 
-    # 4. Compare document titles and URLs, and group the evidence by dev document.
     titles = find_title_matches(
         [d for b in dev for d in b.documents.values()],
         [d for b in test for d in b.documents.values()],
@@ -416,7 +400,7 @@ def main() -> None:
     images_saved = save_pair_images(confirmed, benches, out_dir, "pairs", cfg["max_pair_images"])
     rejected_saved = save_pair_images(rejected, benches, out_dir, "pairs_rejected", cfg["max_rejected_images"])
 
-    # 5. Dev as the loader will serve it, with the reviewed exclusions applied.
+    # Dev as served by the loader, with current exclusions.
     current = load_yaml(Path(cfg["exclusions_config"])).get("documents") or []
     dev_doc_ids = {d for b in dev for d in b.documents}
     after = [summarize(apply_exclusions(b, current)) for b in dev]

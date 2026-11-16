@@ -1,10 +1,10 @@
-# ViDoRe datasets, pinned to a Hub revision (commit hash) so every run uses the same data.
-# role:   test = ViDoRe V3 (report only), dev = ViDoRe V2 + French ViDoRe V1 (make every choice here).
-# format: which loader adapter reads the files (see src/doc_qa/evaluation/vidore.py).
-# language: query language, for datasets whose queries have no language column.
+# ViDoRe datasets pinned to Hub revisions.
+# role: test (ViDoRe V3) | dev (ViDoRe V2 + French ViDoRe V1)
+# format: loader adapter in src/doc_qa/evaluation/vidore.py
+# language: query language, when the data has no language column
 
 datasets:
-  # --- Test: the 8 public ViDoRe V3 datasets ---
+  # Test: ViDoRe V3
   v3_computer_science:
     repo: vidore/vidore_v3_computer_science
     revision: d5cc75883d92e294f0c0fc2662551c9708a06ebc
@@ -46,7 +46,7 @@ datasets:
     role: test
     format: v3
 
-  # --- Dev: ViDoRe V2 ---
+  # Dev: ViDoRe V2
   v2_esg_reports:
     repo: vidore/esg_reports_v2
     revision: 87538b12b20b67a2b4326638921301f87f0cbaf0
@@ -69,7 +69,7 @@ datasets:
     role: dev
     format: v2
 
-  # --- Dev: French datasets of ViDoRe V1 ---
+  # Dev: ViDoRe V1 (French)
   v1_shiftproject:
     repo: vidore/shiftproject_test
     revision: 6e6223b3839a3f4e62d676e70a1b715ee520cc66

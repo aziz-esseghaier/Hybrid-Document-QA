@@ -1,6 +1,5 @@
-# Local conda environment: conda env create -f environment.yml
-# Packages are listed in pyproject.toml only; this file just provides Python and installs the project.
-# Kaggle doesn't use this file: it runs `pip install -e .` on its own Python.
+# conda env create -f environment.yml
+# Dependencies live in pyproject.toml.
 name: doc-qa
 channels:
   - defaults

@@ -1,1 +1,1 @@
-"""Benchmarks, metrics and checks used to evaluate the pipeline."""
+"""Benchmark loading and data checks."""

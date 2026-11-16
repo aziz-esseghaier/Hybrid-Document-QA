@@ -1,10 +1,7 @@
-"""Prepare a Kaggle session: paths and secrets as environment variables.
+"""Kaggle session setup: data/results paths and secrets as environment variables.
 
-Run it in the notebook with `%run scripts/kaggle_setup.py`, not `!python`: %run executes inside the
-notebook's own process, so the variables it sets reach every later `!python ...` command.
-
-This is the only Kaggle-specific code; the package reads everything from environment variables.
-It must not import doc_qa: the package is installed in the same cell, before the kernel can see it.
+Run with `%run scripts/kaggle_setup.py` (not `!python`) so the variables reach later `!python` calls.
+Must not import doc_qa: the package is installed in the same cell.
 """
 
 from __future__ import annotations
@@ -12,18 +9,16 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-# Large disk, wiped at the end of the session.
-KAGGLE_TEMP = Path("/kaggle/temp")
-# Kept as notebook output when you save a version (about 20 GB max): small results only.
-KAGGLE_WORKING = Path("/kaggle/working")
+KAGGLE_TEMP = Path("/kaggle/temp")  # large, wiped at session end
+KAGGLE_WORKING = Path("/kaggle/working")  # kept as notebook output (~20 GB)
 SECRET_NAMES = ("HF_TOKEN",)
 
 
 def set_paths() -> dict[str, str]:
-    """Point data, results and the Hugging Face cache to the right Kaggle disks.
+    """Set DATA_ROOT, RESULTS_ROOT and HF_HOME (unless already set).
 
     Returns:
-        dict[str, str]: The variables set, by name.
+        dict[str, str]: Variables set.
     """
     paths = {
         "DATA_ROOT": KAGGLE_TEMP / "data",
@@ -37,13 +32,13 @@ def set_paths() -> dict[str, str]:
 
 
 def load_secrets(names: tuple[str, ...] = SECRET_NAMES) -> list[str]:
-    """Copy Kaggle Secrets into environment variables. Missing secrets are skipped.
+    """Copy Kaggle secrets into environment variables. Missing secrets are skipped.
 
     Args:
-        names (tuple[str, ...]): Secret names, as added under Add-ons > Secrets.
+        names (tuple[str, ...]): Secret names.
 
     Returns:
-        list[str]: Names of the secrets found (never their values).
+        list[str]: Names found.
     """
     try:
         from kaggle_secrets import UserSecretsClient
@@ -54,13 +49,13 @@ def load_secrets(names: tuple[str, ...] = SECRET_NAMES) -> list[str]:
         try:
             os.environ[name] = client.get_secret(name)
             found.append(name)
-        except Exception:  # secret not attached to this notebook
+        except Exception:  # not attached to this notebook
             continue
     return found
 
 
 def main() -> None:
-    """Set up the session and print what was configured."""
+    """Set up the session."""
     if not Path("/kaggle").exists():
         raise SystemExit("Not a Kaggle session. Locally, settings come from the .env file.")
     for name, value in set_paths().items():

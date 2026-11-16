@@ -1,0 +1,24 @@
+# Dev (ViDoRe V1/V2) vs test (ViDoRe V3) overlap check.
+name: overlap
+datasets_config: configs/datasets.yaml
+exclusions_config: configs/dev_exclusions.yaml
+languages: [en, fr]
+
+# Candidate pairs
+phash_max_distance: 8        # differing bits out of 64
+max_aspect_ratio_diff: 0.05  # relative width/height difference
+
+# Pixel verification
+min_ink_share: 0.01          # pages below are treated as blank
+verify_size: 128             # content box resized to verify_size x verify_size
+min_pixel_correlation: 0.9   # same page if correlation >= this
+
+# Document matching
+title_min_ratio: 0.85        # difflib similarity of normalized titles
+
+# Report
+large_overlap_query_share: 0.2  # lost-query share flagged as large
+max_pair_images: 200
+max_rejected_images: 20
+
+workers: null                # hashing processes; null = all cores

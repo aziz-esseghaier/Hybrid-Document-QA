@@ -1,54 +1,46 @@
 # Document Q&A
 
-Answers questions about English and French PDFs, including charts, tables and scanned pages, and cites the pages each answer comes from. Retrieval is hybrid: a text branch and a visual branch, merged and reranked. Open-source models only.
+Question answering over English and French PDFs (text, tables, charts, scans) with page citations. Hybrid retrieval: a text branch and a visual branch, fused and reranked. Open-source models only.
 
-Evaluated on [ViDoRe V3](https://huggingface.co/vidore) (test), with ViDoRe V2 and the French ViDoRe V1 datasets as dev.
+Evaluation: [ViDoRe V3](https://huggingface.co/vidore) (test), ViDoRe V2 + French ViDoRe V1 (dev).
 
 ## Layout
 
 ```
-configs/          datasets (pinned revisions), experiments, dev exclusions
-src/doc_qa/       the package: core/ (settings, schemas, run records), evaluation/ (loaders, checks)
-scripts/          runnable scripts
-tests/            unit tests
-results/          one folder per experiment (large outputs are not tracked)
+configs/      datasets (pinned revisions), experiment configs, dev exclusions
+src/doc_qa/   package: core/ (settings, schemas, run metadata), evaluation/ (loaders, checks)
+scripts/      entry points
+tests/        unit tests
 ```
 
-## Run on Kaggle
+## Local setup
 
-All data and models run on Kaggle. In the notebook settings: **Internet on**, **Environment: pin to original environment**. Optional: add an `HF_TOKEN` secret (Add-ons > Secrets); the ViDoRe datasets are public, so M0 doesn't need it.
+```
+conda env create -f environment.yml
+conda activate doc-qa
+copy .env.example .env      # Linux: cp
+pytest
+docker compose up -d        # Qdrant on http://localhost:6333
+```
 
-One cell sets up the session:
+## Kaggle
+
+Notebook settings: Internet on, environment pinned. Optional secret: `HF_TOKEN`.
 
 ```python
-!git clone https://github.com/<you>/Hybrid-Document-QA.git /kaggle/temp/Hybrid-Document-QA
+!git clone https://github.com/<user>/Hybrid-Document-QA.git /kaggle/temp/Hybrid-Document-QA
 %cd /kaggle/temp/Hybrid-Document-QA
 !pip install -q -e .
 %run scripts/kaggle_setup.py
 ```
 
-`kaggle_setup.py` must run with `%run`, so the variables it sets reach later commands. The repo is cloned to `/kaggle/temp` (wiped at session end); results go to `/kaggle/working/results` (kept as notebook output when you save a version).
+`kaggle_setup.py` must run with `%run` so its environment variables reach later cells. Data goes to `/kaggle/temp` (wiped at session end), results to `/kaggle/working/results`.
 
-### Overlap check (M0)
-
-No GPU needed: a CPU session is enough.
+## Dev/test overlap check
 
 ```python
 !python scripts/download_data.py
-!python scripts/check_overlap.py --config configs/m0_overlap.yaml
+!python scripts/check_overlap.py
 ```
 
-Then download `/kaggle/working/results/m0_overlap/` and review `report.md` and `artifacts/pairs/`. Copy the confirmed document ids from `proposed_exclusions.yaml` into `configs/dev_exclusions.yaml`.
-
-## Local setup
-
-For editing and unit tests, in a conda environment (packages come from `pyproject.toml`):
-
-```
-conda env create -f environment.yml    # after a dependency change: conda env update -f environment.yml --prune
-conda activate doc-qa
-copy .env.example .env          # Linux: cp .env.example .env
-pytest
-```
-
-Local Qdrant: `docker compose up -d` (REST on http://localhost:6333).
+Finds dev pages that also appear in test: exact and perceptual hashes give candidate pairs, nearly blank pages are skipped, the rest are verified by pixel correlation. Output in `results/overlap/`. Confirmed overlapping documents go into `configs/dev_exclusions.yaml`.

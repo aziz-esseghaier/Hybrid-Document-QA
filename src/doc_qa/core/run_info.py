@@ -1,8 +1,4 @@
-"""Record what produced an experiment's results, so the run can be reproduced.
-
-The record must be safe to publish. It never contains environment variables (tokens), the git remote URL
-(a private clone URL can embed a token), absolute paths (they contain user names) or the hostname.
-"""
+"""Run metadata (run_info.json). Never records env vars, git remote, absolute paths or hostname."""
 
 from __future__ import annotations
 
@@ -18,13 +14,13 @@ from doc_qa.core.config import REPO_ROOT
 
 
 def _run(cmd: list[str]) -> str | None:
-    """Run a command in the repo root and return its output.
+    """Run a command in the repo root.
 
     Args:
         cmd (list[str]): Command and arguments.
 
     Returns:
-        str | None: Stripped standard output, or None if the command is missing or fails.
+        str | None: Stripped stdout, or None on failure.
     """
     try:
         out = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, timeout=30, check=True)
@@ -34,12 +30,10 @@ def _run(cmd: list[str]) -> str | None:
 
 
 def git_state() -> tuple[str | None, bool | None]:
-    """Get the current commit hash and whether tracked or new code differs from it.
-
-    Changes under data/ and results/ are ignored: they are outputs, not code.
+    """Return the HEAD commit and whether code differs from it (data/ and results/ ignored).
 
     Returns:
-        tuple[str | None, bool | None]: Commit hash and dirty flag, or (None, None) outside a git repo.
+        tuple[str | None, bool | None]: (commit, dirty), or (None, None) outside git.
     """
     commit = _run(["git", "rev-parse", "HEAD"])
     if commit is None:
@@ -49,10 +43,10 @@ def git_state() -> tuple[str | None, bool | None]:
 
 
 def installed_packages() -> list[str]:
-    """List installed packages as `name==version`, like `pip freeze` but without local paths or URLs.
+    """List installed packages as `name==version`.
 
     Returns:
-        list[str]: Sorted package pins.
+        list[str]: Sorted pins.
     """
     pins = set()
     for dist in importlib.metadata.distributions():
@@ -63,24 +57,24 @@ def installed_packages() -> list[str]:
 
 
 def gpu_names() -> list[str]:
-    """List the GPUs visible on this machine.
+    """List visible GPUs.
 
     Returns:
-        list[str]: One name per GPU, empty when there is none.
+        list[str]: GPU names; empty if none.
     """
     out = _run(["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"])
     return [line.strip() for line in out.splitlines() if line.strip()] if out else []
 
 
 def collect_run_info(seed: int | None = None, extra: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Collect the facts needed to reproduce a run.
+    """Collect run metadata.
 
     Args:
-        seed (int | None): Random seed used by the run, if any.
-        extra (dict[str, Any] | None): Run-specific versions, such as dataset or model revisions.
+        seed (int | None): Random seed.
+        extra (dict[str, Any] | None): Run-specific fields, e.g. dataset revisions.
 
     Returns:
-        dict[str, Any]: The run record.
+        dict[str, Any]: Run metadata.
     """
     commit, dirty = git_state()
     return {
@@ -97,17 +91,15 @@ def collect_run_info(seed: int | None = None, extra: dict[str, Any] | None = Non
 
 
 def write_run_info(out_dir: Path, seed: int | None = None, extra: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Collect the run record and save it as `run_info.json` in the experiment folder.
-
-    Prints a warning when the code has uncommitted changes, because the commit hash then doesn't describe it.
+    """Write run_info.json to `out_dir`. Warns on uncommitted changes.
 
     Args:
-        out_dir (Path): The experiment's results folder.
-        seed (int | None): Random seed used by the run, if any.
-        extra (dict[str, Any] | None): Run-specific versions, such as dataset or model revisions.
+        out_dir (Path): Experiment folder.
+        seed (int | None): Random seed.
+        extra (dict[str, Any] | None): Run-specific fields.
 
     Returns:
-        dict[str, Any]: The run record that was written.
+        dict[str, Any]: Written metadata.
     """
     info = collect_run_info(seed=seed, extra=extra)
     if info["git_dirty"]:

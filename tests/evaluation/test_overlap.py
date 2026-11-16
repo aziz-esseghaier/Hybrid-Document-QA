@@ -1,4 +1,4 @@
-"""Tests for page hashing, pair verification and dev/test matching."""
+"""Tests for overlap detection."""
 
 import io
 import random
@@ -26,7 +26,7 @@ WORDS = "the energy report shows growth of renewable capacity in europe while de
 
 
 def make_page(layout: str, size: tuple[int, int] = (850, 1100)) -> Image.Image:
-    """Draw a synthetic page: a title bar plus text-like blocks placed by `layout`."""
+    """Synthetic page with a "report" or "chart" block layout."""
     w, h = size
     page = Image.new("RGB", size, "white")
     draw = ImageDraw.Draw(page)
@@ -41,10 +41,7 @@ def make_page(layout: str, size: tuple[int, int] = (850, 1100)) -> Image.Image:
 
 
 def make_text_page(seed: int, size: tuple[int, int] = (850, 1100)) -> Image.Image:
-    """Draw a synthetic text page: a heading, 48 lines of random words and a page number.
-
-    Pages with different seeds share the same layout (margins, line spacing) but not the same text.
-    """
+    """Synthetic text page. Same layout for every seed, different text."""
     rng = random.Random(seed)
     w, h = size
     page = Image.new("RGB", size, "white")
@@ -61,7 +58,7 @@ def make_text_page(seed: int, size: tuple[int, int] = (850, 1100)) -> Image.Imag
 
 
 def make_blank_page(number: str, size: tuple[int, int] = (850, 1100)) -> Image.Image:
-    """Draw a nearly blank page: only a page number at the bottom."""
+    """Blank page with only a page number."""
     page = Image.new("RGB", size, "white")
     ImageDraw.Draw(page).text((size[0] / 2, 0.96 * size[1]), number, fill="black", font=ImageFont.load_default(size=14))
     return page
@@ -75,7 +72,7 @@ def encode(image: Image.Image, fmt: str = "PNG", **kwargs) -> bytes:
 
 
 def rerender(page: Image.Image, scale: float, border: int = 0, crop: int = 0) -> bytes:
-    """Imitate another render of the same page: other margins, another resolution, JPEG compression."""
+    """Re-render a page with optional crop/border, rescaled, as JPEG."""
     if crop:
         page = page.crop((crop, crop, page.width, page.height))
     if border:

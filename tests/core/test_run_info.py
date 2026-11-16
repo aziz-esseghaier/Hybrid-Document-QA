@@ -1,4 +1,4 @@
-"""Tests for the run record: complete enough to reproduce a run, and safe to publish."""
+"""Tests for run metadata."""
 
 import json
 
