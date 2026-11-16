@@ -11,7 +11,6 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import astuple, dataclass
 from difflib import SequenceMatcher
 from functools import partial
-from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator
 
@@ -19,6 +18,7 @@ import imagehash
 import numpy as np
 from PIL import Image
 
+from doc_qa.core.parallel import batched
 from doc_qa.core.schemas import Document
 
 # Set bits per byte value.
@@ -54,21 +54,6 @@ def hash_image_bytes(data: bytes) -> tuple[str, str, int, int]:
     return digest, str(imagehash.phash(rgb)), rgb.width, rgb.height
 
 
-def _batched(items: Iterable, size: int) -> Iterator[list]:
-    """Split an iterable into lists of at most `size` items.
-
-    Args:
-        items (Iterable): Items.
-        size (int): Batch size.
-
-    Returns:
-        Iterator[list]: Batches.
-    """
-    it = iter(items)
-    while batch := list(islice(it, size)):
-        yield batch
-
-
 def _map_images(
     fn: Callable[[bytes], Any], images: Iterable[tuple[str, bytes]], workers: int | None, batch_size: int
 ) -> Iterator[tuple[str, Any]]:
@@ -88,7 +73,7 @@ def _map_images(
             yield page_id, fn(data)
         return
     with ProcessPoolExecutor(max_workers=workers) as pool:
-        for batch in _batched(images, batch_size):
+        for batch in batched(images, batch_size):
             ids = [page_id for page_id, _ in batch]
             yield from zip(ids, pool.map(fn, [data for _, data in batch], chunksize=8))
 

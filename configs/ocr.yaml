@@ -1,0 +1,6 @@
+# PaddleOCR-VL page OCR.
+datasets_config: configs/datasets.yaml
+pipeline_version: v1.6
+batch_size: 4          # pages per predict() call
+pipeline_options: {}   # extra PaddleOCRVL(...) arguments
+predict_options: {}    # extra predict(...) arguments

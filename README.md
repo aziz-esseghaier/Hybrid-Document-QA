@@ -36,6 +36,20 @@ Notebook settings: Internet on, environment pinned. Optional secret: `HF_TOKEN`.
 
 `kaggle_setup.py` must run with `%run` so its environment variables reach later cells. Data goes to `/kaggle/temp` (wiped at session end), results to `/kaggle/working/results`.
 
+## Page OCR
+
+PaddleOCR-VL runs in its own virtual env so Paddle's CUDA libraries don't clash with PyTorch's. GPU session.
+
+```python
+!python -m venv /kaggle/temp/ocr-env
+!/kaggle/temp/ocr-env/bin/pip install -q paddlepaddle-gpu==3.2.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
+!/kaggle/temp/ocr-env/bin/pip install -q "paddleocr[doc-parser]>=3.6.0,<4" -e .
+!python scripts/download_data.py --only v2_esg_reports
+!/kaggle/temp/ocr-env/bin/python scripts/ocr_pages.py --dataset v2_esg_reports
+```
+
+One worker per GPU; output in `<DATA_ROOT>/derived/ocr/<dataset>/`, resumable. `--limit N` OCRs a sample.
+
 ## Dev/test overlap check
 
 ```python
