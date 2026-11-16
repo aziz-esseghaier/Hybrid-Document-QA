@@ -41,9 +41,10 @@ Notebook settings: Internet on, environment pinned. Optional secret: `HF_TOKEN`.
 PaddleOCR-VL runs in its own virtual env so Paddle's CUDA libraries don't clash with PyTorch's. GPU session.
 
 ```python
-!python -m venv /kaggle/temp/ocr-env
+!pip install -q virtualenv  # Kaggle's Python has no working ensurepip
+!python -m virtualenv -q /kaggle/temp/ocr-env
 !/kaggle/temp/ocr-env/bin/pip install -q paddlepaddle-gpu==3.2.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
-!/kaggle/temp/ocr-env/bin/pip install -q "paddleocr[doc-parser]>=3.6.0,<4" -e .
+!/kaggle/temp/ocr-env/bin/pip install -q "paddleocr[doc-parser]>=3.6.0,<4" "sentencepiece==0.2.1" -e .  # 0.2.3 needs protobuf 7
 !python scripts/download_data.py --only v2_esg_reports
 !/kaggle/temp/ocr-env/bin/python scripts/ocr_pages.py --dataset v2_esg_reports
 ```
