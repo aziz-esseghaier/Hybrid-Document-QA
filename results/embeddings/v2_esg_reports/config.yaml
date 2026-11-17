@@ -1,0 +1,16 @@
+datasets_config: configs/datasets.yaml
+embedding_model: Qwen/Qwen3-Embedding-4B
+embedding_revision: 5cf2132abc99cad020ac570b19d031efec650f2b
+chunk_tokens: 512
+chunk_overlap: 64
+max_tokens: 640
+embed_batch_size: 16
+query_prompt_name: query
+bm25_languages:
+  en: english
+  fr: french
+bm25_k: 1.2
+bm25_b: 0.75
+chunk_limit: 500
+page_limit: 100
+rrf_k: 60
