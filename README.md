@@ -25,7 +25,7 @@ docker compose up -d        # Qdrant on http://localhost:6333
 
 ## Kaggle
 
-Notebook settings: Internet on, environment pinned. Secrets: `HF_TOKEN` (optional), `KAGGLE_USERNAME` and `KAGGLE_KEY` (Kaggle API token, for saving outputs to private Datasets).
+Notebook settings: Internet on, environment pinned. Secrets: `HF_TOKEN` (optional), `KAGGLE_USERNAME` and `KAGGLE_API_TOKEN` (or a legacy `KAGGLE_KEY`), for saving outputs to private Datasets.
 
 ```python
 !git clone https://github.com/<user>/Hybrid-Document-QA.git /kaggle/temp/Hybrid-Document-QA

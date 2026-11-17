@@ -7,7 +7,7 @@ Usage:
 push uploads shard*.jsonl, manifest.json, run_info.json, config.yaml and summary.json to
 <KAGGLE_USERNAME>/ocr-<dataset> (created private; a new version if it exists).
 pull copies the shards to <DATA_ROOT>/derived/ocr/<dataset>/.
-Needs KAGGLE_USERNAME and KAGGLE_KEY.
+Needs KAGGLE_USERNAME and KAGGLE_API_TOKEN (or a legacy KAGGLE_KEY).
 """
 
 from __future__ import annotations
