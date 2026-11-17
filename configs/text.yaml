@@ -1,0 +1,5 @@
+# Text branch: chunking.
+tokenizer: Qwen/Qwen3-Embedding-4B   # chunks are counted in the embedding model's tokens
+tokenizer_revision: 5cf2132abc99cad020ac570b19d031efec650f2b
+chunk_tokens: 512
+chunk_overlap: 64

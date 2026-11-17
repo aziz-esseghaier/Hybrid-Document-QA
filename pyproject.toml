@@ -17,6 +17,7 @@ dependencies = [
     "pyarrow>=14.0",
     "python-dotenv>=0.21",
     "pyyaml>=6.0",
+    "tokenizers>=0.19",
 ]
 
 [project.optional-dependencies]

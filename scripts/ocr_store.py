@@ -6,7 +6,7 @@ Usage:
 
 push uploads shard*.jsonl, manifest.json, run_info.json, config.yaml and summary.json to
 <KAGGLE_USERNAME>/ocr-<dataset> (created private; a new version if it exists).
-pull copies the shards to <DATA_ROOT>/derived/ocr/<dataset>/.
+pull copies the shards and manifest.json to <DATA_ROOT>/derived/ocr/<dataset>/.
 Needs KAGGLE_USERNAME and KAGGLE_API_TOKEN (or a legacy KAGGLE_KEY).
 """
 
@@ -120,7 +120,7 @@ def pull(dataset: str, out_dir: Path, force: bool) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     for path in out_dir.glob("shard*.jsonl"):
         path.unlink()
-    for path in sorted(src.glob("shard*.jsonl")):
+    for path in [*sorted(src.glob("shard*.jsonl")), src / "manifest.json"]:
         shutil.copy2(path, out_dir / path.name)
     print(f"Restored {manifest['pages']} pages (git {str(manifest['git_commit'])[:7]}) to {out_dir}")
 

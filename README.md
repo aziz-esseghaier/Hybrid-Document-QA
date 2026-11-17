@@ -8,7 +8,7 @@ Evaluation: [ViDoRe V3](https://huggingface.co/vidore) (test), ViDoRe V2 + Frenc
 
 ```
 configs/      datasets (pinned revisions), experiment configs, dev exclusions
-src/doc_qa/   package: core/ (settings, schemas, run metadata), evaluation/ (loaders, checks)
+src/doc_qa/   package: core/ (settings, schemas, run metadata), evaluation/ (loaders, checks), ingest/ (OCR, text, chunks)
 scripts/      entry points
 tests/        unit tests
 ```
@@ -57,6 +57,14 @@ Save the output to a private Kaggle Dataset (`<user>/ocr-<dataset>`, with a `man
 !python scripts/ocr_store.py push --dataset v2_esg_reports
 !python scripts/ocr_store.py pull --dataset v2_esg_reports
 ```
+
+## Text chunks
+
+```python
+!python scripts/build_chunks.py --dataset v2_esg_reports
+```
+
+Cleans the OCR text (drops image placeholders and HTML tags, turns tables into `cell | cell` rows) and splits each page into overlapping chunks counted in the embedding model's tokens (`configs/text.yaml`). Chunks never cross pages. Output in `<DATA_ROOT>/derived/chunks/<dataset>/`.
 
 ## Dev/test overlap check
 
