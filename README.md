@@ -9,7 +9,7 @@ Evaluation: [ViDoRe V3](https://huggingface.co/vidore) (test), ViDoRe V2 + Frenc
 ```
 configs/      datasets (pinned revisions), experiment configs, dev exclusions
 src/doc_qa/   package: core/ (settings, schemas, run metadata), evaluation/ (loaders, checks, metrics),
-              ingest/ (OCR, text, chunks), retrieval/ (embeddings, BM25, Qdrant, fusion)
+              ingest/ (OCR, PDF text, chunks), retrieval/ (embeddings, BM25, Qdrant, fusion)
 scripts/      entry points
 tests/        unit tests
 ```
@@ -77,7 +77,23 @@ GPU session, `%run scripts/kaggle_setup.py --qdrant`.
 !python scripts/eval_text.py --dataset v2_esg_reports    # NDCG@10, Recall@100 per query language
 ```
 
-Pages score as their best chunk. Dense search is exact (no HNSW) so rankings are reproducible. BM25 uses the document language's stemmer (`doc_language` in `configs/datasets.yaml`), with IDF computed by Qdrant. `rrf` merges the BM25 and dense page rankings. Output in `results/text_eval/<dataset>/`, with the rankings of each method.
+Pages score as their best chunk. Dense search is exact (no HNSW) so rankings are reproducible. BM25 uses the document language's stemmer (`doc_language` in `configs/datasets.yaml`), with IDF computed by Qdrant. `rrf` merges the BM25 and dense page rankings. Output in `results/text_eval/<dataset>/`, with the rankings of each method. `--corpus NAME` runs the three scripts on another chunk folder, scored on the dataset's queries.
+
+## Bridge check: PDF text vs OCR
+
+Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).
+
+```python
+!python scripts/download_data.py --only v2_esg_reports v2_esg_reports_human
+!python scripts/ocr_store.py pull --dataset v2_esg_reports
+!python scripts/build_bridge.py
+for source in ("ocr", "pdf"):
+    !python scripts/embed_text.py --dataset v2_esg_reports --corpus v2_esg_reports-bridge-{source}
+    !python scripts/index_text.py --dataset v2_esg_reports --corpus v2_esg_reports-bridge-{source}
+    !python scripts/eval_text.py --dataset v2_esg_reports --corpus v2_esg_reports-bridge-{source}
+```
+
+`build_bridge.py` downloads the PDFs, matches their pages to the dataset's page images by pixel correlation, reads the text layer with pypdfium2 (OCR text where the layer has almost none, as in the product), and writes two chunk folders with the same pages. Output in `results/bridge/v2_esg_reports/`: per-PDF and per-page match tables (ids, URLs, statistics; no document text).
 
 ## Dev/test overlap check
 

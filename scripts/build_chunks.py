@@ -14,52 +14,13 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
 
-import numpy as np
 import yaml
 
 from doc_qa.core.config import get_settings, load_yaml
-from doc_qa.core.parallel import read_jsonl
+from doc_qa.core.parallel import read_jsonl, write_jsonl
 from doc_qa.core.run_info import write_run_info
-from doc_qa.ingest.text import chunk_text, clean_ocr_text
-
-
-def write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
-    """Write records to a JSONL file, replacing it.
-
-    Args:
-        path (Path): Output file.
-        records (list[dict[str, Any]]): Records.
-    """
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        for record in records:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
-
-
-def summarize(page_tokens: list[int], chunks_per_page: list[int], chunk_tokens: int) -> dict[str, Any]:
-    """Summarize page lengths and chunk counts.
-
-    Args:
-        page_tokens (list[int]): Tokens per page.
-        chunks_per_page (list[int]): Chunks per page.
-        chunk_tokens (int): Max tokens per chunk.
-
-    Returns:
-        dict[str, Any]: Summary.
-    """
-    tokens = np.array(page_tokens)
-    with_text = tokens[tokens > 0]
-    return {
-        "pages": len(tokens),
-        "empty_pages": int((tokens == 0).sum()),
-        "chunks": int(sum(chunks_per_page)),
-        "page_tokens_p50": int(np.percentile(with_text, 50)) if with_text.size else 0,
-        "page_tokens_p90": int(np.percentile(with_text, 90)) if with_text.size else 0,
-        "page_tokens_max": int(with_text.max()) if with_text.size else 0,
-        "pages_in_one_chunk": round(float((with_text <= chunk_tokens).mean()), 3) if with_text.size else None,
-    }
+from doc_qa.ingest.text import chunk_pages, clean_ocr_text
 
 
 def main() -> None:
@@ -90,21 +51,11 @@ def main() -> None:
     (results_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
     tokenizer = Tokenizer.from_pretrained(cfg["embedding_model"], revision=cfg["embedding_revision"])
-    page_ids = sorted(records)
-    texts = [clean_ocr_text(records[p]) for p in page_ids]
-    encodings = tokenizer.encode_batch(texts, add_special_tokens=False)
-
-    pages, chunks, page_tokens, chunks_per_page = [], [], [], []
-    for page_id, text, enc in zip(page_ids, texts, encodings):
-        page_chunks = chunk_text(text, enc.offsets, cfg["chunk_tokens"], cfg["chunk_overlap"])
-        pages.append({"page_id": page_id, "text": text})
-        chunks += [{"chunk_id": f"{page_id}#{i}", "page_id": page_id, **c} for i, c in enumerate(page_chunks)]
-        page_tokens.append(len(enc.offsets))
-        chunks_per_page.append(len(page_chunks))
+    texts = {page_id: clean_ocr_text(text) for page_id, text in records.items()}
+    pages, chunks, summary = chunk_pages(texts, tokenizer, cfg["chunk_tokens"], cfg["chunk_overlap"])
 
     write_jsonl(out_dir / "pages.jsonl", pages)
     write_jsonl(out_dir / "chunks.jsonl", chunks)
-    summary = summarize(page_tokens, chunks_per_page, cfg["chunk_tokens"])
     (results_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
 

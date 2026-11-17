@@ -1,9 +1,29 @@
-"""Retrieval metrics: NDCG@k (linear gain, as trec_eval) and Recall@k."""
+"""Retrieval metrics: NDCG@k (linear gain, as trec_eval) and Recall@k. Text overlap: token F1."""
 
 from __future__ import annotations
 
 import math
-from collections import defaultdict
+import re
+from collections import Counter, defaultdict
+
+_WORD = re.compile(r"\w+")
+
+
+def token_f1(a: str, b: str) -> float:
+    """F1 of the lowercased word multisets of two texts.
+
+    Args:
+        a (str): First text.
+        b (str): Second text.
+
+    Returns:
+        float: F1 in [0, 1]; 1 if both are empty.
+    """
+    ca, cb = Counter(_WORD.findall(a.lower())), Counter(_WORD.findall(b.lower()))
+    if not ca and not cb:
+        return 1.0
+    common = sum((ca & cb).values())
+    return 2 * common / (sum(ca.values()) + sum(cb.values()))
 
 
 def ndcg_at_k(ranking: list[str], relevance: dict[str, int], k: int = 10) -> float:

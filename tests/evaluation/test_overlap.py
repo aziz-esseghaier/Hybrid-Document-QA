@@ -9,11 +9,13 @@ from PIL import Image, ImageDraw, ImageFont
 from doc_qa.core.schemas import Document
 from doc_qa.evaluation.overlap import (
     PageHash,
+    best_matches,
     find_exact_matches,
     find_phash_matches,
     find_title_matches,
     hash_image_bytes,
     hash_pages,
+    image_view,
     load_hashes,
     normalize_title,
     page_view,
@@ -154,6 +156,20 @@ def test_page_views_in_parallel_match_serial():
         assert parallel[page_id].ink_share == view.ink_share
         np.testing.assert_array_equal(parallel[page_id].pixels, view.pixels)
         assert view.pixels.shape == (64, 64)
+
+
+def test_best_matches_finds_rerendered_pages():
+    pages = {f"pdf#{i}": make_text_page(i) for i in range(4)}
+    targets = {k: image_view(p.convert("L")) for k, p in pages.items()}
+    targets["pdf#blank"] = page_view(encode(make_blank_page("3")))
+    sources = {f"ds/{i}": page_view(rerender(pages[f"pdf#{i}"], 1.4)) for i in (0, 2)}
+    sources["ds/blank"] = page_view(encode(make_blank_page("3")))
+
+    matches = best_matches(sources, targets, min_ink_share=0.01)
+    assert set(matches) == {"ds/0", "ds/2"}  # blank pages are skipped
+    assert [matches[s][0] for s in ("ds/0", "ds/2")] == ["pdf#0", "pdf#2"]
+    for _, correlation, runner_up in matches.values():
+        assert correlation >= 0.9 > runner_up
 
 
 def test_title_matching():

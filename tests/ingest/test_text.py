@@ -4,7 +4,18 @@ import re
 
 import pytest
 
-from doc_qa.ingest.text import chunk_text, clean_ocr_text, table_to_text, token_windows
+from doc_qa.ingest.text import chunk_pages, chunk_text, clean_ocr_text, table_to_text, token_windows
+
+
+class WhitespaceTokenizer:
+    """Stand-in for `tokenizers.Tokenizer`: one token per word."""
+
+    class Encoding:
+        def __init__(self, text: str) -> None:
+            self.offsets = [m.span() for m in re.finditer(r"\S+", text)]
+
+    def encode_batch(self, texts: list[str], add_special_tokens: bool = False) -> list:
+        return [self.Encoding(t) for t in texts]
 
 
 def test_clean_drops_image_placeholders_and_tags():
@@ -55,3 +66,12 @@ def test_chunk_text_maps_tokens_to_characters():
     assert [c["text"] for c in chunks] == ["a bb", "bb ccc", "ccc dd", "dd e"]
     assert chunks[1] == {"text": "bb ccc", "start": 2, "end": 8, "tokens": 2}
     assert chunk_text("", [], 2, 1) == []
+
+
+def test_chunk_pages():
+    texts = {"d/2": "a b c d e", "d/1": "x y", "d/3": ""}
+    pages, chunks, summary = chunk_pages(texts, WhitespaceTokenizer(), size=3, overlap=1)
+    assert [p["page_id"] for p in pages] == ["d/1", "d/2", "d/3"]
+    assert [(c["chunk_id"], c["text"]) for c in chunks] == [("d/1#0", "x y"), ("d/2#0", "a b c"), ("d/2#1", "c d e")]
+    assert summary["pages"] == 3 and summary["empty_pages"] == 1 and summary["chunks"] == 3
+    assert summary["pages_in_one_chunk"] == 0.5

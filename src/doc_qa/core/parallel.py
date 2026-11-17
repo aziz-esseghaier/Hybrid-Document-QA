@@ -63,6 +63,19 @@ def read_jsonl(paths: Iterable[Path]) -> list[dict[str, Any]]:
     return records
 
 
+def write_jsonl(path: Path, records: Iterable[dict[str, Any]]) -> None:
+    """Write records to a JSONL file, replacing it.
+
+    Args:
+        path (Path): File.
+        records (Iterable[dict[str, Any]]): Records.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        for r in records:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
 def append_jsonl(path: Path, records: Iterable[dict[str, Any]]) -> None:
     """Append records to a JSONL file, repairing a truncated last line first.
 

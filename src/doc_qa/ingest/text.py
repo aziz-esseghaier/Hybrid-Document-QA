@@ -5,6 +5,9 @@ from __future__ import annotations
 import html
 import re
 from html.parser import HTMLParser
+from typing import Any
+
+import numpy as np
 
 _TABLE = re.compile(r"<table\b.*?</table>", re.IGNORECASE | re.DOTALL)
 _IMG = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
@@ -160,3 +163,39 @@ def chunk_text(text: str, offsets: list[tuple[int, int]], size: int, overlap: in
         start, end = offsets[s][0], offsets[e - 1][1]
         chunks.append({"text": text[start:end], "start": start, "end": end, "tokens": e - s})
     return chunks
+
+
+def chunk_pages(texts: dict[str, str], tokenizer: Any, size: int, overlap: int) -> tuple[list[dict], list[dict], dict]:
+    """Chunk every page and summarize page lengths.
+
+    Args:
+        texts (dict[str, str]): Cleaned text per page id.
+        tokenizer (Any): `tokenizers.Tokenizer` of the embedding model.
+        size (int): Max tokens per chunk.
+        overlap (int): Tokens shared by consecutive chunks.
+
+    Returns:
+        tuple[list[dict], list[dict], dict]: Pages ({page_id, text}), chunks ({chunk_id, page_id, text,
+            start, end, tokens}), summary.
+    """
+    page_ids = sorted(texts)
+    encodings = tokenizer.encode_batch([texts[p] for p in page_ids], add_special_tokens=False)
+    pages, chunks, page_tokens = [], [], []
+    for page_id, enc in zip(page_ids, encodings):
+        page_chunks = chunk_text(texts[page_id], enc.offsets, size, overlap)
+        pages.append({"page_id": page_id, "text": texts[page_id]})
+        chunks += [{"chunk_id": f"{page_id}#{i}", "page_id": page_id, **c} for i, c in enumerate(page_chunks)]
+        page_tokens.append(len(enc.offsets))
+
+    tokens = np.array(page_tokens, dtype=int)
+    with_text = tokens[tokens > 0]
+    summary = {
+        "pages": len(tokens),
+        "empty_pages": int((tokens == 0).sum()),
+        "chunks": len(chunks),
+        "page_tokens_p50": int(np.percentile(with_text, 50)) if with_text.size else 0,
+        "page_tokens_p90": int(np.percentile(with_text, 90)) if with_text.size else 0,
+        "page_tokens_max": int(with_text.max()) if with_text.size else 0,
+        "pages_in_one_chunk": round(float((with_text <= size).mean()), 3) if with_text.size else None,
+    }
+    return pages, chunks, summary

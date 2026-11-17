@@ -1,11 +1,11 @@
 """Load a dataset's chunks into a Qdrant collection with dense and BM25 vectors.
 
 Usage:
-    python scripts/index_text.py --dataset v2_esg_reports
+    python scripts/index_text.py --dataset v2_esg_reports [--corpus NAME]
 
-Creates (or replaces) collection text_<dataset>: one point per chunk, payload {chunk_id, page_id}.
-Needs chunks (build_chunks.py), chunk embeddings (embed_text.py) and a running Qdrant (QDRANT_URL).
-Writes <RESULTS_ROOT>/index/<dataset>/: config.yaml, run_info.json, summary.json.
+Creates (or replaces) collection text_<corpus>: one point per chunk, payload {chunk_id, page_id}. The corpus
+(chunk folder) defaults to the dataset. Needs chunks (build_chunks.py), chunk embeddings (embed_text.py) and a
+running Qdrant (QDRANT_URL). Writes <RESULTS_ROOT>/index/<corpus>/: config.yaml, run_info.json, summary.json.
 """
 
 from __future__ import annotations
@@ -30,7 +30,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--config", type=Path, default=Path("configs/text.yaml"))
     parser.add_argument("--dataset", required=True)
+    parser.add_argument("--corpus", help="Chunk folder name (default: the dataset key).")
     args = parser.parse_args()
+    corpus = args.corpus or args.dataset
 
     from qdrant_client import QdrantClient
 
@@ -38,10 +40,10 @@ def main() -> None:
     cfg = load_yaml(args.config)
     spec = load_yaml(Path(cfg["datasets_config"]))["datasets"][args.dataset]
     language = cfg["bm25_languages"][spec["doc_language"]]
-    name = text_collection(args.dataset)
+    name = text_collection(corpus)
 
-    chunks = read_jsonl([settings.data_root / "derived" / "chunks" / args.dataset / "chunks.jsonl"])
-    emb_dir = settings.data_root / "derived" / "embeddings" / args.dataset / cfg["embedding_model"].split("/")[-1]
+    chunks = read_jsonl([settings.data_root / "derived" / "chunks" / corpus / "chunks.jsonl"])
+    emb_dir = settings.data_root / "derived" / "embeddings" / corpus / cfg["embedding_model"].split("/")[-1]
     vectors = load_vectors(sorted(emb_dir.glob("chunks_w*.npz")))
     missing = [c["chunk_id"] for c in chunks if c["chunk_id"] not in vectors]
     if not chunks or missing:
@@ -54,9 +56,10 @@ def main() -> None:
     sparse = [sparse_vector(e.indices, e.values) for e in bm25.embed(texts, batch_size=256)]
 
     client = QdrantClient(url=settings.qdrant_url, timeout=120)
-    results_dir = settings.results_root / "index" / args.dataset
+    results_dir = settings.results_root / "index" / corpus
     write_run_info(results_dir, extra={
         "dataset": args.dataset,
+        "corpus": corpus,
         "collection": name,
         "qdrant_version": client.info().version,
         "model": {"repo": cfg["embedding_model"], "revision": cfg["embedding_revision"]},

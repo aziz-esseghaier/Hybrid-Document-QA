@@ -1,0 +1,16 @@
+# Bridge check: PDF text layer vs OCR text, on the dev pages whose PDF can still be downloaded.
+text_config: configs/text.yaml
+dataset: v2_esg_reports              # pages, queries and OCR text
+urls_dataset: v2_esg_reports_human   # same reports, with each page's PDF URL
+
+# Matching PDF pages to dataset page images
+render_scale: 1.0            # 72 dpi, enough for a small comparison grid
+verify_size: 128             # content box resized to verify_size x verify_size
+min_ink_share: 0.01          # pages below are blank and not matched
+min_pixel_correlation: 0.9   # same page if correlation >= this
+
+# Product rule: a page whose text layer has fewer letters/digits than this is OCR'd instead
+min_word_chars: 50
+
+download_timeout: 120        # seconds per PDF
+workers: null                # CPU processes; null = all cores

@@ -1,4 +1,4 @@
-"""Dev/test overlap detection: page hashes, pixel verification, title matching."""
+"""Page matching: hashes, pixel verification, title matching (dev/test overlap, dataset pages to PDFs)."""
 
 from __future__ import annotations
 
@@ -199,7 +199,21 @@ def page_view(data: bytes, size: int = 128, contrast: int = 40) -> PageView:
         PageView: Ink share and downscaled content box.
     """
     with Image.open(io.BytesIO(data)) as image:
-        gray = image.convert("L")
+        return image_view(image, size, contrast)
+
+
+def image_view(image: Image.Image, size: int = 128, contrast: int = 40) -> PageView:
+    """Same as `page_view`, for a decoded image.
+
+    Args:
+        image (Image.Image): Page image.
+        size (int): Output side in pixels.
+        contrast (int): Min gray-level difference from the background to count as ink.
+
+    Returns:
+        PageView: Ink share and downscaled content box.
+    """
+    gray = image.convert("L")
     pixels = np.asarray(gray)
     background = int(np.bincount(pixels.ravel(), minlength=256).argmax())
     ink = np.abs(pixels.astype(np.int16) - background) > contrast
@@ -260,6 +274,52 @@ def verify_pair(dev: PageView, test: PageView, min_ink_share: float, min_correla
         return "blank", None
     correlation = pixel_correlation(dev.pixels, test.pixels)
     return ("confirmed" if correlation >= min_correlation else "rejected"), correlation
+
+
+def _unit_rows(views: list[PageView]) -> np.ndarray:
+    """Stack views as zero-mean, unit-norm rows, so dot products are Pearson correlations.
+
+    Args:
+        views (list[PageView]): Same-size views.
+
+    Returns:
+        np.ndarray: (len(views), size * size) float32.
+    """
+    rows = np.stack([v.pixels.ravel() for v in views]).astype(np.float32)
+    rows -= rows.mean(axis=1, keepdims=True)
+    norms = np.linalg.norm(rows, axis=1, keepdims=True)
+    return np.divide(rows, norms, out=np.zeros_like(rows), where=norms > 0)
+
+
+def best_matches(
+    sources: dict[str, PageView], targets: dict[str, PageView], min_ink_share: float, chunk_size: int = 512
+) -> dict[str, tuple[str, float, float]]:
+    """Find the most correlated target page for each source page. Blank pages are skipped.
+
+    Args:
+        sources (dict[str, PageView]): Pages to match, by id.
+        targets (dict[str, PageView]): Candidate pages, by id.
+        min_ink_share (float): Pages below this are treated as blank.
+        chunk_size (int): Source pages compared per block.
+
+    Returns:
+        dict[str, tuple[str, float, float]]: {source id: (best target id, correlation, runner-up correlation)}.
+    """
+    source_ids = [k for k, v in sources.items() if v.ink_share >= min_ink_share]
+    target_ids = [k for k, v in targets.items() if v.ink_share >= min_ink_share]
+    if not source_ids or not target_ids:
+        return {}
+    target_rows = _unit_rows([targets[k] for k in target_ids])
+    matches = {}
+    for start in range(0, len(source_ids), chunk_size):
+        block = source_ids[start : start + chunk_size]
+        corr = _unit_rows([sources[k] for k in block]) @ target_rows.T
+        top = np.argsort(-corr, axis=1)[:, :2]
+        for i, source_id in enumerate(block):
+            best = corr[i, top[i, 0]]
+            runner_up = corr[i, top[i, 1]] if len(target_ids) > 1 else -1.0
+            matches[source_id] = (target_ids[top[i, 0]], round(float(best), 4), round(float(runner_up), 4))
+    return matches
 
 
 # ---------------------------------------------------------------- document matching

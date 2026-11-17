@@ -4,7 +4,7 @@ import math
 
 import pytest
 
-from doc_qa.evaluation.metrics import evaluate, ndcg_at_k, recall_at_k
+from doc_qa.evaluation.metrics import evaluate, ndcg_at_k, recall_at_k, token_f1
 
 
 def test_ndcg_linear_gain():
@@ -19,6 +19,13 @@ def test_ndcg_linear_gain():
 def test_recall():
     assert recall_at_k(["a", "x"], {"a": 1, "b": 1}) == 0.5
     assert recall_at_k(["a", "b"], {"a": 1, "b": 0}) == 1.0
+
+
+def test_token_f1():
+    assert token_f1("Scope 1 emissions: 12,5 t", "scope 1 EMISSIONS 12 5 t") == 1.0
+    assert token_f1("a a b", "a c") == pytest.approx(2 * 1 / 5)
+    assert token_f1("", "") == 1.0
+    assert token_f1("text", "") == 0.0
 
 
 def test_evaluate_groups_by_language():
