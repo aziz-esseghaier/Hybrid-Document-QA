@@ -25,7 +25,7 @@ docker compose up -d        # Qdrant on http://localhost:6333
 
 ## Kaggle
 
-Notebook settings: Internet on, environment pinned. Optional secret: `HF_TOKEN`.
+Notebook settings: Internet on, environment pinned. Secrets: `HF_TOKEN` (optional), `KAGGLE_USERNAME` and `KAGGLE_KEY` (Kaggle API token, for saving outputs to private Datasets).
 
 ```python
 !git clone https://github.com/<user>/Hybrid-Document-QA.git /kaggle/temp/Hybrid-Document-QA
@@ -50,6 +50,13 @@ PaddleOCR-VL runs in its own virtual env so Paddle's CUDA libraries don't clash 
 ```
 
 One worker per GPU; output in `<DATA_ROOT>/derived/ocr/<dataset>/`, resumable. `--limit N` OCRs a sample.
+
+Save the output to a private Kaggle Dataset (`<user>/ocr-<dataset>`, with a `manifest.json`), and restore it in later sessions:
+
+```python
+!python scripts/ocr_store.py push --dataset v2_esg_reports
+!python scripts/ocr_store.py pull --dataset v2_esg_reports
+```
 
 ## Dev/test overlap check
 

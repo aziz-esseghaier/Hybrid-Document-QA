@@ -11,7 +11,7 @@ from pathlib import Path
 
 KAGGLE_TEMP = Path("/kaggle/temp")  # large, wiped at session end
 KAGGLE_WORKING = Path("/kaggle/working")  # kept as notebook output (~20 GB)
-SECRET_NAMES = ("HF_TOKEN",)
+SECRET_NAMES = ("HF_TOKEN", "KAGGLE_USERNAME", "KAGGLE_KEY")
 
 
 def set_paths() -> dict[str, str]:
