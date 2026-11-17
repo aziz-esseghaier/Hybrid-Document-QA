@@ -20,7 +20,8 @@ KAGGLE_WORKING = Path("/kaggle/working")  # kept as notebook output (~20 GB)
 SECRET_NAMES = ("HF_TOKEN", "KAGGLE_USERNAME", "KAGGLE_API_TOKEN", "KAGGLE_KEY")  # KAGGLE_KEY: legacy key
 QDRANT_DIR = KAGGLE_TEMP / "qdrant"
 COMPOSE_FILE = Path(__file__).resolve().parents[1] / "docker-compose.yml"
-QDRANT_RELEASE = "https://github.com/qdrant/qdrant/releases/download/v{version}/qdrant-x86_64-unknown-linux-gnu.tar.gz"
+# Static (musl) build: the glibc build can need a newer glibc than Kaggle's image has.
+QDRANT_RELEASE = "https://github.com/qdrant/qdrant/releases/download/v{version}/qdrant-x86_64-unknown-linux-musl.tar.gz"
 
 
 def set_paths() -> dict[str, str]:
@@ -106,7 +107,7 @@ def start_qdrant(port: int = 6333, timeout: float = 60.0) -> str:
     if _ready(url):
         return url
     version = qdrant_version()
-    binary_dir = QDRANT_DIR / f"v{version}"
+    binary_dir = QDRANT_DIR / f"v{version}-musl"
     binary = binary_dir / "qdrant"
     if not binary.exists():
         binary_dir.mkdir(parents=True, exist_ok=True)
