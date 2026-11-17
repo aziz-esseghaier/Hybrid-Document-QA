@@ -27,6 +27,18 @@ def test_table_to_rows():
     assert clean_ocr_text(f"Before\n{table}\nAfter") == "Before\n\nYear | CO2 (t)\n2021 | 1,234 est.\nR&D | 5\n\nAfter"
 
 
+def test_clean_flattens_latex_and_literal_newlines():
+    raw = (
+        "Metric Tonnes ( $ CO_{2}e $)\n"
+        "<table><tr><td>2022\\nMt  $ CO_{{2}}e $</td><td>574 $ ^{1} $</td><td>$ 12.5\\% $</td></tr></table>\n"
+        "Costs were $5 million and $3 million. $$\\mathrm{E} = m c^{2}$$ \\nu stays in $ \\nu_{0} $."
+    )
+    assert clean_ocr_text(raw) == (
+        "Metric Tonnes ( CO2e)\n\n2022 Mt CO2e | 574 1 | 12.5%\n\n"
+        "Costs were $5 million and $3 million. E = m c2\nu stays in \\nu0."
+    )
+
+
 def test_token_windows():
     assert token_windows(10, 4, 1) == [(0, 4), (3, 7), (6, 10)]
     assert token_windows(7, 4, 1) == [(0, 4), (3, 7)]

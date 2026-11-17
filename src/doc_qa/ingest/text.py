@@ -12,6 +12,11 @@ _MD_IMG = re.compile(r"!\[[^\]]*\]\([^)]*\)")
 _BR = re.compile(r"<br\s*/?>", re.IGNORECASE)
 _TAG = re.compile(r"</?[a-zA-Z][a-zA-Z0-9]*(?:\s[^<>]*)?/?>")
 _BLANK_LINES = re.compile(r"\n{3,}")
+# LaTeX spans: $$...$$, or $...$ on one line containing a LaTeX marker (so "$5 and $3" is left alone).
+_MATH = re.compile(r"\$\$(.+?)\$\$|\$([^$\n]*[_^\\{][^$\n]*)\$", re.DOTALL)
+_MATH_WRAPPER = re.compile(r"\\(?:mathrm|mathbf|mathit|text|operatorname)\b\s*")
+_MATH_ESCAPE = re.compile(r"\\([%&#$])")
+_MATH_MARKUP = re.compile(r"[_^{}]")
 
 
 class _TableParser(HTMLParser):
@@ -64,8 +69,41 @@ def table_to_text(table_html: str) -> str:
     return "\n".join(" | ".join(row) for row in parser.rows if any(row))
 
 
+def plain_math(expr: str) -> str:
+    """Flatten simple LaTeX to text, e.g. `CO_{{2}}e` -> `CO2e`. Other commands are kept.
+
+    Args:
+        expr (str): LaTeX without the `$` delimiters.
+
+    Returns:
+        str: Plain text.
+    """
+    expr = _MATH_ESCAPE.sub(r"\1", _MATH_WRAPPER.sub("", expr))
+    return " ".join(_MATH_MARKUP.sub("", expr).split())
+
+
+def _plain_math_and_newlines(text: str) -> str:
+    """Flatten LaTeX spans, and turn literal `\\n` outside them into line breaks.
+
+    Args:
+        text (str): Raw OCR Markdown.
+
+    Returns:
+        str: Text without LaTeX delimiters or literal `\\n`.
+    """
+    parts, last = [], 0
+    for m in _MATH.finditer(text):
+        parts.append(text[last : m.start()].replace("\\n", "\n"))
+        parts.append(plain_math(m.group(1) or m.group(2)))
+        last = m.end()
+    parts.append(text[last:].replace("\\n", "\n"))
+    return "".join(parts)
+
+
 def clean_ocr_text(text: str) -> str:
-    """Turn PaddleOCR-VL Markdown into plain text: drop image placeholders, flatten tables, strip tags.
+    """Turn PaddleOCR-VL Markdown into plain text.
+
+    Drops image placeholders and tags, flattens tables to rows and simple LaTeX to text.
 
     Args:
         text (str): Raw OCR Markdown.
@@ -73,6 +111,7 @@ def clean_ocr_text(text: str) -> str:
     Returns:
         str: Cleaned text.
     """
+    text = _plain_math_and_newlines(text)
     text = _TABLE.sub(lambda m: "\n" + table_to_text(m.group()) + "\n", text)
     text = _MD_IMG.sub("", _IMG.sub("", text))
     text = _TAG.sub("", _BR.sub("\n", text))
