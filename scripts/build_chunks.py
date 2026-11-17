@@ -84,12 +84,12 @@ def main() -> None:
     ocr = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
     write_run_info(results_dir, extra={
         "dataset": args.dataset,
-        "tokenizer": {"repo": cfg["tokenizer"], "revision": cfg["tokenizer_revision"]},
+        "tokenizer": {"repo": cfg["embedding_model"], "revision": cfg["embedding_revision"]},
         "ocr": {k: ocr.get(k) for k in ("git_commit", "pipeline_version", "created_at")},
     })
     (results_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
-    tokenizer = Tokenizer.from_pretrained(cfg["tokenizer"], revision=cfg["tokenizer_revision"])
+    tokenizer = Tokenizer.from_pretrained(cfg["embedding_model"], revision=cfg["embedding_revision"])
     page_ids = sorted(records)
     texts = [clean_ocr_text(records[p]) for p in page_ids]
     encodings = tokenizer.encode_batch(texts, add_special_tokens=False)

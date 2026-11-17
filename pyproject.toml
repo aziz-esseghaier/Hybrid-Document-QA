@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 # Ranges for packages preinstalled on Kaggle, exact pins otherwise. Exact versions go to run_info.json.
 dependencies = [
+    "fastembed==0.9.1",
     "huggingface_hub>=0.24",
     "imagehash==4.3.2",
     "numpy>=1.26",
@@ -17,11 +18,14 @@ dependencies = [
     "pyarrow>=14.0",
     "python-dotenv>=0.21",
     "pyyaml>=6.0",
+    "qdrant-client==1.20.0",
     "tokenizers>=0.19",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.4"]
+# Model inference; preinstalled on Kaggle.
+gpu = ["sentence-transformers>=5.0", "torch>=2.4", "transformers>=4.56"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

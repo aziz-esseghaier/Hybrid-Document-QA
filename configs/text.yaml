@@ -1,5 +1,17 @@
-# Text branch: chunking.
-tokenizer: Qwen/Qwen3-Embedding-4B   # chunks are counted in the embedding model's tokens
-tokenizer_revision: 5cf2132abc99cad020ac570b19d031efec650f2b
-chunk_tokens: 512
+# Text branch: chunks, dense embeddings, BM25, fusion.
+datasets_config: configs/datasets.yaml
+embedding_model: Qwen/Qwen3-Embedding-4B
+embedding_revision: 5cf2132abc99cad020ac570b19d031efec650f2b
+chunk_tokens: 512          # counted with the embedding model's tokenizer
 chunk_overlap: 64
+max_tokens: 640            # embedding input limit; chunks fit, longer inputs are truncated
+embed_batch_size: 16
+query_prompt_name: query   # the model's built-in retrieval instruction; documents get none
+
+bm25_languages: {en: english, fr: french}   # stemmer and stopwords, by document language
+bm25_k: 1.2
+bm25_b: 0.75
+
+chunk_limit: 500           # chunks retrieved per query before grouping by page
+page_limit: 100            # pages kept per ranking
+rrf_k: 60

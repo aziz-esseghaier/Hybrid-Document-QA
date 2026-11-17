@@ -8,6 +8,8 @@ services:
     volumes:
       # Named volume: Windows bind mounts through WSL2 can corrupt Qdrant storage.
       - qdrant_storage:/qdrant/storage
+    environment:
+      QDRANT__TELEMETRY_DISABLED: "true"
     restart: unless-stopped
 
 volumes:

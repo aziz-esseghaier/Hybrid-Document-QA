@@ -2,6 +2,7 @@
 # role: test (ViDoRe V3) | dev (ViDoRe V2 + French ViDoRe V1)
 # format: loader adapter in src/doc_qa/evaluation/vidore.py
 # language: query language, when the data has no language column
+# doc_language: document language (BM25 stemming)
 
 datasets:
   # Test: ViDoRe V3
@@ -52,22 +53,26 @@ datasets:
     revision: 87538b12b20b67a2b4326638921301f87f0cbaf0
     role: dev
     format: v2
+    doc_language: en
   v2_esg_reports_human:
     repo: vidore/esg_reports_human_labeled_v2
     revision: 5a338c329bf1608ac46ac2808060d44bcd92d521
     role: dev
     format: v2_human
     language: en
+    doc_language: en
   v2_economics_reports:
     repo: vidore/economics_reports_v2
     revision: 76fe40166ba07b1bf50457f5c6057cacdd045f10
     role: dev
     format: v2
+    doc_language: en
   v2_biomedical_lectures:
     repo: vidore/biomedical_lectures_v2
     revision: c4754665734e38742b191f0c28d504e8558d0462
     role: dev
     format: v2
+    doc_language: en
 
   # Dev: ViDoRe V1 (French)
   v1_shiftproject:
@@ -76,9 +81,11 @@ datasets:
     role: dev
     format: v1_qa
     language: fr
+    doc_language: fr
   v1_tabfquad:
     repo: vidore/tabfquad_test_subsampled
     revision: 16c8e633612fbda7400bfcbbc31d61a7534f580f
     role: dev
     format: v1_qa
     language: fr
+    doc_language: fr

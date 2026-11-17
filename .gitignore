@@ -223,3 +223,6 @@ __marimo__/
 /data/
 /results/*/artifacts/
 *.snapshot
+
+# Kaggle API credentials
+kaggle.json

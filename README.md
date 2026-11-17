@@ -8,7 +8,8 @@ Evaluation: [ViDoRe V3](https://huggingface.co/vidore) (test), ViDoRe V2 + Frenc
 
 ```
 configs/      datasets (pinned revisions), experiment configs, dev exclusions
-src/doc_qa/   package: core/ (settings, schemas, run metadata), evaluation/ (loaders, checks), ingest/ (OCR, text, chunks)
+src/doc_qa/   package: core/ (settings, schemas, run metadata), evaluation/ (loaders, checks, metrics),
+              ingest/ (OCR, text, chunks), retrieval/ (embeddings, BM25, Qdrant, fusion)
 scripts/      entry points
 tests/        unit tests
 ```
@@ -34,7 +35,7 @@ Notebook settings: Internet on, environment pinned. Secrets: `HF_TOKEN` (optiona
 %run scripts/kaggle_setup.py
 ```
 
-`kaggle_setup.py` must run with `%run` so its environment variables reach later cells. Data goes to `/kaggle/temp` (wiped at session end), results to `/kaggle/working/results`.
+`kaggle_setup.py` must run with `%run` so its environment variables reach later cells. Data goes to `/kaggle/temp` (wiped at session end), results to `/kaggle/working/results`. `--qdrant` also downloads and starts the Qdrant binary, at the version pinned in `docker-compose.yml`.
 
 ## Page OCR
 
@@ -65,6 +66,18 @@ Save the output to a private Kaggle Dataset (`<user>/ocr-<dataset>`, with a `man
 ```
 
 Cleans the OCR text (drops image placeholders and HTML tags, turns tables into `cell | cell` rows) and splits each page into overlapping chunks counted in the embedding model's tokens (`configs/text.yaml`). Chunks never cross pages. Output in `<DATA_ROOT>/derived/chunks/<dataset>/`.
+
+## Text retrieval
+
+GPU session, `%run scripts/kaggle_setup.py --qdrant`.
+
+```python
+!python scripts/embed_text.py --dataset v2_esg_reports   # chunks + queries, one worker per GPU
+!python scripts/index_text.py --dataset v2_esg_reports   # Qdrant collection text_<dataset>: dense + BM25
+!python scripts/eval_text.py --dataset v2_esg_reports    # NDCG@10, Recall@100 per query language
+```
+
+Pages score as their best chunk. Dense search is exact (no HNSW) so rankings are reproducible. BM25 uses the document language's stemmer (`doc_language` in `configs/datasets.yaml`), with IDF computed by Qdrant. `rrf` merges the BM25 and dense page rankings. Output in `results/text_eval/<dataset>/`, with the rankings of each method.
 
 ## Dev/test overlap check
 
