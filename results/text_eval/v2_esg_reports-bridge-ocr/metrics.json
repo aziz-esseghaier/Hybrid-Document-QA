@@ -1,0 +1,53 @@
+{
+  "bm25": {
+    "all": {
+      "queries": 54,
+      "ndcg@10": 0.2671,
+      "recall@100": 0.7467
+    },
+    "en": {
+      "queries": 27,
+      "ndcg@10": 0.39,
+      "recall@100": 0.8322
+    },
+    "fr": {
+      "queries": 27,
+      "ndcg@10": 0.1442,
+      "recall@100": 0.6612
+    }
+  },
+  "dense": {
+    "all": {
+      "queries": 54,
+      "ndcg@10": 0.4249,
+      "recall@100": 0.7789
+    },
+    "en": {
+      "queries": 27,
+      "ndcg@10": 0.4367,
+      "recall@100": 0.7866
+    },
+    "fr": {
+      "queries": 27,
+      "ndcg@10": 0.4131,
+      "recall@100": 0.7712
+    }
+  },
+  "rrf": {
+    "all": {
+      "queries": 54,
+      "ndcg@10": 0.4369,
+      "recall@100": 0.8168
+    },
+    "en": {
+      "queries": 27,
+      "ndcg@10": 0.4909,
+      "recall@100": 0.8633
+    },
+    "fr": {
+      "queries": 27,
+      "ndcg@10": 0.3828,
+      "recall@100": 0.7703
+    }
+  }
+}

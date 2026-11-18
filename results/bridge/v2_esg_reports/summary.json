@@ -1,0 +1,33 @@
+{
+  "pdfs": 30,
+  "pdfs_read": 18,
+  "pdf_pages": 928,
+  "dataset_pages": 1538,
+  "dataset_pages_blank": 11,
+  "matched_pages": 870,
+  "near_misses": 22,
+  "queries_with_matched_page": 54,
+  "fallback_pages": 45,
+  "token_f1_p10": 0.858,
+  "token_f1_p50": 0.975,
+  "corpora": {
+    "v2_esg_reports-bridge-ocr": {
+      "pages": 870,
+      "empty_pages": 17,
+      "chunks": 1165,
+      "page_tokens_p50": 380,
+      "page_tokens_p90": 736,
+      "page_tokens_max": 5511,
+      "pages_in_one_chunk": 0.699
+    },
+    "v2_esg_reports-bridge-pdf": {
+      "pages": 870,
+      "empty_pages": 13,
+      "chunks": 1284,
+      "page_tokens_p50": 433,
+      "page_tokens_p90": 838,
+      "page_tokens_max": 3319,
+      "pages_in_one_chunk": 0.588
+    }
+  }
+}
