@@ -11,12 +11,12 @@ min_word_chars: 50     # below this a page goes to OCR anyway
 clean_min_f1: 0.9      # layer and OCR agree: the layer is usable
 low_max_f1: 0.5        # layer and OCR disagree: inspect
 
-rule:                  # starting values, to be checked against the results
+rule:                  # set from the sweeps; a false alarm only costs one page of OCR
   max_bad_char_share: 0.05
-  max_symbol_share: 0.4
+  max_symbol_share: 0.3
   max_spaced_letter_share: 0.3
   max_long_word_share: 0.2
-  min_common_word_share: 0.03
+  min_common_word_share: 0.05
   min_letters: 200          # long-word check only on pages with this many letters
   min_distinct_words: 20    # common-word check only on pages with this many different words
 

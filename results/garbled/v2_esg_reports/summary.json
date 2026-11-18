@@ -1,0 +1,326 @@
+{
+  "pdfs_skipped": 0,
+  "pages": {
+    "clean_en": 698,
+    "low_agreement": 26,
+    "clean_fr_ocr": 1058,
+    "shifted_codes": 698,
+    "substituted_letters": 698,
+    "replacement_chars": 698,
+    "private_use_chars": 698,
+    "spaced_letters": 698,
+    "no_spaces": 698
+  },
+  "rule": {
+    "max_bad_char_share": 0.05,
+    "max_symbol_share": 0.4,
+    "max_spaced_letter_share": 0.3,
+    "max_long_word_share": 0.2,
+    "min_common_word_share": 0.03,
+    "min_letters": 200,
+    "min_distinct_words": 20
+  },
+  "flagged_by_rule": {
+    "clean_en": 0.0014,
+    "low_agreement": 0.0385,
+    "clean_fr_ocr": 0.0028,
+    "shifted_codes": 0.9914,
+    "substituted_letters": 0.9212,
+    "replacement_chars": 1.0,
+    "private_use_chars": 1.0,
+    "spaced_letters": 1.0,
+    "no_spaces": 0.967
+  },
+  "sweeps": {
+    "bad_char_share": [
+      {
+        "threshold": 0.01,
+        "flagged": {
+          "clean_en": 0.0014,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0014,
+          "substituted_letters": 0.0014,
+          "replacement_chars": 1.0,
+          "private_use_chars": 1.0,
+          "spaced_letters": 0.0014,
+          "no_spaces": 0.0014
+        }
+      },
+      {
+        "threshold": 0.02,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 1.0,
+          "private_use_chars": 1.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.05,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 1.0,
+          "private_use_chars": 1.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.1,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 1.0,
+          "private_use_chars": 1.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      }
+    ],
+    "symbol_share": [
+      {
+        "threshold": 0.2,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0028,
+          "shifted_codes": 0.0487,
+          "substituted_letters": 0.0,
+          "replacement_chars": 1.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.3,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0129,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.8481,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.4,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0057,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0014,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.5,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.0
+        }
+      }
+    ],
+    "spaced_letter_share": [
+      {
+        "threshold": 0.1,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0028,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 1.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.2,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 1.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.3,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 1.0,
+          "no_spaces": 0.0
+        }
+      },
+      {
+        "threshold": 0.5,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.9971,
+          "no_spaces": 0.0
+        }
+      }
+    ],
+    "long_word_share": [
+      {
+        "threshold": 0.05,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.9699
+        }
+      },
+      {
+        "threshold": 0.1,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.9656
+        }
+      },
+      {
+        "threshold": 0.2,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.9499
+        }
+      },
+      {
+        "threshold": 0.3,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0,
+          "clean_fr_ocr": 0.0,
+          "shifted_codes": 0.0,
+          "substituted_letters": 0.0,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.0,
+          "no_spaces": 0.9241
+        }
+      }
+    ],
+    "common_word_share": [
+      {
+        "threshold": 0.01,
+        "flagged": {
+          "clean_en": 0.0,
+          "low_agreement": 0.0385,
+          "clean_fr_ocr": 0.0019,
+          "shifted_codes": 0.9842,
+          "substituted_letters": 0.7966,
+          "replacement_chars": 0.0,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.9928,
+          "no_spaces": 0.1719
+        }
+      },
+      {
+        "threshold": 0.03,
+        "flagged": {
+          "clean_en": 0.0014,
+          "low_agreement": 0.0385,
+          "clean_fr_ocr": 0.0028,
+          "shifted_codes": 0.9857,
+          "substituted_letters": 0.9212,
+          "replacement_chars": 0.0014,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.9928,
+          "no_spaces": 0.4613
+        }
+      },
+      {
+        "threshold": 0.05,
+        "flagged": {
+          "clean_en": 0.0029,
+          "low_agreement": 0.0385,
+          "clean_fr_ocr": 0.0038,
+          "shifted_codes": 0.9857,
+          "substituted_letters": 0.9685,
+          "replacement_chars": 0.0086,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.9928,
+          "no_spaces": 0.6977
+        }
+      },
+      {
+        "threshold": 0.1,
+        "flagged": {
+          "clean_en": 0.0115,
+          "low_agreement": 0.1923,
+          "clean_fr_ocr": 0.017,
+          "shifted_codes": 0.9857,
+          "substituted_letters": 0.9857,
+          "replacement_chars": 0.1519,
+          "private_use_chars": 0.0,
+          "spaced_letters": 0.9928,
+          "no_spaces": 0.9298
+        }
+      }
+    ]
+  }
+}

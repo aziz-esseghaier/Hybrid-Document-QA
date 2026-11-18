@@ -1,0 +1,8 @@
+datasets_config: configs/datasets.yaml
+target: v2_esg_reports_human
+source: v2_esg_reports
+verify_size: 128
+min_ink_share: 0.01
+min_pixel_correlation: 0.98
+min_margin: 0.02
+workers: null
