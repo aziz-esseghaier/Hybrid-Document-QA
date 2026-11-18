@@ -1,0 +1,7 @@
+{
+  "collection": "text_v2_biomedical_lectures",
+  "points": 1018,
+  "dim": 2560,
+  "bm25_language": "english",
+  "bm25_avg_len": 36.3
+}

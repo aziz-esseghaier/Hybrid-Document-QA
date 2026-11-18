@@ -1,0 +1,330 @@
+{
+  "queries": 54,
+  "question_groups": 27,
+  "methods": {
+    "bm25": {
+      "scores": {
+        "all": {
+          "ndcg@10": {
+            "ocr": 0.2671,
+            "pdf": 0.3007,
+            "delta": 0.0336,
+            "ci_low": -0.0216,
+            "ci_high": 0.0956
+          },
+          "recall@100": {
+            "ocr": 0.7467,
+            "pdf": 0.9037,
+            "delta": 0.157,
+            "ci_low": 0.0664,
+            "ci_high": 0.265
+          }
+        },
+        "fr": {
+          "ndcg@10": {
+            "ocr": 0.1442,
+            "pdf": 0.1324,
+            "delta": -0.0118,
+            "ci_low": -0.0326,
+            "ci_high": 0.0064
+          },
+          "recall@100": {
+            "ocr": 0.6612,
+            "pdf": 0.8567,
+            "delta": 0.1955,
+            "ci_low": 0.0721,
+            "ci_high": 0.336
+          }
+        },
+        "en": {
+          "ndcg@10": {
+            "ocr": 0.39,
+            "pdf": 0.469,
+            "delta": 0.079,
+            "ci_low": -0.0272,
+            "ci_high": 0.1979
+          },
+          "recall@100": {
+            "ocr": 0.8322,
+            "pdf": 0.9506,
+            "delta": 0.1184,
+            "ci_low": 0.0386,
+            "ci_high": 0.2187
+          }
+        }
+      },
+      "all_pairs": {
+        "pairs": 264,
+        "ocr_hit@10": 0.2235,
+        "pdf_hit@10": 0.2462,
+        "ocr_hit@100": 0.6136,
+        "pdf_hit@100": 0.7879,
+        "only_pdf@100": 51,
+        "only_ocr@100": 5
+      },
+      "by_text_group": {
+        "same_text": {
+          "pairs": 8,
+          "ocr_hit@10": 0.5,
+          "pdf_hit@10": 0.5,
+          "ocr_hit@100": 0.75,
+          "pdf_hit@100": 0.75,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        },
+        "ocr_lacks_most": {
+          "pairs": 2,
+          "ocr_hit@10": 0.0,
+          "pdf_hit@10": 0.0,
+          "ocr_hit@100": 0.0,
+          "pdf_hit@100": 0.0,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        },
+        "ocr_lacks_some": {
+          "pairs": 22,
+          "ocr_hit@10": 0.1818,
+          "pdf_hit@10": 0.1818,
+          "ocr_hit@100": 0.4545,
+          "pdf_hit@100": 0.8636,
+          "only_pdf@100": 9,
+          "only_ocr@100": 0
+        },
+        "similar": {
+          "pairs": 232,
+          "ocr_hit@10": 0.2198,
+          "pdf_hit@10": 0.2457,
+          "ocr_hit@100": 0.6293,
+          "pdf_hit@100": 0.7888,
+          "only_pdf@100": 42,
+          "only_ocr@100": 5
+        },
+        "pdf_lacks_some": {
+          "pairs": 0,
+          "ocr_hit@10": 0.0,
+          "pdf_hit@10": 0.0,
+          "ocr_hit@100": 0.0,
+          "pdf_hit@100": 0.0,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        }
+      }
+    },
+    "dense": {
+      "scores": {
+        "all": {
+          "ndcg@10": {
+            "ocr": 0.4249,
+            "pdf": 0.4742,
+            "delta": 0.0493,
+            "ci_low": -0.0392,
+            "ci_high": 0.152
+          },
+          "recall@100": {
+            "ocr": 0.7789,
+            "pdf": 0.8786,
+            "delta": 0.0998,
+            "ci_low": 0.0177,
+            "ci_high": 0.1837
+          }
+        },
+        "fr": {
+          "ndcg@10": {
+            "ocr": 0.4131,
+            "pdf": 0.4667,
+            "delta": 0.0536,
+            "ci_low": -0.0453,
+            "ci_high": 0.1624
+          },
+          "recall@100": {
+            "ocr": 0.7712,
+            "pdf": 0.8719,
+            "delta": 0.1007,
+            "ci_low": 0.017,
+            "ci_high": 0.1872
+          }
+        },
+        "en": {
+          "ndcg@10": {
+            "ocr": 0.4367,
+            "pdf": 0.4817,
+            "delta": 0.045,
+            "ci_low": -0.0432,
+            "ci_high": 0.1479
+          },
+          "recall@100": {
+            "ocr": 0.7866,
+            "pdf": 0.8854,
+            "delta": 0.0988,
+            "ci_low": 0.0159,
+            "ci_high": 0.1852
+          }
+        }
+      },
+      "all_pairs": {
+        "pairs": 264,
+        "ocr_hit@10": 0.303,
+        "pdf_hit@10": 0.3182,
+        "ocr_hit@100": 0.5114,
+        "pdf_hit@100": 0.6667,
+        "only_pdf@100": 44,
+        "only_ocr@100": 3
+      },
+      "by_text_group": {
+        "same_text": {
+          "pairs": 8,
+          "ocr_hit@10": 0.75,
+          "pdf_hit@10": 0.75,
+          "ocr_hit@100": 0.75,
+          "pdf_hit@100": 0.75,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        },
+        "ocr_lacks_most": {
+          "pairs": 2,
+          "ocr_hit@10": 0.0,
+          "pdf_hit@10": 0.0,
+          "ocr_hit@100": 0.0,
+          "pdf_hit@100": 0.0,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        },
+        "ocr_lacks_some": {
+          "pairs": 22,
+          "ocr_hit@10": 0.2273,
+          "pdf_hit@10": 0.3636,
+          "ocr_hit@100": 0.6364,
+          "pdf_hit@100": 0.7727,
+          "only_pdf@100": 4,
+          "only_ocr@100": 1
+        },
+        "similar": {
+          "pairs": 232,
+          "ocr_hit@10": 0.2974,
+          "pdf_hit@10": 0.3017,
+          "ocr_hit@100": 0.4957,
+          "pdf_hit@100": 0.6595,
+          "only_pdf@100": 40,
+          "only_ocr@100": 2
+        },
+        "pdf_lacks_some": {
+          "pairs": 0,
+          "ocr_hit@10": 0.0,
+          "pdf_hit@10": 0.0,
+          "ocr_hit@100": 0.0,
+          "pdf_hit@100": 0.0,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        }
+      }
+    },
+    "rrf": {
+      "scores": {
+        "all": {
+          "ndcg@10": {
+            "ocr": 0.4369,
+            "pdf": 0.4949,
+            "delta": 0.058,
+            "ci_low": -0.0133,
+            "ci_high": 0.1365
+          },
+          "recall@100": {
+            "ocr": 0.8168,
+            "pdf": 0.9078,
+            "delta": 0.091,
+            "ci_low": 0.0284,
+            "ci_high": 0.1636
+          }
+        },
+        "fr": {
+          "ndcg@10": {
+            "ocr": 0.3828,
+            "pdf": 0.4505,
+            "delta": 0.0677,
+            "ci_low": -0.0023,
+            "ci_high": 0.1444
+          },
+          "recall@100": {
+            "ocr": 0.7703,
+            "pdf": 0.8726,
+            "delta": 0.1023,
+            "ci_low": 0.0282,
+            "ci_high": 0.1887
+          }
+        },
+        "en": {
+          "ndcg@10": {
+            "ocr": 0.4909,
+            "pdf": 0.5392,
+            "delta": 0.0484,
+            "ci_low": -0.0514,
+            "ci_high": 0.1621
+          },
+          "recall@100": {
+            "ocr": 0.8633,
+            "pdf": 0.9431,
+            "delta": 0.0798,
+            "ci_low": 0.0247,
+            "ci_high": 0.1451
+          }
+        }
+      },
+      "all_pairs": {
+        "pairs": 264,
+        "ocr_hit@10": 0.3068,
+        "pdf_hit@10": 0.3523,
+        "ocr_hit@100": 0.6136,
+        "pdf_hit@100": 0.7576,
+        "only_pdf@100": 42,
+        "only_ocr@100": 4
+      },
+      "by_text_group": {
+        "same_text": {
+          "pairs": 8,
+          "ocr_hit@10": 0.75,
+          "pdf_hit@10": 0.75,
+          "ocr_hit@100": 0.75,
+          "pdf_hit@100": 0.75,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        },
+        "ocr_lacks_most": {
+          "pairs": 2,
+          "ocr_hit@10": 0.0,
+          "pdf_hit@10": 0.0,
+          "ocr_hit@100": 0.0,
+          "pdf_hit@100": 0.0,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        },
+        "ocr_lacks_some": {
+          "pairs": 22,
+          "ocr_hit@10": 0.2727,
+          "pdf_hit@10": 0.4091,
+          "ocr_hit@100": 0.6364,
+          "pdf_hit@100": 0.9091,
+          "only_pdf@100": 6,
+          "only_ocr@100": 0
+        },
+        "similar": {
+          "pairs": 232,
+          "ocr_hit@10": 0.2974,
+          "pdf_hit@10": 0.3362,
+          "ocr_hit@100": 0.6121,
+          "pdf_hit@100": 0.75,
+          "only_pdf@100": 36,
+          "only_ocr@100": 4
+        },
+        "pdf_lacks_some": {
+          "pairs": 0,
+          "ocr_hit@10": 0.0,
+          "pdf_hit@10": 0.0,
+          "ocr_hit@100": 0.0,
+          "pdf_hit@100": 0.0,
+          "only_pdf@100": 0,
+          "only_ocr@100": 0
+        }
+      }
+    }
+  }
+}

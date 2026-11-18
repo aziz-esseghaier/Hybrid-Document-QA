@@ -1,0 +1,7 @@
+{
+  "collection": "text_v2_economics_reports",
+  "points": 720,
+  "dim": 2560,
+  "bm25_language": "english",
+  "bm25_avg_len": 178.3
+}

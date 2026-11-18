@@ -1,0 +1,7 @@
+{
+  "workers": 2,
+  "seconds": 120,
+  "chunks": 720,
+  "dim": 2560,
+  "queries": 116
+}

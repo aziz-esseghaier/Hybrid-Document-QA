@@ -1,0 +1,38 @@
+{
+  "bm25": {
+    "all": {
+      "queries": 280,
+      "ndcg@10": 0.8191,
+      "recall@100": 0.9643
+    },
+    "fr": {
+      "queries": 280,
+      "ndcg@10": 0.8191,
+      "recall@100": 0.9643
+    }
+  },
+  "dense": {
+    "all": {
+      "queries": 280,
+      "ndcg@10": 0.9226,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 280,
+      "ndcg@10": 0.9226,
+      "recall@100": 1.0
+    }
+  },
+  "rrf": {
+    "all": {
+      "queries": 280,
+      "ndcg@10": 0.887,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 280,
+      "ndcg@10": 0.887,
+      "recall@100": 1.0
+    }
+  }
+}

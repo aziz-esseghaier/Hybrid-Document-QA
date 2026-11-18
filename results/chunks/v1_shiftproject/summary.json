@@ -1,0 +1,9 @@
+{
+  "pages": 1000,
+  "empty_pages": 6,
+  "chunks": 1898,
+  "page_tokens_p50": 656,
+  "page_tokens_p90": 1219,
+  "page_tokens_max": 3059,
+  "pages_in_one_chunk": 0.347
+}

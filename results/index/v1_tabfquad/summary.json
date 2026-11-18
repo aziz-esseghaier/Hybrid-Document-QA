@@ -1,0 +1,7 @@
+{
+  "collection": "text_v1_tabfquad",
+  "points": 97,
+  "dim": 2560,
+  "bm25_language": "french",
+  "bm25_avg_len": 104.5
+}
