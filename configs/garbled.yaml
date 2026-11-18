@@ -1,0 +1,28 @@
+# Check of the rule that sends unusable PDF text layers to OCR.
+datasets_config: configs/datasets.yaml
+dataset: v2_esg_reports              # bridge run: pages.csv and pdfs.csv
+urls_dataset: v2_esg_reports_human
+french_ocr: [v1_shiftproject, v1_tabfquad]   # French text, to count false alarms (no French PDFs available)
+download_timeout: 120
+workers: null
+seed: 0
+
+min_word_chars: 50     # below this a page goes to OCR anyway
+clean_min_f1: 0.9      # layer and OCR agree: the layer is usable
+low_max_f1: 0.5        # layer and OCR disagree: inspect
+
+rule:                  # starting values, to be checked against the results
+  max_bad_char_share: 0.05
+  max_symbol_share: 0.4
+  max_spaced_letter_share: 0.3
+  max_long_word_share: 0.2
+  min_common_word_share: 0.03
+  min_letters: 200          # long-word check only on pages with this many letters
+  min_distinct_words: 20    # common-word check only on pages with this many different words
+
+sweeps:               # each check alone, at these thresholds
+  bad_char_share: [0.01, 0.02, 0.05, 0.1]
+  symbol_share: [0.2, 0.3, 0.4, 0.5]
+  spaced_letter_share: [0.1, 0.2, 0.3, 0.5]
+  long_word_share: [0.05, 0.1, 0.2, 0.3]
+  common_word_share: [0.01, 0.03, 0.05, 0.1]

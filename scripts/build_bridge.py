@@ -18,8 +18,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import urllib.error
-import urllib.request
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from pathlib import Path
@@ -33,36 +31,8 @@ from doc_qa.core.run_info import write_run_info
 from doc_qa.evaluation.metrics import token_f1
 from doc_qa.evaluation.overlap import PageView, best_matches, image_view, page_views
 from doc_qa.evaluation.vidore import iter_page_images, load_benchmark
-from doc_qa.ingest.pdf import clean_pdf_text, read_pdf, word_chars
+from doc_qa.ingest.pdf import clean_pdf_text, download_pdf, read_pdf, word_chars
 from doc_qa.ingest.text import chunk_pages, clean_ocr_text
-
-
-def download_pdf(url: str, path: Path, timeout: float) -> str:
-    """Download a PDF unless already on disk.
-
-    Args:
-        url (str): PDF URL.
-        path (Path): Output file.
-        timeout (float): Seconds.
-
-    Returns:
-        str: "ok", "not a PDF", or the error.
-    """
-    if path.exists():
-        return "ok"
-    request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            data = response.read()
-    except urllib.error.HTTPError as e:
-        return f"HTTP {e.code}"
-    except (urllib.error.URLError, OSError) as e:
-        return type(e).__name__
-    if not data.startswith(b"%PDF"):
-        return "not a PDF"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(data)
-    return "ok"
 
 
 def pdf_pages(path: Path, scale: float, size: int) -> list[tuple[int, PageView, str]] | None:

@@ -59,6 +59,13 @@ Save the output to a private Kaggle Dataset (`<user>/ocr-<dataset>`, with a `man
 !python scripts/ocr_store.py pull --dataset v2_esg_reports
 ```
 
+`v2_esg_reports_human` has the same reports as `v2_esg_reports`, so it reuses their OCR where the pages match (identical pixels, or a strict pixel check). `ocr_pages.py` then handles the rest:
+
+```python
+!python scripts/reuse_ocr.py                                 # configs/ocr_reuse.yaml
+!python scripts/ocr_pages.py --dataset v2_esg_reports_human  # from the OCR env if pages remain
+```
+
 ## Text chunks
 
 ```python
@@ -105,6 +112,8 @@ for source in ("ocr", "pdf"):
 `build_bridge.py` downloads the PDFs, matches their pages to the dataset's page images by pixel correlation, reads the text layer with pypdfium2 (OCR text where the layer has almost none, as in the product), and writes two chunk folders with the same pages. Output in `results/bridge/v2_esg_reports/`: per-PDF and per-page match tables (ids, URLs, statistics; no document text).
 
 `python scripts/analyze_bridge.py --input results` then compares the two runs per query, with bootstrap intervals, and shows which relevant pages each text source finds, grouped by how much text OCR and the PDF have. Output in `gaps/` under the same folder.
+
+`python scripts/check_garbled.py --input results` measures the rule that sends unusable text layers to OCR (`configs/garbled.yaml`): false alarms on real English layers and French text, and detection on clean pages corrupted in memory. Output in `results/garbled/v2_esg_reports/`.
 
 ## Dev/test overlap check
 
