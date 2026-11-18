@@ -1,8 +1,9 @@
 """Tests for data-parallel helpers."""
 
+import csv
 import sys
 
-from doc_qa.core.parallel import append_jsonl, batched, launch_workers, read_jsonl
+from doc_qa.core.parallel import append_jsonl, batched, launch_workers, read_jsonl, write_csv
 
 
 def test_batched():
@@ -17,6 +18,13 @@ def test_jsonl_survives_truncated_line(tmp_path):
         f.write('{"page_id": "b", "te')  # interrupted write
     append_jsonl(path, [{"page_id": "c"}])
     assert [r["page_id"] for r in read_jsonl([path, tmp_path / "missing.jsonl"])] == ["a", "c"]
+
+
+def test_write_csv(tmp_path):
+    path = tmp_path / "sub" / "rows.csv"
+    write_csv(path, [{"a": 1, "b": None}, {"a": 2, "b": "x"}])
+    with path.open(encoding="utf-8", newline="") as f:
+        assert list(csv.DictReader(f)) == [{"a": "1", "b": ""}, {"a": "2", "b": "x"}]
 
 
 def test_launch_workers_sets_gpu_per_worker(tmp_path):

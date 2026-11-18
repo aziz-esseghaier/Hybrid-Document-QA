@@ -1,10 +1,13 @@
-"""Retrieval metrics: NDCG@k (linear gain, as trec_eval) and Recall@k. Text overlap: token F1."""
+"""Retrieval metrics: NDCG@k (linear gain, as trec_eval), Recall@k, bootstrap intervals. Text overlap and coverage."""
 
 from __future__ import annotations
 
 import math
 import re
 from collections import Counter, defaultdict
+from typing import Hashable, Sequence
+
+import numpy as np
 
 _WORD = re.compile(r"\w+")
 
@@ -24,6 +27,61 @@ def token_f1(a: str, b: str) -> float:
         return 1.0
     common = sum((ca & cb).values())
     return 2 * common / (sum(ca.values()) + sum(cb.values()))
+
+
+def text_coverage(qrels: dict[str, dict[str, int]], page_texts: dict[str, str], min_chars: int = 20) -> dict[str, int]:
+    """Count the pages and queries that have almost no text to search.
+
+    Args:
+        qrels (dict[str, dict[str, int]]): Relevance per query id.
+        page_texts (dict[str, str]): Text per page id.
+        min_chars (int): Pages with fewer characters count as near-empty.
+
+    Returns:
+        dict[str, int]: Page and relevant-page counts, and queries whose relevant pages are all near-empty.
+    """
+    near_empty = {p for p, text in page_texts.items() if len(text.strip()) < min_chars}
+    relevant = {q: {p for p, g in pages.items() if g > 0} for q, pages in qrels.items()}
+    relevant_pages = set().union(*relevant.values()) if relevant else set()
+    return {
+        "pages": len(page_texts),
+        "near_empty_pages": len(near_empty),
+        "relevant_pages": len(relevant_pages),
+        "near_empty_relevant_pages": len(relevant_pages & near_empty),
+        "queries": len(relevant),
+        "queries_only_near_empty": sum(1 for pages in relevant.values() if pages and pages <= near_empty),
+    }
+
+
+def cluster_bootstrap_ci(
+    values: Sequence[float],
+    clusters: Sequence[Hashable],
+    n_resamples: int = 10_000,
+    confidence: float = 0.95,
+    seed: int = 0,
+) -> tuple[float, float, float]:
+    """Mean with a percentile bootstrap interval, resampling whole clusters.
+
+    Args:
+        values (Sequence[float]): One value per query.
+        clusters (Sequence[Hashable]): Cluster of each value (e.g. translations of one question).
+        n_resamples (int): Bootstrap samples.
+        confidence (float): Interval coverage.
+        seed (int): Random seed.
+
+    Returns:
+        tuple[float, float, float]: (mean, lower bound, upper bound).
+    """
+    index = {c: i for i, c in enumerate(sorted(set(clusters), key=repr))}
+    sums, counts = np.zeros(len(index)), np.zeros(len(index))
+    for value, cluster in zip(values, clusters):
+        sums[index[cluster]] += value
+        counts[index[cluster]] += 1
+    picks = np.random.default_rng(seed).integers(len(index), size=(n_resamples, len(index)))
+    means = sums[picks].sum(axis=1) / counts[picks].sum(axis=1)
+    tail = (1 - confidence) / 2 * 100
+    low, high = np.percentile(means, [tail, 100 - tail])
+    return float(sums.sum() / counts.sum()), float(low), float(high)
 
 
 def ndcg_at_k(ranking: list[str], relevance: dict[str, int], k: int = 10) -> float:

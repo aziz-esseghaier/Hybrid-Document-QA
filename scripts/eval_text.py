@@ -5,8 +5,9 @@ Usage:
 
 Searches collection text_<corpus> (exact search; the corpus defaults to the dataset), scores each page by its
 best chunk, and reports NDCG@10 and Recall@100 per query language. Only relevant pages in the corpus count;
-queries left with none are dropped. Writes <RESULTS_ROOT>/text_eval/<corpus>/: metrics.json,
-rankings_<method>.jsonl ({query_id, pages: [[page_id, score], ...]}), config.yaml, run_info.json.
+queries left with none are dropped. Writes <RESULTS_ROOT>/text_eval/<corpus>/: metrics.json, coverage.json
+(near-empty pages among the relevant ones), rankings_<method>.jsonl ({query_id, pages: [[page_id, score], ...]}),
+config.yaml, run_info.json.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ import yaml
 from doc_qa.core.config import get_settings, load_yaml
 from doc_qa.core.parallel import read_jsonl
 from doc_qa.core.run_info import write_run_info
-from doc_qa.evaluation.metrics import evaluate
+from doc_qa.evaluation.metrics import evaluate, text_coverage
 from doc_qa.evaluation.vidore import load_benchmark
 from doc_qa.retrieval.bm25 import load_bm25
 from doc_qa.retrieval.dense import load_vectors
@@ -49,7 +50,8 @@ def main() -> None:
     name = text_collection(corpus)
 
     pages_file = settings.data_root / "derived" / "chunks" / corpus / "pages.jsonl"
-    corpus_pages = {r["page_id"] for r in read_jsonl([pages_file])}
+    page_texts = {r["page_id"]: r["text"] for r in read_jsonl([pages_file])}
+    corpus_pages = set(page_texts)
     if not corpus_pages:
         raise SystemExit(f"No pages for {corpus} (run build_chunks.py first).")
     qrels: dict[str, dict[str, int]] = defaultdict(dict)
@@ -102,7 +104,10 @@ def main() -> None:
             for query_id, pages in rankings[method].items():
                 f.write(json.dumps({"query_id": query_id, "pages": [[p, round(s, 6)] for p, s in pages]}) + "\n")
     (results_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    coverage = text_coverage(qrels, page_texts)
+    (results_dir / "coverage.json").write_text(json.dumps(coverage, indent=2), encoding="utf-8")
 
+    print(json.dumps(coverage, indent=2))
     print(f"{'method':<7} {'lang':<5} {'queries':>7} {'ndcg@10':>8} {'recall@100':>10}")
     for method in METHODS:
         for group, m in metrics[method].items():

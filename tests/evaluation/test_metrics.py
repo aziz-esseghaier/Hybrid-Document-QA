@@ -4,7 +4,14 @@ import math
 
 import pytest
 
-from doc_qa.evaluation.metrics import evaluate, ndcg_at_k, recall_at_k, token_f1
+from doc_qa.evaluation.metrics import (
+    cluster_bootstrap_ci,
+    evaluate,
+    ndcg_at_k,
+    recall_at_k,
+    text_coverage,
+    token_f1,
+)
 
 
 def test_ndcg_linear_gain():
@@ -26,6 +33,25 @@ def test_token_f1():
     assert token_f1("a a b", "a c") == pytest.approx(2 * 1 / 5)
     assert token_f1("", "") == 1.0
     assert token_f1("text", "") == 0.0
+
+
+def test_text_coverage():
+    texts = {"a": "enough text on this page here", "b": " tiny ", "c": "", "d": "another page with enough text"}
+    qrels = {"q1": {"b": 1, "c": 1}, "q2": {"a": 1, "b": 1}, "q3": {"d": 1, "c": 0}}
+    assert text_coverage(qrels, texts) == {
+        "pages": 4,
+        "near_empty_pages": 2,
+        "relevant_pages": 4,
+        "near_empty_relevant_pages": 2,
+        "queries": 3,
+        "queries_only_near_empty": 1,
+    }
+
+
+def test_cluster_bootstrap_ci():
+    mean, low, high = cluster_bootstrap_ci([1.0, 1.0, 0.0, 0.0], ["a", "a", "b", "b"], n_resamples=2000)
+    assert mean == 0.5 and low == 0.0 and high == 1.0
+    assert cluster_bootstrap_ci([0.2, 0.2, 0.2], ["a", "b", "c"], n_resamples=100) == pytest.approx((0.2, 0.2, 0.2))
 
 
 def test_evaluate_groups_by_language():

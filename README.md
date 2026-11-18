@@ -77,7 +77,7 @@ GPU session, `%run scripts/kaggle_setup.py --qdrant`.
 !python scripts/eval_text.py --dataset v2_esg_reports    # NDCG@10, Recall@100 per query language
 ```
 
-Pages score as their best chunk. Dense search is exact (no HNSW) so rankings are reproducible. BM25 uses the document language's stemmer (`doc_language` in `configs/datasets.yaml`), with IDF computed by Qdrant. `rrf` merges the BM25 and dense page rankings. Output in `results/text_eval/<dataset>/`, with the rankings of each method. `--corpus NAME` runs the three scripts on another chunk folder, scored on the dataset's queries.
+Pages score as their best chunk. Dense search is exact (no HNSW) so rankings are reproducible. BM25 uses the document language's stemmer (`doc_language` in `configs/datasets.yaml`), with IDF computed by Qdrant. `rrf` merges the BM25 and dense page rankings. Output in `results/text_eval/<dataset>/`, with the rankings of each method and `coverage.json` (relevant pages with almost no text). `--corpus NAME` runs the three scripts on another chunk folder, scored on the dataset's queries.
 
 ## Bridge check: PDF text vs OCR
 
@@ -94,6 +94,8 @@ for source in ("ocr", "pdf"):
 ```
 
 `build_bridge.py` downloads the PDFs, matches their pages to the dataset's page images by pixel correlation, reads the text layer with pypdfium2 (OCR text where the layer has almost none, as in the product), and writes two chunk folders with the same pages. Output in `results/bridge/v2_esg_reports/`: per-PDF and per-page match tables (ids, URLs, statistics; no document text).
+
+`python scripts/analyze_bridge.py --input results` then compares the two runs per query, with bootstrap intervals, and shows which relevant pages each text source finds, grouped by how much text OCR and the PDF have. Output in `gaps/` under the same folder.
 
 ## Dev/test overlap check
 

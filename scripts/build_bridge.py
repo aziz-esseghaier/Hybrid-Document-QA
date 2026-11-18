@@ -16,7 +16,6 @@ ids, public URLs and statistics, no document text.
 from __future__ import annotations
 
 import argparse
-import csv
 import hashlib
 import json
 import urllib.error
@@ -24,13 +23,12 @@ import urllib.request
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import yaml
 
 from doc_qa.core.config import get_settings, load_yaml
-from doc_qa.core.parallel import read_jsonl, write_jsonl
+from doc_qa.core.parallel import read_jsonl, write_csv, write_jsonl
 from doc_qa.core.run_info import write_run_info
 from doc_qa.evaluation.metrics import token_f1
 from doc_qa.evaluation.overlap import PageView, best_matches, image_view, page_views
@@ -82,19 +80,6 @@ def pdf_pages(path: Path, scale: float, size: int) -> list[tuple[int, PageView, 
         return [(index, image_view(image, size), text) for index, image, text in read_pdf(path, scale)]
     except Exception:  # PDFium raises its own error types for corrupt files
         return None
-
-
-def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
-    """Write rows to CSV, columns from the first row.
-
-    Args:
-        path (Path): Output file.
-        rows (list[dict[str, Any]]): Rows.
-    """
-    with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else [])
-        writer.writeheader()
-        writer.writerows(rows)
 
 
 def main() -> None:

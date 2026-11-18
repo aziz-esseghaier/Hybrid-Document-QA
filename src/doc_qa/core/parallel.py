@@ -1,7 +1,8 @@
-"""Data-parallel helpers: one worker process per GPU, resumable JSONL shards."""
+"""Data-parallel helpers: one worker process per GPU, resumable JSONL shards. Plain JSONL and CSV output."""
 
 from __future__ import annotations
 
+import csv
 import json
 import os
 import subprocess
@@ -74,6 +75,20 @@ def write_jsonl(path: Path, records: Iterable[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8") as f:
         for r in records:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+
+def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    """Write rows to a CSV file, columns from the first row.
+
+    Args:
+        path (Path): File.
+        rows (list[dict[str, Any]]): Rows.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else [])
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def append_jsonl(path: Path, records: Iterable[dict[str, Any]]) -> None:
