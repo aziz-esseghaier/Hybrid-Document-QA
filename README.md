@@ -79,6 +79,15 @@ GPU session, `%run scripts/kaggle_setup.py --qdrant`.
 
 Pages score as their best chunk. Dense search is exact (no HNSW) so rankings are reproducible. BM25 uses the document language's stemmer (`doc_language` in `configs/datasets.yaml`), with IDF computed by Qdrant. `rrf` merges the BM25 and dense page rankings. Output in `results/text_eval/<dataset>/`, with the rankings of each method and `coverage.json` (relevant pages with almost no text). `--corpus NAME` runs the three scripts on another chunk folder, scored on the dataset's queries.
 
+Save a collection to a private Kaggle Dataset (`<user>/qdrant-text-<corpus>`, with a `manifest.json`), and restore it in a later session with the same Qdrant version:
+
+```python
+!python scripts/qdrant_store.py push --dataset v2_esg_reports
+!python scripts/qdrant_store.py pull --dataset v2_esg_reports
+```
+
+The Dataset also holds `pages.jsonl` and the query embeddings, so `eval_text.py` can run right after `pull`.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

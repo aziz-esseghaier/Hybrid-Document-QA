@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import numpy as np
 
@@ -97,3 +100,73 @@ def search(client: Any, name: str, using: str, query: Any, limit: int) -> list[t
     params = models.SearchParams(exact=True) if using == DENSE else None
     result = client.query_points(name, query=query, using=using, limit=limit, with_payload=True, search_params=params)
     return [(point.payload, point.score) for point in result.points]
+
+
+def file_sha256(path: Path) -> str:
+    """Hash a file.
+
+    Args:
+        path (Path): File.
+
+    Returns:
+        str: SHA-256 hex digest.
+    """
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        while block := f.read(1024 * 1024):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def save_snapshot(client: Any, url: str, name: str, path: Path, timeout: float = 3600.0) -> str:
+    """Snapshot a collection into a local file, then delete the snapshot from the server.
+
+    Args:
+        client (Any): QdrantClient.
+        url (str): Qdrant base URL.
+        name (str): Collection name.
+        path (Path): Output file.
+        timeout (float): Download timeout in seconds.
+
+    Returns:
+        str: SHA-256 of the file.
+    """
+    import httpx
+
+    snapshot = client.create_snapshot(name, wait=True)
+    try:
+        address = f"{url}/collections/{quote(name)}/snapshots/{quote(snapshot.name)}"
+        with httpx.stream("GET", address, timeout=timeout) as response:
+            response.raise_for_status()
+            with path.open("wb") as f:
+                for block in response.iter_bytes():
+                    f.write(block)
+    finally:
+        client.delete_snapshot(name, snapshot.name, wait=True)
+    sha256 = file_sha256(path)
+    if snapshot.checksum and snapshot.checksum != sha256:
+        raise RuntimeError(f"Snapshot of {name} doesn't match the server's checksum.")
+    return sha256
+
+
+def restore_snapshot(url: str, name: str, path: Path, sha256: str, timeout: float = 3600.0) -> None:
+    """Create a collection from a snapshot file. Qdrant verifies the checksum.
+
+    Args:
+        url (str): Qdrant base URL.
+        name (str): Collection name.
+        path (Path): Snapshot file.
+        sha256 (str): Expected SHA-256 of the file.
+        timeout (float): Request timeout in seconds.
+    """
+    import httpx
+
+    with path.open("rb") as f:
+        response = httpx.post(
+            f"{url}/collections/{quote(name)}/snapshots/upload",
+            params={"wait": "true", "priority": "snapshot", "checksum": sha256},
+            files={"snapshot": (path.name, f, "application/octet-stream")},
+            timeout=timeout,
+        )
+    if response.is_error:
+        raise RuntimeError(f"Restoring {name} failed ({response.status_code}): {response.text[:500]}")

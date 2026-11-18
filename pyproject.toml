@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 # Ranges for packages preinstalled on Kaggle, exact pins otherwise. Exact versions go to run_info.json.
 dependencies = [
     "fastembed==0.9.1",
+    "httpx>=0.20",
     "huggingface_hub>=0.24",
     "imagehash==4.3.2",
     "numpy>=1.26",
