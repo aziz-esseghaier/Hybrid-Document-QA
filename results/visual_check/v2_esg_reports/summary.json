@@ -1,0 +1,95 @@
+{
+  "pages": 20,
+  "queries": 16,
+  "weights_not_loaded": {
+    "count": 0,
+    "first": []
+  },
+  "gpu_gb_after_load": 8.93,
+  "last_step": "reference",
+  "batches": [
+    {
+      "batch_size": 1,
+      "status": "ok",
+      "seconds_per_page": 0.6,
+      "pages_per_hour_two_gpus": 11940,
+      "peak_gpu_gb": 9.12
+    },
+    {
+      "batch_size": 2,
+      "status": "ok",
+      "seconds_per_page": 0.61,
+      "pages_per_hour_two_gpus": 11715,
+      "peak_gpu_gb": 9.29
+    },
+    {
+      "batch_size": 4,
+      "status": "ok",
+      "seconds_per_page": 0.63,
+      "pages_per_hour_two_gpus": 11516,
+      "peak_gpu_gb": 9.62
+    },
+    {
+      "batch_size": 8,
+      "status": "ok",
+      "seconds_per_page": 0.63,
+      "pages_per_hour_two_gpus": 11388,
+      "peak_gpu_gb": 10.29
+    }
+  ],
+  "dim": 2560,
+  "vectors_per_page": {
+    "min": 749,
+    "mean": 763.5,
+    "max": 774
+  },
+  "image_tokens_per_page": {
+    "min": 735,
+    "mean": 749.5,
+    "max": 760
+  },
+  "fp16_gb_per_1000_pages": 3.91,
+  "vectors_per_query": {
+    "min": 22,
+    "mean": 35.9,
+    "max": 48
+  },
+  "batching_changes_nothing": {
+    "pages_batch_size": 8,
+    "pages": {
+      "mean": 1.0,
+      "min": 0.99986
+    },
+    "queries_batch_size": 8,
+    "queries": {
+      "mean": 1.0,
+      "min": 0.99999
+    }
+  },
+  "retrieval": {
+    "en": {
+      "queries": 8,
+      "top1": 1.0,
+      "mrr": 1.0,
+      "top1_by_chance": 0.05
+    },
+    "fr": {
+      "queries": 8,
+      "top1": 1.0,
+      "mrr": 1.0,
+      "top1_by_chance": 0.05
+    }
+  },
+  "matches_reference": {
+    "dtype": "bfloat16",
+    "cpu_seconds_per_page": 169.1,
+    "pages": {
+      "mean": 0.99961,
+      "min": 0.91188
+    },
+    "queries": {
+      "mean": 0.99997,
+      "min": 0.9999
+    }
+  }
+}
