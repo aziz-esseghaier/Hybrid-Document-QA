@@ -1,0 +1,17 @@
+# Visual branch: page and query embeddings with the multi-vector retriever.
+datasets_config: configs/datasets.yaml
+model: nvidia/nemotron-colembed-vl-4b-v2
+revision: 0ed152d91f8ad4c5d48296b51c220f686641a398
+dtype: float16                # T4 has no bf16
+attn_implementation: sdpa     # T4 has no FlashAttention 2
+query_batch_size: 8
+
+check:                        # does the model run correctly on this GPU, and at what cost?
+  dataset: v2_esg_reports
+  seed: 0
+  pages: 20                   # one relevant page per question, the rest at random
+  questions: 8                # with all their translations
+  batch_sizes: [1, 2, 4, 8]   # stops at the first that runs out of memory
+  reference_dtype: bfloat16   # the model's own precision, on CPU
+  reference_pages: 2          # CPU is slow
+  reference_queries: 2

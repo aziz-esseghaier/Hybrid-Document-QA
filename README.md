@@ -95,6 +95,17 @@ Save a collection to a private Kaggle Dataset (`<user>/qdrant-text-<corpus>`, wi
 
 The Dataset also holds `pages.jsonl` and the query embeddings, so `eval_text.py` can run right after `pull`.
 
+## Visual retrieval
+
+The retriever gives each page and query one vector per token and scores pages with MaxSim. Its model card uses bf16 and FlashAttention 2, which T4 GPUs lack, so this check runs it in fp16 with SDPA on a small sample (`configs/visual.yaml`). GPU session.
+
+```python
+!python scripts/download_data.py --only v2_esg_reports
+!python scripts/check_visual_model.py
+```
+
+Reports memory, speed per batch size, vectors per page, whether batching changes the embeddings, how relevant pages rank, and the match with the model's bf16 output on CPU. Output in `results/visual_check/v2_esg_reports/`.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

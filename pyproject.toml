@@ -27,7 +27,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7.4"]
 # Model inference; preinstalled on Kaggle.
-gpu = ["sentence-transformers>=5.0", "torch>=2.4", "transformers>=4.56"]
+gpu = ["datasets>=3.0", "sentence-transformers>=5.0", "torch>=2.4", "transformers>=4.57.2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
