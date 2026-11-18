@@ -1,8 +1,9 @@
-"""Qdrant collections of text chunks: a dense and a BM25 sparse vector per chunk. Requires `qdrant-client`."""
+"""Qdrant collections: text chunks (dense + BM25 vectors) and pages (multi-vectors). Requires `qdrant-client`."""
 
 from __future__ import annotations
 
 import hashlib
+import time
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -11,6 +12,93 @@ import numpy as np
 
 DENSE = "dense"
 SPARSE = "bm25"
+VISUAL = "page"
+MAX_MULTIVECTOR_VALUES = 1_048_576  # Qdrant's limit on vectors x dimensions in one point; not configurable
+
+
+def visual_collection(dataset: str) -> str:
+    """Return the name of a dataset's page collection.
+
+    Args:
+        dataset (str): Dataset key.
+
+    Returns:
+        str: Collection name.
+    """
+    return f"visual_{dataset}"
+
+
+def fits_in_point(tokens: int, dim: int) -> bool:
+    """Check that a multi-vector is within Qdrant's size limit.
+
+    Args:
+        tokens (int): Vectors.
+        dim (int): Dimensions per vector.
+
+    Returns:
+        bool: True if a point can hold it.
+    """
+    return tokens * dim < MAX_MULTIVECTOR_VALUES
+
+
+def create_visual_collection(client: Any, name: str, dim: int) -> None:
+    """Create (or replace) a MaxSim multi-vector collection, stored as float16 on disk, without HNSW.
+
+    Args:
+        client (Any): QdrantClient.
+        name (str): Collection name.
+        dim (int): Dimensions per vector.
+    """
+    from qdrant_client import models
+
+    if client.collection_exists(name):
+        client.delete_collection(name)
+    client.create_collection(
+        name,
+        vectors_config={
+            VISUAL: models.VectorParams(
+                size=dim,
+                distance=models.Distance.DOT,  # the vectors are already unit length
+                datatype=models.Datatype.FLOAT16,
+                on_disk=True,
+                multivector_config=models.MultiVectorConfig(comparator=models.MultiVectorComparator.MAX_SIM),
+                hnsw_config=models.HnswConfigDiff(m=0),  # search is exact
+            )
+        },
+    )
+
+
+def upsert_page(client: Any, name: str, point_id: int, page_id: str, vectors: np.ndarray) -> None:
+    """Insert one page. A page is close to the request size limit, so it goes alone.
+
+    Args:
+        client (Any): QdrantClient.
+        name (str): Collection name.
+        point_id (int): Point id.
+        page_id (str): Page id, stored as payload.
+        vectors (np.ndarray): (tokens, dim) unit vectors.
+    """
+    from qdrant_client import models
+
+    point = models.PointStruct(id=point_id, vector={VISUAL: vectors.tolist()}, payload={"page_id": page_id})
+    client.upsert(name, points=[point], wait=True)
+
+
+def wait_until_ready(client: Any, name: str, timeout: float = 3600.0) -> None:
+    """Wait for Qdrant to finish reorganizing a collection.
+
+    Args:
+        client (Any): QdrantClient.
+        name (str): Collection name.
+        timeout (float): Seconds before giving up.
+    """
+    from qdrant_client import models
+
+    deadline = time.monotonic() + timeout
+    while client.get_collection(name).status != models.CollectionStatus.GREEN:
+        if time.monotonic() > deadline:
+            raise TimeoutError(f"{name} is still being optimized after {timeout:.0f} s.")
+        time.sleep(2)
 
 
 def text_collection(dataset: str) -> str:
@@ -83,13 +171,13 @@ def upsert_chunks(
 
 
 def search(client: Any, name: str, using: str, query: Any, limit: int) -> list[tuple[dict, float]]:
-    """Search one vector of a collection. Dense search is exact (no HNSW); sparse search always is.
+    """Search one vector of a collection. Dense and multi-vector search skip HNSW; sparse search is always exact.
 
     Args:
         client (Any): QdrantClient.
         name (str): Collection name.
-        using (str): DENSE or SPARSE.
-        query (Any): Dense vector (list of floats) or sparse vector.
+        using (str): DENSE, SPARSE or VISUAL.
+        query (Any): Dense vector, sparse vector, or list of vectors for VISUAL.
         limit (int): Max hits.
 
     Returns:
@@ -97,7 +185,7 @@ def search(client: Any, name: str, using: str, query: Any, limit: int) -> list[t
     """
     from qdrant_client import models
 
-    params = models.SearchParams(exact=True) if using == DENSE else None
+    params = models.SearchParams(exact=True) if using != SPARSE else None
     result = client.query_points(name, query=query, using=using, limit=limit, with_payload=True, search_params=params)
     return [(point.payload, point.score) for point in result.points]
 

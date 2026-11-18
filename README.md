@@ -106,6 +106,16 @@ The retriever gives each page and query one vector per token and scores pages wi
 
 Reports memory, speed per batch size, vectors per page, whether batching changes the embeddings, how relevant pages rank, and the match with the model's bf16 output on CPU. Output in `results/visual_check/v2_esg_reports/`.
 
+A Qdrant point holds at most 409 vectors of this size and a page has about 764, so each page's most similar vectors are merged (Ward clustering) down to half. GPU session, `%run scripts/kaggle_setup.py --qdrant`.
+
+```python
+!python scripts/embed_visual.py --dataset v2_esg_reports  # every vector, then merged; one worker per GPU, resumable
+!python scripts/index_visual.py --dataset v2_esg_reports  # Qdrant collection visual_<dataset>: MaxSim, float16, no HNSW
+!python scripts/eval_visual.py --dataset v2_esg_reports   # NDCG@10, Recall@100 per query language
+```
+
+`eval_visual.py` compares three exact rankings: all vectors and merged vectors, computed locally, and merged vectors searched in Qdrant. This shows what merging costs and whether Qdrant matches. Output in `results/visual_eval/<dataset>/`, with the search time in `summary.json`.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

@@ -33,6 +33,7 @@ from doc_qa.retrieval.visual import (
     embed_queries,
     load_visual_model,
     maxsim,
+    spread,
     token_cosines,
 )
 
@@ -119,18 +120,6 @@ def cosine_stats(first: list[np.ndarray], second: list[np.ndarray]) -> dict[str,
     """
     cosines = np.concatenate([token_cosines(a, b) for a, b in zip(first, second)])
     return {"mean": round(float(cosines.mean()), 5), "min": round(float(cosines.min()), 5)}
-
-
-def spread(values: Sequence[float]) -> dict[str, float]:
-    """Summarize values.
-
-    Args:
-        values (Sequence[float]): Values.
-
-    Returns:
-        dict[str, float]: Min, mean and max.
-    """
-    return {"min": min(values), "mean": round(float(np.mean(values)), 1), "max": max(values)}
 
 
 def probe_batch_sizes(

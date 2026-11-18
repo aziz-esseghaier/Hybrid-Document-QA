@@ -1,17 +1,36 @@
-"""Multi-vector embeddings of page images and queries (one unit vector per token), and MaxSim scoring.
+"""Multi-vector embeddings of page images and queries (one unit vector per token): encoding, merging, storage, MaxSim.
 
-Loading and encoding require `torch`, `transformers` and `datasets` (not base dependencies).
+Loading and encoding require `torch` and `transformers` (not base dependencies).
 """
 
 from __future__ import annotations
 
+import math
+import os
 from io import BytesIO
-from typing import Any
+from pathlib import Path
+from typing import Any, Iterable, Iterator, Sequence
 
 import numpy as np
 from PIL import Image
+from scipy.cluster.hierarchy import fcluster, linkage
 
 from doc_qa.core.parallel import batched
+
+
+def fetch_visual_model(name: str, revision: str) -> None:
+    """Download the model and its custom code, so parallel workers find them ready.
+
+    Args:
+        name (str): Hugging Face repo id.
+        revision (str): Commit hash.
+    """
+    from huggingface_hub import snapshot_download
+    from transformers import AutoConfig, AutoProcessor
+
+    snapshot_download(name, revision=revision)
+    AutoConfig.from_pretrained(name, revision=revision, trust_remote_code=True)
+    AutoProcessor.from_pretrained(name, revision=revision, trust_remote_code=True)
 
 
 def load_visual_model(
@@ -146,6 +165,134 @@ def maxsim(query: np.ndarray, page: np.ndarray) -> float:
         float: MaxSim score.
     """
     return float((query @ page.T).max(axis=1).sum())
+
+
+def maxsim_matrix(queries: Sequence[np.ndarray], pages: Sequence[np.ndarray]) -> np.ndarray:
+    """Score every page for every query with MaxSim.
+
+    Args:
+        queries (Sequence[np.ndarray]): (query tokens, dim) per query, unit vectors.
+        pages (Sequence[np.ndarray]): (page tokens, dim) per page, unit vectors.
+
+    Returns:
+        np.ndarray: (queries, pages) scores.
+    """
+    query_starts = np.cumsum([0, *(len(query) for query in queries[:-1])])
+    page_starts = np.cumsum([0, *(len(page) for page in pages[:-1])])
+    similarities = np.concatenate(queries) @ np.concatenate(pages).T
+    best_per_page = np.maximum.reduceat(similarities, page_starts, axis=1)
+    return np.add.reduceat(best_per_page, query_starts, axis=0)
+
+
+def pool_vectors(vectors: np.ndarray, factor: int) -> np.ndarray:
+    """Merge a page's most similar vectors with Ward clustering, keeping about 1/factor of them.
+
+    Args:
+        vectors (np.ndarray): (tokens, dim) unit vectors.
+        factor (int): Reduction factor.
+
+    Returns:
+        np.ndarray: (at most ceil(tokens / factor), dim) float32 unit vectors, one per cluster.
+    """
+    vectors = vectors.astype(np.float32)
+    count, target = len(vectors), math.ceil(len(vectors) / factor)
+    if target >= count:
+        return vectors
+    squared = np.clip(2 - 2 * (vectors @ vectors.T), 0, None)  # unit vectors: |a - b|^2 = 2 - 2 a.b
+    distances = np.sqrt(squared[np.triu_indices(count, k=1)])
+    labels = fcluster(linkage(distances, method="ward"), target, criterion="maxclust") - 1
+    merged = np.zeros((labels.max() + 1, vectors.shape[1]), dtype=np.float32)
+    np.add.at(merged, labels, vectors)
+    return merged / np.linalg.norm(merged, axis=1, keepdims=True)
+
+
+def spread(values: Sequence[float]) -> dict[str, float]:
+    """Summarize values.
+
+    Args:
+        values (Sequence[float]): Values.
+
+    Returns:
+        dict[str, float]: Min, mean and max.
+    """
+    return {"min": min(values), "mean": round(float(np.mean(values)), 1), "max": max(values)}
+
+
+def visual_dir(data_root: Path, dataset: str, model: str) -> Path:
+    """Locate a dataset's saved visual embeddings.
+
+    Args:
+        data_root (Path): Data root.
+        dataset (str): Dataset key.
+        model (str): Hugging Face repo id.
+
+    Returns:
+        Path: Folder holding `pages`, `queries` and `pooled_<factor>`.
+    """
+    return data_root / "derived" / "visual" / dataset / model.split("/")[-1]
+
+
+def part_files(folder: Path) -> list[Path]:
+    """List a folder's finished embedding files.
+
+    Args:
+        folder (Path): Folder; may not exist.
+
+    Returns:
+        list[Path]: Sorted .npz files.
+    """
+    return sorted(folder.glob("*.npz"))
+
+
+def save_multivectors(path: Path, ids: Sequence[str], vectors: Sequence[np.ndarray]) -> None:
+    """Save multi-vectors as float16. The file appears only once complete.
+
+    Args:
+        path (Path): Output .npz file.
+        ids (Sequence[str]): One id per item.
+        vectors (Sequence[np.ndarray]): (tokens, dim) per item.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(".tmp")
+    with temporary.open("wb") as f:
+        np.savez(
+            f,
+            ids=np.array(ids, dtype=str),
+            lengths=np.array([len(item) for item in vectors], dtype=np.int32),
+            vectors=np.concatenate(vectors).astype(np.float16),
+        )
+    os.replace(temporary, path)
+
+
+def iter_multivectors(paths: Iterable[Path]) -> Iterator[tuple[list[str], list[np.ndarray]]]:
+    """Read saved multi-vectors one file at a time.
+
+    Args:
+        paths (Iterable[Path]): Files from `save_multivectors`.
+
+    Returns:
+        Iterator[tuple[list[str], list[np.ndarray]]]: Ids and float32 (tokens, dim) arrays, per file.
+    """
+    for path in paths:
+        with np.load(path, allow_pickle=False) as data:
+            stops = np.cumsum(data["lengths"])[:-1]
+            yield data["ids"].tolist(), np.split(data["vectors"].astype(np.float32), stops)
+
+
+def multivector_lengths(paths: Iterable[Path]) -> dict[str, int]:
+    """Read how many vectors each saved item has, without loading the vectors.
+
+    Args:
+        paths (Iterable[Path]): Files from `save_multivectors`.
+
+    Returns:
+        dict[str, int]: Vector count per id.
+    """
+    lengths: dict[str, int] = {}
+    for path in paths:
+        with np.load(path, allow_pickle=False) as data:
+            lengths.update(zip(data["ids"].tolist(), data["lengths"].tolist()))
+    return lengths
 
 
 def token_cosines(first: np.ndarray, second: np.ndarray) -> np.ndarray:

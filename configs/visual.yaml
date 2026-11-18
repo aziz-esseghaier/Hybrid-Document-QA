@@ -4,7 +4,13 @@ model: nvidia/nemotron-colembed-vl-4b-v2
 revision: 0ed152d91f8ad4c5d48296b51c220f686641a398
 dtype: float16                # T4 has no bf16
 attn_implementation: sdpa     # T4 has no FlashAttention 2
+page_batch_size: 1            # larger batches were no faster on T4
 query_batch_size: 8
+part_pages: 64                # pages per saved file; a cut-off run loses at most one file per GPU
+pool_factor: 2                # a Qdrant point holds 409 vectors of 2,560 dimensions; pages have about 764
+page_limit: 100               # pages kept per ranking
+upload_threads: 4             # parallel page uploads to Qdrant
+qdrant_timeout: 600           # seconds per request
 
 check:                        # does the model run correctly on this GPU, and at what cost?
   dataset: v2_esg_reports

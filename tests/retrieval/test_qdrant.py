@@ -1,4 +1,4 @@
-"""Tests for Qdrant snapshot transfer, against a small local HTTP server."""
+"""Tests for Qdrant helpers; snapshot transfer runs against a small local HTTP server."""
 
 import hashlib
 import threading
@@ -8,7 +8,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from doc_qa.retrieval.qdrant import file_sha256, restore_snapshot, save_snapshot
+from doc_qa.retrieval.qdrant import file_sha256, fits_in_point, restore_snapshot, save_snapshot, visual_collection
 
 DATA = b"snapshot bytes" * 1000
 SHA256 = hashlib.sha256(DATA).hexdigest()
@@ -56,6 +56,15 @@ class Client:
 
     def delete_snapshot(self, name, snapshot_name, wait):
         self.deleted.append((name, snapshot_name))
+
+
+def test_visual_collection_name():
+    assert visual_collection("v2_esg_reports") == "visual_v2_esg_reports"
+
+
+def test_fits_in_point_matches_the_server_limit():
+    assert fits_in_point(409, 2560)
+    assert not fits_in_point(410, 2560)
 
 
 def test_file_sha256(tmp_path):
