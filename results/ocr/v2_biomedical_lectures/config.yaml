@@ -1,0 +1,5 @@
+datasets_config: configs/datasets.yaml
+pipeline_version: v1.6
+batch_size: 4
+pipeline_options: {}
+predict_options: {}
