@@ -1,6 +1,7 @@
 """Tests for PDF download, text-layer cleaning, quality signals and reading."""
 
 import pytest
+from PIL import Image
 
 from doc_qa.ingest.pdf import (
     clean_pdf_text,
@@ -121,3 +122,21 @@ def test_read_pdf(tmp_path):
         (0, (100, 150), "L", ""),
         (1, (150, 100), "L", ""),
     ]
+
+
+def test_read_pdf_in_color_keeps_channel_order(tmp_path):
+    pdfium = pytest.importorskip("pypdfium2")
+    pdf = pdfium.PdfDocument.new()
+    page = pdf.new_page(200, 300)
+    picture = pdfium.PdfImage.new(pdf)
+    picture.set_bitmap(pdfium.PdfBitmap.from_pil(Image.new("RGB", (8, 8), (230, 20, 40))))
+    picture.set_matrix(pdfium.PdfMatrix().scale(200, 300))  # fill the page
+    page.insert_obj(picture)
+    page.gen_content()
+    pdf.save(tmp_path / "doc.pdf")
+    pdf.close()
+
+    [(_, image, _)] = read_pdf(tmp_path / "doc.pdf", scale=0.5, color=True)
+    assert (image.mode, image.size) == ("RGB", (100, 150))
+    red, green, blue = image.getpixel((50, 75))
+    assert red > 200 and green < 60 and blue < 80  # red stays red, not swapped with blue

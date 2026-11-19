@@ -204,15 +204,16 @@ def read_text_layers(path: Path) -> list[str]:
         pdf.close()
 
 
-def read_pdf(path: Path, scale: float = 1.0) -> Iterator[tuple[int, Image.Image, str]]:
+def read_pdf(path: Path, scale: float = 1.0, color: bool = False) -> Iterator[tuple[int, Image.Image, str]]:
     """Render each page and extract its text layer.
 
     Args:
         path (Path): PDF file.
         scale (float): Render scale; 1 = 72 dpi.
+        color (bool): Render in RGB, as the visual retriever needs; grayscale otherwise.
 
     Returns:
-        Iterator[tuple[int, Image.Image, str]]: (page index from 0, grayscale image, raw text).
+        Iterator[tuple[int, Image.Image, str]]: (page index from 0, image, raw text).
     """
     import pypdfium2 as pdfium
 
@@ -220,7 +221,7 @@ def read_pdf(path: Path, scale: float = 1.0) -> Iterator[tuple[int, Image.Image,
     try:
         for index in range(len(pdf)):
             page = pdf[index]
-            image = page.render(scale=scale, grayscale=True).to_pil().convert("L")
+            image = page.render(scale=scale, grayscale=not color).to_pil().convert("RGB" if color else "L")
             text = page.get_textpage().get_text_range()
             yield index, image, text
     finally:
