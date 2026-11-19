@@ -116,6 +116,15 @@ A Qdrant point holds at most 409 vectors of this size and a page has about 764, 
 
 `eval_visual.py` compares three exact rankings: all vectors and merged vectors, computed locally, and merged vectors searched in Qdrant. This shows what merging costs and whether Qdrant matches. Output in `results/visual_eval/<dataset>/`, with the search time in `summary.json`.
 
+Save a collection to a private Kaggle Dataset (`<user>/qdrant-visual-<dataset>`: snapshot, query embeddings, `manifest.json`), and restore it in a later session:
+
+```python
+!python scripts/qdrant_store.py push --branch visual --dataset v2_esg_reports --clean
+!python scripts/qdrant_store.py pull --branch visual --dataset v2_esg_reports
+```
+
+`--clean` then deletes the collection and the dataset's vectors (about 6 GB per 1,000 pages), so every dev dataset fits on the disk of one session. A restored collection can be searched right away; `eval_visual.py` also needs the local vectors, so it needs `embed_visual.py` again.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).
