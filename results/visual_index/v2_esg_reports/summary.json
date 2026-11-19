@@ -4,7 +4,7 @@
   "dim": 2560,
   "pool_factor": 2,
   "vectors": 585982,
-  "upload_seconds_per_page": 0.348,
-  "total_seconds": 548,
+  "upload_seconds_per_page": 0.355,
+  "total_seconds": 560,
   "segments": 4
 }

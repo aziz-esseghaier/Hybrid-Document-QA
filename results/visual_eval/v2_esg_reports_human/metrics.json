@@ -1,0 +1,38 @@
+{
+  "full": {
+    "all": {
+      "queries": 52,
+      "ndcg@10": 0.734,
+      "recall@100": 0.9727
+    },
+    "en": {
+      "queries": 52,
+      "ndcg@10": 0.734,
+      "recall@100": 0.9727
+    }
+  },
+  "pooled": {
+    "all": {
+      "queries": 52,
+      "ndcg@10": 0.7298,
+      "recall@100": 0.9727
+    },
+    "en": {
+      "queries": 52,
+      "ndcg@10": 0.7298,
+      "recall@100": 0.9727
+    }
+  },
+  "qdrant": {
+    "all": {
+      "queries": 52,
+      "ndcg@10": 0.7298,
+      "recall@100": 0.9727
+    },
+    "en": {
+      "queries": 52,
+      "ndcg@10": 0.7298,
+      "recall@100": 0.9727
+    }
+  }
+}

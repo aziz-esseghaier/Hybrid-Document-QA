@@ -1,0 +1,10 @@
+{
+  "collection": "visual_v1_shiftproject",
+  "points": 1000,
+  "dim": 2560,
+  "pool_factor": 2,
+  "vectors": 387000,
+  "upload_seconds_per_page": 0.358,
+  "total_seconds": 372,
+  "segments": 3
+}

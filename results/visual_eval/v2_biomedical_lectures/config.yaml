@@ -1,0 +1,25 @@
+datasets_config: configs/datasets.yaml
+model: nvidia/nemotron-colembed-vl-4b-v2
+revision: 0ed152d91f8ad4c5d48296b51c220f686641a398
+dtype: float16
+attn_implementation: sdpa
+page_batch_size: 1
+query_batch_size: 8
+part_pages: 64
+pool_factor: 2
+page_limit: 100
+upload_threads: 4
+qdrant_timeout: 600
+check:
+  dataset: v2_esg_reports
+  seed: 0
+  pages: 20
+  questions: 8
+  batch_sizes:
+  - 1
+  - 2
+  - 4
+  - 8
+  reference_dtype: bfloat16
+  reference_pages: 2
+  reference_queries: 2

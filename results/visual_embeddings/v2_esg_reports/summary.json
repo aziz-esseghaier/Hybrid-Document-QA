@@ -1,7 +1,7 @@
 {
   "workers": 2,
-  "embed_seconds": 658,
-  "pool_seconds": 164,
+  "embed_seconds": 614,
+  "pool_seconds": 163,
   "pages": 1538,
   "queries": 114,
   "dim": 2560,

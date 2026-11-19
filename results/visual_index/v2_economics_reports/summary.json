@@ -1,0 +1,10 @@
+{
+  "collection": "visual_v2_economics_reports",
+  "points": 452,
+  "dim": 2560,
+  "pool_factor": 2,
+  "vectors": 169408,
+  "upload_seconds_per_page": 0.349,
+  "total_seconds": 175,
+  "segments": 2
+}

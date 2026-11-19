@@ -1,0 +1,16 @@
+{
+  "queries": 320,
+  "pool_factor": 2,
+  "local_seconds": {
+    "full": 192.7,
+    "pooled": 95.9
+  },
+  "top10_overlap_full_vs_pooled": 0.9744,
+  "qdrant_search": {
+    "queries_done": 320,
+    "median_seconds": 2.03,
+    "mean_seconds": 2.11,
+    "max_seconds": 4.64
+  },
+  "top10_overlap_qdrant_vs_pooled": 0.9997
+}

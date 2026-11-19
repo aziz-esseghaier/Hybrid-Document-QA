@@ -1,0 +1,10 @@
+{
+  "collection": "visual_v2_biomedical_lectures",
+  "points": 1016,
+  "dim": 2560,
+  "pool_factor": 2,
+  "vectors": 378014,
+  "upload_seconds_per_page": 0.343,
+  "total_seconds": 361,
+  "segments": 3
+}
