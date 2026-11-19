@@ -1,0 +1,10 @@
+{
+  "collection": "visual_v2_esg_reports",
+  "points": 1538,
+  "dim": 2560,
+  "pool_factor": 2,
+  "vectors": 585982,
+  "upload_seconds_per_page": 0.348,
+  "total_seconds": 548,
+  "segments": 4
+}

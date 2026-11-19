@@ -1,0 +1,53 @@
+{
+  "full": {
+    "all": {
+      "queries": 114,
+      "ndcg@10": 0.6832,
+      "recall@100": 0.989
+    },
+    "en": {
+      "queries": 57,
+      "ndcg@10": 0.6918,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 57,
+      "ndcg@10": 0.6746,
+      "recall@100": 0.9781
+    }
+  },
+  "pooled": {
+    "all": {
+      "queries": 114,
+      "ndcg@10": 0.6818,
+      "recall@100": 0.989
+    },
+    "en": {
+      "queries": 57,
+      "ndcg@10": 0.681,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 57,
+      "ndcg@10": 0.6826,
+      "recall@100": 0.9781
+    }
+  },
+  "qdrant": {
+    "all": {
+      "queries": 114,
+      "ndcg@10": 0.6818,
+      "recall@100": 0.989
+    },
+    "en": {
+      "queries": 57,
+      "ndcg@10": 0.681,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 57,
+      "ndcg@10": 0.6826,
+      "recall@100": 0.9781
+    }
+  }
+}
