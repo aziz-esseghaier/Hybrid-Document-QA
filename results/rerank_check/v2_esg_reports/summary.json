@@ -1,0 +1,71 @@
+{
+  "queries": 16,
+  "pairs": 320,
+  "gpu_gb_after_load": 8.1,
+  "prompt_tokens": {
+    "min": 94,
+    "mean": 573.4,
+    "max": 4096
+  },
+  "dataset_page_tokens": {
+    "min": 0,
+    "mean": 430.6,
+    "max": 5511
+  },
+  "dataset_pages_cut": 1,
+  "last_step": "reference",
+  "batches": [
+    {
+      "batch_size": 1,
+      "status": "ok",
+      "seconds_per_pair": 0.462,
+      "tokens_per_second": 1242,
+      "peak_gpu_gb": 14.01
+    },
+    {
+      "batch_size": 4,
+      "status": "ok",
+      "seconds_per_pair": 0.33,
+      "tokens_per_second": 1737,
+      "peak_gpu_gb": 11.89
+    },
+    {
+      "batch_size": 8,
+      "status": "out of memory"
+    }
+  ],
+  "batching_changes_nothing": {
+    "batch_size": 4,
+    "max_abs_diff": 0.0469
+  },
+  "score_range": [
+    -8.94,
+    6.54
+  ],
+  "dev_hours_two_gpus": {
+    "20_candidates": 0.9,
+    "30_candidates": 1.35,
+    "50_candidates": 2.25
+  },
+  "quality": {
+    "en": {
+      "queries": 8,
+      "with_relevant_candidate": 1.0,
+      "ndcg@10_before": 0.503,
+      "ndcg@10_after": 0.434
+    },
+    "fr": {
+      "queries": 8,
+      "with_relevant_candidate": 1.0,
+      "ndcg@10_before": 0.446,
+      "ndcg@10_after": 0.355
+    }
+  },
+  "matches_reference": {
+    "dtype": "float32",
+    "pairs": 40,
+    "max_abs_diff": 0.0329,
+    "mean_abs_diff": 0.0089,
+    "spearman": 0.9996
+  }
+}

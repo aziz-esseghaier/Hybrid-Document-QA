@@ -1,0 +1,23 @@
+datasets_config: configs/datasets.yaml
+model: Qwen/Qwen3-Reranker-4B
+revision: 22e683669bc0f0bd69640a1354a6d0aebcfeede5
+dtype: float16
+attn_implementation: sdpa
+instruction: Given a question, judge whether this document page contains the information
+  that answers it
+max_tokens: 4096
+batch_size: 8
+check:
+  dataset: v2_esg_reports
+  seed: 0
+  questions: 8
+  candidates: 20
+  rankings: results/visual_eval/v2_esg_reports/rankings_qdrant.jsonl
+  batch_sizes:
+  - 1
+  - 4
+  - 8
+  - 16
+  reference_dtype: float32
+  reference_pairs: 40
+  dev_queries: 982

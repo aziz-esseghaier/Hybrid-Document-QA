@@ -6,7 +6,10 @@ dtype: float16                # T4 has no bf16
 attn_implementation: sdpa     # T4 has no FlashAttention 2
 instruction: Given a question, judge whether this document page contains the information that answers it
 max_tokens: 4096              # prompt limit; the end of longer pages is cut
-batch_size: 8
+batch_size: 4                 # 8 ran out of memory on 4,096-token prompts
+candidates: 30                # top pages of the saved visual ranking, reranked per query
+candidates_from: results/visual_eval/{dataset}/rankings_qdrant.jsonl
+part_queries: 16              # queries scored between saves
 
 check:                        # does the reranker run correctly on this GPU, and at what cost?
   dataset: v2_esg_reports

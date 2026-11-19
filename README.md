@@ -149,6 +149,14 @@ The reranker reads a question and a page's OCR text and answers "yes" or "no"; t
 
 Reports memory, speed per batch size, prompt lengths, whether batching changes the scores, how the visual ranking's top pages move, the match with fp32, and the time to rerank all dev queries. Output in `results/rerank_check/v2_esg_reports/`.
 
+Rerank the top 30 pages of the saved visual ranking for every query of a dataset (GPU session, one worker per GPU, resumable):
+
+```python
+!python scripts/rerank_pages.py --dataset v2_esg_reports   # after ocr_store.py pull and build_chunks.py
+```
+
+Output in `results/rerank/<dataset>/`: the candidates in reranker order, with scores. Then, locally, `python scripts/eval_fusion.py --config configs/fusion_rerank.yaml` scores the reranker's order alone and blended with the visual ranking (output in `results/fusion_rerank/`).
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

@@ -1,4 +1,5 @@
 # Fusion of the visual and text page rankings, chosen on dev.
+results_name: fusion
 datasets_config: configs/datasets.yaml
 datasets: [v2_esg_reports, v2_esg_reports_human, v2_economics_reports, v2_biomedical_lectures, v1_shiftproject, v1_tabfquad]
 qrels: results/qrels/{dataset}.jsonl        # from export_qrels.py

@@ -35,6 +35,11 @@ def test_grid_skips_visual_alone_and_rules_that_change_nothing():
     assert not any(s[RULE] and not s["bm25"] for s in settings)
 
 
+def test_grid_without_the_language_rule():
+    settings = eval_fusion.grid_settings({"visual": [1], "rerank": [0.5, 2]})
+    assert [eval_fusion.label(s) for s in settings] == ["visual 1 + rerank 0.5", "visual 1 + rerank 2"]
+
+
 def test_language_rule_drops_bm25_only_across_languages():
     setting = {"visual": 1, "bm25": 5, RULE: True}
     assert [p for p, _ in eval_fusion.fuse(query(cross_language=True), setting, 60, 10)] == ["v", "b"]

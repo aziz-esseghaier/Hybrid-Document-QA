@@ -6,8 +6,9 @@ Usage:
 Runs on saved rankings and judgments (export_qrels.py); no GPU or Qdrant. Scores every weight combination in the grid
 by its mean NDCG@10 over the dataset-language groups and keeps the best. Checks how well that choice carries over by
 leaving each dataset out in turn, and compares the best setting with each branch alone (bootstrap intervals;
-translations of a question are resampled together). Writes <RESULTS_ROOT>/fusion/: summary.json, grid.jsonl,
-config.yaml, run_info.json, and <dataset>/rankings_fused.jsonl.
+translations of a question are resampled together). Writes <RESULTS_ROOT>/<results_name>/: summary.json,
+grid.jsonl, config.yaml, run_info.json, and <dataset>/rankings_fused.jsonl. configs/fusion_rerank.yaml scores the
+reranker the same way, as one more ranking.
 """
 
 from __future__ import annotations
@@ -74,14 +75,14 @@ def grid_settings(grid: dict[str, list[Any]]) -> list[dict[str, Any]]:
     """List the weight combinations worth scoring.
 
     Args:
-        grid (dict[str, list[Any]]): Values per ranking weight, and of the BM25 language rule.
+        grid (dict[str, list[Any]]): Values per ranking weight, and optionally of the BM25 language rule.
 
     Returns:
         list[dict[str, Any]]: Settings; visual alone and rules that change nothing are left out.
     """
     sources = [key for key in grid if key != LANGUAGE_RULE]
     settings = []
-    for combo in itertools.product(*(grid[source] for source in sources), grid[LANGUAGE_RULE]):
+    for combo in itertools.product(*(grid[source] for source in sources), grid.get(LANGUAGE_RULE, [False])):
         setting = {**dict(zip(sources, combo[:-1])), LANGUAGE_RULE: combo[-1]}
         if not any(setting[source] for source in sources if source != "visual"):
             continue
@@ -255,7 +256,7 @@ def main() -> None:
     specs = load_yaml(Path(cfg["datasets_config"]))["datasets"]
     k, limit = cfg["rrf_k"], cfg["page_limit"]
     queries = load_queries(cfg, specs)
-    results_dir = settings.results_root / "fusion"
+    results_dir = settings.results_root / cfg["results_name"]
     write_run_info(results_dir, seed=cfg["seed"], extra={"datasets": cfg["datasets"], "queries": len(queries)})
     (results_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
