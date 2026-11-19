@@ -61,3 +61,9 @@ def test_evaluate_groups_by_language():
     assert result["en"]["ndcg@10"] == 1.0
     assert result["fr"]["ndcg@10"] == 0.0
     assert result["all"] == {"queries": 2, "ndcg@10": 0.5, "recall@100": 0.5}
+
+
+def test_evaluate_extra_recall_cutoffs():
+    qrels = {"q1": {"a": 1, "b": 1}}
+    result = evaluate({"q1": ["a", "x", "b"]}, qrels, {"q1": "en"}, recall_ks=(1, 3))
+    assert result["all"] == {"queries": 1, "ndcg@10": result["all"]["ndcg@10"], "recall@1": 0.5, "recall@3": 1.0}

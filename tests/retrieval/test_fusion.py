@@ -20,6 +20,18 @@ def test_rrf():
     assert len(rrf([["a", "b"], ["c"]], limit=2)) == 2
 
 
+def test_weighted_rrf():
+    lists = [["a", "b"], ["b", "c"]]
+    assert rrf(lists, weights=[1, 1]) == rrf(lists)
+    assert [i for i, _ in rrf([["a"], ["b"]])] == ["a", "b"]  # tie, broken by id
+    heavy = rrf([["a"], ["b"]], k=60, weights=[1, 3])
+    assert [i for i, _ in heavy] == ["b", "a"]
+    assert heavy[0][1] == pytest.approx(3 / 61)
+    assert [i for i, _ in rrf(lists, weights=[1, 0])] == ["a", "b"]  # weight 0 drops the list's pages
+    with pytest.raises(ValueError):
+        rrf(lists, weights=[1])
+
+
 def test_vectors_roundtrip(tmp_path):
     vectors = np.random.default_rng(0).normal(size=(3, 4)).astype(np.float32)
     save_vectors(tmp_path / "w0.npz", ["a", "b"], vectors[:2])

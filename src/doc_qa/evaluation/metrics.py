@@ -117,29 +117,33 @@ def recall_at_k(ranking: list[str], relevance: dict[str, int], k: int = 100) -> 
 
 
 def evaluate(
-    rankings: dict[str, list[str]], qrels: dict[str, dict[str, int]], groups: dict[str, str]
+    rankings: dict[str, list[str]],
+    qrels: dict[str, dict[str, int]],
+    groups: dict[str, str],
+    recall_ks: Sequence[int] = (100,),
 ) -> dict[str, dict[str, float]]:
-    """Mean NDCG@10 and Recall@100 per group (e.g. query language) and over all queries.
+    """Mean NDCG@10 and Recall@k per group (e.g. query language) and over all queries.
 
     Args:
         rankings (dict[str, list[str]]): Ranked page ids per query id.
         qrels (dict[str, dict[str, int]]): Relevance per query id.
         groups (dict[str, str]): Group per query id.
+        recall_ks (Sequence[int]): Recall cutoffs.
 
     Returns:
-        dict[str, dict[str, float]]: {group or "all": {"queries", "ndcg@10", "recall@100"}}.
+        dict[str, dict[str, float]]: {group or "all": {"queries", "ndcg@10", "recall@<k>", ...}}.
     """
-    scores: dict[str, list[tuple[float, float]]] = defaultdict(list)
+    names = ["ndcg@10", *(f"recall@{k}" for k in recall_ks)]
+    scores: dict[str, list[list[float]]] = defaultdict(list)
     for query_id, relevance in qrels.items():
         ranking = rankings.get(query_id, [])
-        pair = (ndcg_at_k(ranking, relevance, 10), recall_at_k(ranking, relevance, 100))
-        scores[groups[query_id]].append(pair)
-        scores["all"].append(pair)
+        row = [ndcg_at_k(ranking, relevance, 10), *(recall_at_k(ranking, relevance, k) for k in recall_ks)]
+        scores[groups[query_id]].append(row)
+        scores["all"].append(row)
     return {
         group: {
-            "queries": len(pairs),
-            "ndcg@10": round(sum(p[0] for p in pairs) / len(pairs), 4),
-            "recall@100": round(sum(p[1] for p in pairs) / len(pairs), 4),
+            "queries": len(rows),
+            **{name: round(sum(row[i] for row in rows) / len(rows), 4) for i, name in enumerate(names)},
         }
-        for group, pairs in sorted(scores.items())
+        for group, rows in sorted(scores.items())
     }

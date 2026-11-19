@@ -1,0 +1,27 @@
+# Fusion of the visual and text page rankings, chosen on dev.
+datasets_config: configs/datasets.yaml
+datasets: [v2_esg_reports, v2_esg_reports_human, v2_economics_reports, v2_biomedical_lectures, v1_shiftproject, v1_tabfquad]
+qrels: results/qrels/{dataset}.jsonl        # from export_qrels.py
+rankings:                                   # saved top-100 page rankings
+  visual: results/visual_eval/{dataset}/rankings_qdrant.jsonl
+  dense: results/text_eval/{dataset}/rankings_dense.jsonl
+  bm25: results/text_eval/{dataset}/rankings_bm25.jsonl
+rrf_k: 60
+page_limit: 100
+
+grid:                         # weight of each ranking; every combination is scored
+  visual: [1, 1.5, 2, 3]
+  dense: [0, 0.5, 1]
+  bm25: [0, 0.5, 1]
+  bm25_same_language_only: [false, true]   # true: no BM25 when the query and document languages differ
+
+baselines:                    # fixed weights, reported next to the best setting
+  visual: {visual: 1}
+  dense: {dense: 1}
+  bm25: {bm25: 1}
+  text_rrf: {dense: 1, bm25: 1}
+  equal_rrf: {visual: 1, dense: 1, bm25: 1}
+compare_with: [visual, dense]  # bootstrap intervals for best minus these
+recall_ks: [5, 10, 20, 30, 50, 100]
+bootstrap_resamples: 10000
+seed: 0

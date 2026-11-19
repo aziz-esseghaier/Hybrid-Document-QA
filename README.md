@@ -125,6 +125,30 @@ Save a collection to a private Kaggle Dataset (`<user>/qdrant-visual-<dataset>`:
 
 `--clean` then deletes the collection and the dataset's vectors (about 6 GB per 1,000 pages), so every dev dataset fits on the disk of one session. A restored collection can be searched right away; `eval_visual.py` also needs the local vectors, so it needs `embed_visual.py` again.
 
+## Fusion and reranking
+
+Fusion works on the saved rankings, so it runs locally once the dev judgments are exported (Kaggle, after `download_data.py`):
+
+```python
+!python scripts/export_qrels.py   # results/qrels/<dataset>.jsonl: ids and grades, no text
+```
+
+```
+python scripts/eval_fusion.py     # local, configs/fusion.yaml
+```
+
+`eval_fusion.py` merges the visual, dense and BM25 rankings with weighted reciprocal rank fusion. It scores every weight combination in the grid (optionally without BM25 when the query and document languages differ) by mean NDCG@10 over the dataset-language groups, checks the choice by leaving each dataset out in turn, and compares the best setting with each branch alone (bootstrap intervals). It also recomputes the single-branch scores from the saved rankings and checks that they match their own evaluations. Output in `results/fusion/`, with the fused rankings per dataset.
+
+The reranker reads a question and a page's OCR text and answers "yes" or "no"; the page scores as how much the model prefers "yes". Check it on ESG first (GPU session, both GPUs):
+
+```python
+!python scripts/ocr_store.py pull --dataset v2_esg_reports
+!python scripts/build_chunks.py --dataset v2_esg_reports
+!python scripts/check_reranker.py   # configs/rerank.yaml
+```
+
+Reports memory, speed per batch size, prompt lengths, whether batching changes the scores, how the visual ranking's top pages move, the match with fp32, and the time to rerank all dev queries. Output in `results/rerank_check/v2_esg_reports/`.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

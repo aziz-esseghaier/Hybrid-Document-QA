@@ -1,0 +1,20 @@
+# Text reranker: reads a question and a page's text, and scores how well they match.
+datasets_config: configs/datasets.yaml
+model: Qwen/Qwen3-Reranker-4B
+revision: 22e683669bc0f0bd69640a1354a6d0aebcfeede5
+dtype: float16                # T4 has no bf16
+attn_implementation: sdpa     # T4 has no FlashAttention 2
+instruction: Given a question, judge whether this document page contains the information that answers it
+max_tokens: 4096              # prompt limit; the end of longer pages is cut
+batch_size: 8
+
+check:                        # does the reranker run correctly on this GPU, and at what cost?
+  dataset: v2_esg_reports
+  seed: 0
+  questions: 8                # with all their translations
+  candidates: 20              # top pages of the saved visual ranking, per query
+  rankings: results/visual_eval/v2_esg_reports/rankings_qdrant.jsonl
+  batch_sizes: [1, 4, 8, 16]  # stops at the first that runs out of memory
+  reference_dtype: float32    # spread over both GPUs
+  reference_pairs: 40
+  dev_queries: 982            # all dev queries, for the time estimate
