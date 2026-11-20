@@ -30,12 +30,6 @@ from doc_qa.evaluation.metrics import cluster_bootstrap_ci, evaluate, ndcg_at_k
 from doc_qa.retrieval.fusion import rrf
 
 LANGUAGE_RULE = "bm25_same_language_only"
-SAVED_METRICS = {  # baseline -> (metrics file, method in it); the recomputed scores must match
-    "visual": ("results/visual_eval/{dataset}/metrics.json", "qdrant"),
-    "dense": ("results/text_eval/{dataset}/metrics.json", "dense"),
-    "bm25": ("results/text_eval/{dataset}/metrics.json", "bm25"),
-    "text_rrf": ("results/text_eval/{dataset}/metrics.json", "rrf"),
-}
 
 
 def load_queries(cfg: dict[str, Any], specs: dict[str, Any]) -> list[dict[str, Any]]:
@@ -225,18 +219,18 @@ def compare(
     return result
 
 
-def saved_metrics_match(name: str, dataset: str, computed: dict[str, dict[str, float]]) -> bool:
+def saved_metrics_match(source: Sequence[str], dataset: str, computed: dict[str, dict[str, float]]) -> bool:
     """Check that a baseline recomputed from saved rankings gives the scores saved by its own evaluation.
 
     Args:
-        name (str): Baseline name.
+        source (Sequence[str]): Metrics file pattern and the method in it, e.g. [".../metrics.json", "dense"].
         dataset (str): Dataset key.
         computed (dict[str, dict[str, float]]): Its `evaluate` output.
 
     Returns:
         bool: True if NDCG@10 and Recall@100 match for every group.
     """
-    path, method = SAVED_METRICS[name]
+    path, method = source
     saved = json.loads((REPO_ROOT / path.format(dataset=dataset)).read_text(encoding="utf-8"))[method]
     return all(
         computed[group][metric] == values[metric]
@@ -301,8 +295,8 @@ def main() -> None:
             fused = {query["query_id"]: fuse(query, setting, k, limit) for query in subset}
             ranked = {query_id: [page for page, _ in pages] for query_id, pages in fused.items()}
             metrics[name][dataset] = evaluate(ranked, qrels, languages, cfg["recall_ks"])
-            if name in SAVED_METRICS:
-                matches.append(saved_metrics_match(name, dataset, metrics[name][dataset]))
+            if name in cfg["saved_metrics"]:
+                matches.append(saved_metrics_match(cfg["saved_metrics"][name], dataset, metrics[name][dataset]))
             if name == "best":
                 write_jsonl(results_dir / dataset / "rankings_fused.jsonl", [
                     {"query_id": query_id, "pages": [[page, round(score, 6)] for page, score in pages]}

@@ -1,0 +1,7 @@
+{
+  "queries": 100,
+  "pool_factor": 1,
+  "local_seconds": {
+    "full": 18.0
+  }
+}

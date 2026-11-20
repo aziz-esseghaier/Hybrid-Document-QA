@@ -17,6 +17,8 @@ baselines:
   visual: {visual: 1}
   rerank: {visual: 1, rerank: 1000}   # reranker order for the top 30, then visual order
 compare_with: [visual, rerank]
+saved_metrics:
+  visual: ["results/visual_eval/{dataset}/metrics.json", qdrant]
 recall_ks: [5, 10, 20, 30, 50, 100]
 bootstrap_resamples: 10000
 seed: 0

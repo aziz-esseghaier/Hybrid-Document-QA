@@ -1,0 +1,26 @@
+{
+  "workers": 2,
+  "embed_seconds": 269,
+  "pool_seconds": 0,
+  "pages": 452,
+  "queries": 116,
+  "dim": 320,
+  "vectors_per_page": {
+    "min": 693,
+    "mean": 856.2,
+    "max": 929
+  },
+  "vectors_per_query": {
+    "min": 20,
+    "mean": 30.8,
+    "max": 51
+  },
+  "pool_factor": 1,
+  "pooled_vectors_per_page": {
+    "min": 693,
+    "mean": 856.2,
+    "max": 929
+  },
+  "full_gb": 0.25,
+  "pooled_gb": 0.25
+}

@@ -23,6 +23,11 @@ baselines:                    # fixed weights, reported next to the best setting
   text_rrf: {dense: 1, bm25: 1}
   equal_rrf: {visual: 1, dense: 1, bm25: 1}
 compare_with: [visual, dense]  # bootstrap intervals for best minus these
+saved_metrics:                # baseline -> [metrics file, method]; recomputed scores must match them
+  visual: ["results/visual_eval/{dataset}/metrics.json", qdrant]
+  dense: ["results/text_eval/{dataset}/metrics.json", dense]
+  bm25: ["results/text_eval/{dataset}/metrics.json", bm25]
+  text_rrf: ["results/text_eval/{dataset}/metrics.json", rrf]
 recall_ks: [5, 10, 20, 30, 50, 100]
 bootstrap_resamples: 10000
 seed: 0

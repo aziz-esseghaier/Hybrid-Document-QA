@@ -1,0 +1,109 @@
+{
+  "pages": 20,
+  "queries": 16,
+  "weights_not_loaded": {
+    "count": 0,
+    "first": []
+  },
+  "gpu_gb_after_load": 8.94,
+  "last_step": "reference",
+  "batches": [
+    {
+      "batch_size": 1,
+      "status": "ok",
+      "seconds_per_page": 1.61,
+      "pages_per_hour_two_gpus": 4486,
+      "peak_gpu_gb": 9.83
+    },
+    {
+      "batch_size": 2,
+      "status": "ok",
+      "seconds_per_page": 1.44,
+      "pages_per_hour_two_gpus": 4993,
+      "peak_gpu_gb": 10.69
+    },
+    {
+      "batch_size": 4,
+      "status": "ok",
+      "seconds_per_page": 1.44,
+      "pages_per_hour_two_gpus": 5000,
+      "peak_gpu_gb": 12.32
+    },
+    {
+      "batch_size": 8,
+      "status": "ok",
+      "seconds_per_page": 1.37,
+      "pages_per_hour_two_gpus": 5266,
+      "peak_gpu_gb": 12.0
+    }
+  ],
+  "dim": 320,
+  "vectors_per_page": {
+    "min": 1226,
+    "mean": 1250.6,
+    "max": 1271
+  },
+  "fp16_gb_per_1000_pages": 0.8,
+  "vectors_per_query": {
+    "min": 20,
+    "mean": 33.9,
+    "max": 46
+  },
+  "batching_changes_nothing": {
+    "pages_batch_size": 8,
+    "pages": {
+      "mean": 0.99998,
+      "min": 0.95492
+    },
+    "queries_batch_size": 8,
+    "queries": {
+      "mean": 0.99998,
+      "min": 0.99858
+    }
+  },
+  "retrieval": {
+    "en": {
+      "queries": 8,
+      "top1": 1.0,
+      "mrr": 1.0,
+      "top1_by_chance": 0.05
+    },
+    "fr": {
+      "queries": 8,
+      "top1": 0.875,
+      "mrr": 0.938,
+      "top1_by_chance": 0.05
+    }
+  },
+  "matches_reference": {
+    "dtype": "float32",
+    "cpu_seconds_per_page": 78.6,
+    "pages": {
+      "mean": 0.99718,
+      "min": 0.0683
+    },
+    "queries": {
+      "mean": 0.99999,
+      "min": 0.99971
+    },
+    "scores": {
+      "max_abs_diff": 0.1955,
+      "mean_abs_diff": 0.0309,
+      "median_top_gap": 1.118,
+      "same_order": 0.938
+    },
+    "pages_by_kind": {
+      "image_tokens": {
+        "mean": 0.99716,
+        "p5": 0.99889,
+        "min": 0.0683
+      },
+      "prompt_tokens": {
+        "mean": 0.99967,
+        "p5": 0.99897,
+        "min": 0.98973
+      },
+      "prompt_tokens_per_page": 11
+    }
+  }
+}
