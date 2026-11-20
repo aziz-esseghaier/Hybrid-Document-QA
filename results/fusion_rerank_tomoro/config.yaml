@@ -1,0 +1,46 @@
+results_name: fusion_rerank_tomoro
+datasets_config: configs/datasets.yaml
+datasets:
+- v2_esg_reports
+- v2_esg_reports_human
+- v2_economics_reports
+- v2_biomedical_lectures
+- v1_shiftproject
+- v1_tabfquad
+qrels: results/qrels/{dataset}.jsonl
+rankings:
+  visual: results/visual_tomoro_eval/{dataset}/rankings_full.jsonl
+  rerank: results/rerank_tomoro/{dataset}/rankings_rerank.jsonl
+rrf_k: 60
+page_limit: 100
+grid:
+  visual:
+  - 1
+  rerank:
+  - 0.25
+  - 0.5
+  - 1
+  - 2
+  - 4
+baselines:
+  visual:
+    visual: 1
+  rerank:
+    visual: 1
+    rerank: 1000
+compare_with:
+- visual
+- rerank
+saved_metrics:
+  visual:
+  - results/visual_tomoro_eval/{dataset}/metrics.json
+  - full
+recall_ks:
+- 5
+- 10
+- 20
+- 30
+- 50
+- 100
+bootstrap_resamples: 10000
+seed: 0
