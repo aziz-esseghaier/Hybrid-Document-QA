@@ -1,6 +1,6 @@
 # Document Q&A
 
-Question answering over English and French PDFs (text, tables, charts, scans) with page citations. Hybrid retrieval: a text branch and a visual branch, fused and reranked. Open-source models only.
+Question answering over English and French PDFs (text, tables, charts, scans) with page citations. Hybrid retrieval: a visual retriever finds candidate pages, and a text reranker reorders them by reading their text. Open-source models only.
 
 Evaluation: [ViDoRe V3](https://huggingface.co/vidore) (test), ViDoRe V2 + French ViDoRe V1 (dev).
 
@@ -166,6 +166,8 @@ Rerank the top 30 pages of the saved visual ranking for every query of a dataset
 Output in `results/rerank/<dataset>/`: the candidates in reranker order, with scores. Then, locally, `python scripts/eval_fusion.py --config configs/fusion_rerank.yaml` scores the reranker's order alone and blended with the visual ranking (output in `results/fusion_rerank/`).
 
 The same steps with the Tomoro visual ranking use `configs/fusion_tomoro.yaml`, `configs/rerank_tomoro.yaml` (`rerank_pages.py --config configs/rerank_tomoro.yaml`) and `configs/fusion_rerank_tomoro.yaml`. Each config's name sets its results folder.
+
+The retrieval setting chosen on dev is `configs/fusion_rerank_tomoro_top20.yaml`: the reranker reorders the visual ranking's top 20 pages, and its order is merged with the visual ranking at equal weight. Merging in text search (dense and BM25) scored lower on dev, so text search is kept only as an evaluation baseline.
 
 ## Bridge check: PDF text vs OCR
 

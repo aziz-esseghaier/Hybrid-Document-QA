@@ -8,7 +8,7 @@ by its mean NDCG@10 over the dataset-language groups and keeps the best. Checks 
 leaving each dataset out in turn, and compares the best setting with each branch alone (bootstrap intervals;
 translations of a question are resampled together). Writes <RESULTS_ROOT>/<results_name>/: summary.json,
 grid.jsonl, config.yaml, run_info.json, and <dataset>/rankings_fused.jsonl. configs/fusion_rerank.yaml scores the
-reranker the same way, as one more ranking.
+reranker the same way, as one more ranking; `restrict` keeps only the reranked pages within visual's top k.
 """
 
 from __future__ import annotations
@@ -53,16 +53,34 @@ def load_queries(cfg: dict[str, Any], specs: dict[str, Any]) -> list[dict[str, A
             lists[source] = {row["query_id"]: [page for page, _ in row["pages"]] for row in saved}
         for row in rows:
             relevant = tuple(sorted(page for page, grade in row["pages"].items() if grade > 0))
+            ranked = {source: by_query.get(row["query_id"], []) for source, by_query in lists.items()}
             queries.append({
                 "dataset": dataset,
                 "query_id": row["query_id"],
                 "group": f"{dataset}/{row['language']}",
                 "cross_language": row["language"] != specs[dataset]["doc_language"],
                 "relevance": row["pages"],
-                "lists": {source: ranked.get(row["query_id"], []) for source, ranked in lists.items()},
+                "lists": restrict(ranked, cfg.get("restrict", {})),
                 "cluster": (dataset, relevant),  # translations share their relevant pages
             })
     return queries
+
+
+def restrict(lists: dict[str, list[str]], rules: dict[str, Sequence[Any]]) -> dict[str, list[str]]:
+    """Keep only the pages of a ranking that another ranking puts in its top k.
+
+    Args:
+        lists (dict[str, list[str]]): Ranked page ids per source, best first.
+        rules (dict[str, Sequence[Any]]): {source: [other source, k]}, e.g. {"rerank": ["visual", 20]}.
+
+    Returns:
+        dict[str, list[str]]: The lists, with each restricted source cut down in its own order.
+    """
+    kept = dict(lists)
+    for source, (other, k) in rules.items():
+        allowed = set(lists[other][:k])
+        kept[source] = [page for page in lists[source] if page in allowed]
+    return kept
 
 
 def grid_settings(grid: dict[str, list[Any]]) -> list[dict[str, Any]]:

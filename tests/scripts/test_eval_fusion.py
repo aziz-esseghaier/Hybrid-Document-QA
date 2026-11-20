@@ -80,3 +80,11 @@ def test_load_queries_reads_judgments_and_rankings(tmp_path):
     assert loaded["group"] == "d/fr" and loaded["cross_language"]
     assert loaded["lists"] == {"visual": ["v", "x"], "dense": ["v", "x"]}
     assert loaded["cluster"] == ("d", ("v",))
+    [restricted] = eval_fusion.load_queries({**cfg, "restrict": {"dense": ["visual", 1]}}, {"d": {"doc_language": "en"}})
+    assert restricted["lists"] == {"visual": ["v", "x"], "dense": ["v"]}
+
+
+def test_restrict_keeps_the_pages_in_the_other_top_k_in_their_own_order():
+    lists = {"visual": ["a", "b", "c", "d"], "rerank": ["d", "c", "b", "a"]}
+    assert eval_fusion.restrict(lists, {"rerank": ["visual", 2]}) == {"visual": ["a", "b", "c", "d"], "rerank": ["b", "a"]}
+    assert eval_fusion.restrict(lists, {}) == lists

@@ -1,0 +1,26 @@
+# Retrieval setting chosen on dev: Tomoro visual ranking, the text reranker's order of its top 20 pages, merged with RRF.
+results_name: fusion_rerank_tomoro_top20
+datasets_config: configs/datasets.yaml
+datasets: [v2_esg_reports, v2_esg_reports_human, v2_economics_reports, v2_biomedical_lectures, v1_shiftproject, v1_tabfquad]
+qrels: results/qrels/{dataset}.jsonl
+rankings:
+  visual: results/visual_tomoro_eval/{dataset}/rankings_full.jsonl
+  rerank: results/rerank_tomoro/{dataset}/rankings_rerank.jsonl     # scores for visual's top 30
+restrict:                     # ranking -> [other ranking, k]: keep only its pages in the other's top k
+  rerank: [visual, 20]
+rrf_k: 60
+page_limit: 100
+
+grid:
+  visual: [1]
+  rerank: [0.25, 0.5, 1, 2, 4]
+
+baselines:
+  visual: {visual: 1}
+  rerank: {visual: 1, rerank: 1000}   # reranker order for the top 20, then visual order
+compare_with: [visual, rerank]
+saved_metrics:
+  visual: ["results/visual_tomoro_eval/{dataset}/metrics.json", full]
+recall_ks: [5, 10, 20, 30, 50, 100]
+bootstrap_resamples: 10000
+seed: 0
