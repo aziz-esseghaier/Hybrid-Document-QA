@@ -7,13 +7,17 @@ import pytest
 from PIL import Image
 
 from doc_qa.retrieval.visual import (
+    check_unit_vectors,
     decode_image,
     iter_multivectors,
     maxsim,
     maxsim_matrix,
     multivector_lengths,
+    page_inputs,
     part_files,
     pool_vectors,
+    pooled_dir,
+    query_inputs,
     save_multivectors,
     token_cosines,
     trim_padding,
@@ -92,6 +96,41 @@ def test_maxsim_sums_each_query_tokens_best_match():
     query = np.array([[1.0, 0.0], [0.0, 1.0]])
     page = np.array([[1.0, 0.0], [0.6, 0.8], [-1.0, 0.0]])
     assert maxsim(query, page) == pytest.approx(1.0 + 0.8)
+
+
+class NemotronProcessor:
+    def process_documents(self, documents):
+        return ("documents", documents)
+
+    def process_queries(self, queries):
+        return ("queries", queries)
+
+
+class ColQwen3Processor:
+    def process_images(self, images):
+        return ("images", images)
+
+    def process_texts(self, texts):
+        return ("texts", texts)
+
+
+def test_inputs_follow_each_processor():
+    assert page_inputs(NemotronProcessor(), ["img"]) == ("documents", [{"image": "img", "text": ""}])
+    assert query_inputs(NemotronProcessor(), ["q"]) == ("queries", ["q"])
+    assert page_inputs(ColQwen3Processor(), ["img"]) == ("images", ["img"])
+    assert query_inputs(ColQwen3Processor(), ["q"]) == ("texts", ["q"])
+
+
+def test_check_unit_vectors_catches_zero_and_non_finite_tokens():
+    check_unit_vectors([unit_vectors(3, 4), unit_vectors(0, 4)])
+    for bad in (np.zeros((1, 4)), np.full((1, 4), np.nan), np.full((1, 4), np.inf)):
+        with pytest.raises(FloatingPointError):
+            check_unit_vectors([unit_vectors(2, 4), bad])
+
+
+def test_pooled_dir(tmp_path):
+    assert pooled_dir(tmp_path, 1) == tmp_path / "pages"
+    assert pooled_dir(tmp_path, 2) == tmp_path / "pooled_2"
 
 
 def test_token_cosines():

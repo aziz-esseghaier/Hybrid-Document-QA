@@ -125,6 +125,14 @@ Save a collection to a private Kaggle Dataset (`<user>/qdrant-visual-<dataset>`:
 
 `--clean` then deletes the collection and the dataset's vectors (about 6 GB per 1,000 pages), so every dev dataset fits on the disk of one session. A restored collection can be searched right away; `eval_visual.py` also needs the local vectors, so it needs `embed_visual.py` again.
 
+nemotron's license forbids commercial use. `configs/visual_tomoro.yaml` runs the same scripts with tomoro-colqwen3-embed-4b (Apache 2.0). Its pages have at most about 1,300 vectors of 320 dimensions, so each fits in one Qdrant point without merging (`pool_factor: 1`). Results go to `results/visual_tomoro_check/`, `visual_tomoro_embeddings/` and `visual_tomoro_eval/`. `--local-only` ranks without Qdrant, which is enough to compare models:
+
+```python
+!python scripts/check_visual_model.py --config configs/visual_tomoro.yaml
+!python scripts/embed_visual.py --config configs/visual_tomoro.yaml --dataset v2_esg_reports
+!python scripts/eval_visual.py --config configs/visual_tomoro.yaml --dataset v2_esg_reports --local-only
+```
+
 ## Fusion and reranking
 
 Fusion works on the saved rankings, so it runs locally once the dev judgments are exported (Kaggle, after `download_data.py`):

@@ -64,7 +64,7 @@ def load_visual_model(
         str(key)
         for field in ("missing_keys", "unexpected_keys", "mismatched_keys")
         for key in info.get(field, ())
-        if not str(key).startswith("lm_head")  # tied to the input embeddings, unused here
+        if "lm_head" not in str(key).split(".")  # tied to the input embeddings, unused here
     ]
     return model.to(device).eval(), processor, sorted(problems)
 
@@ -95,6 +95,48 @@ def trim_padding(vectors: np.ndarray, mask: np.ndarray) -> list[np.ndarray]:
     return [row[keep.astype(bool)] for row, keep in zip(vectors, mask)]
 
 
+def page_inputs(processor: Any, images: list[Image.Image]) -> Any:
+    """Prepare page images for the model. Nemotron and ColQwen3 processors name this step differently.
+
+    Args:
+        processor (Any): The model's processor.
+        images (list[Image.Image]): RGB pages.
+
+    Returns:
+        Any: Model inputs.
+    """
+    if hasattr(processor, "process_documents"):  # nemotron
+        return processor.process_documents([{"image": image, "text": ""} for image in images])
+    return processor.process_images(images=images)  # ColQwen3
+
+
+def query_inputs(processor: Any, queries: list[str]) -> Any:
+    """Prepare query texts for the model.
+
+    Args:
+        processor (Any): The model's processor.
+        queries (list[str]): Queries.
+
+    Returns:
+        Any: Model inputs.
+    """
+    if hasattr(processor, "process_documents"):  # nemotron
+        return processor.process_queries(queries)
+    return processor.process_texts(texts=queries)  # ColQwen3
+
+
+def check_unit_vectors(items: Sequence[np.ndarray]) -> None:
+    """Fail if any token vector is not unit length, e.g. after an fp16 overflow.
+
+    Args:
+        items (Sequence[np.ndarray]): (tokens, dim) per item.
+    """
+    for item in items:
+        norms = np.linalg.norm(item, axis=1)
+        if not np.isfinite(norms).all() or np.abs(norms - 1).max(initial=0) > 1e-3:
+            raise FloatingPointError("Embeddings that are not unit vectors (fp16 overflow?)")
+
+
 def _encode(model: Any, inputs: Any) -> list[np.ndarray]:
     """Run one processed batch through the model.
 
@@ -108,13 +150,13 @@ def _encode(model: Any, inputs: Any) -> list[np.ndarray]:
     import torch
 
     parameter = next(model.parameters())
-    inputs = {key: value.to(parameter.device) for key, value in inputs.items()}
+    inputs = {key: value.to(parameter.device) if torch.is_tensor(value) else value for key, value in inputs.items()}
     with torch.inference_mode(), torch.autocast(device_type=parameter.device.type, dtype=parameter.dtype):
-        hidden = model(**inputs).last_hidden_state
+        output = model(**inputs)
+        hidden = output.embeddings if "embeddings" in output else output.last_hidden_state  # ColQwen3 or nemotron
         vectors = torch.nn.functional.normalize(hidden.float(), dim=-1)  # float32: an fp16 norm can overflow
     items = trim_padding(vectors.cpu().numpy(), inputs["attention_mask"].cpu().numpy())
-    if not all(np.isfinite(item).all() for item in items):
-        raise FloatingPointError("Non-finite embeddings (fp16 overflow?)")
+    check_unit_vectors(items)
     return items
 
 
@@ -132,7 +174,7 @@ def embed_images(model: Any, processor: Any, images: list[Image.Image], batch_si
     """
     vectors: list[np.ndarray] = []
     for batch in batched(images, batch_size):
-        vectors.extend(_encode(model, processor.process_documents([{"image": i, "text": ""} for i in batch])))
+        vectors.extend(_encode(model, page_inputs(processor, batch)))
     return vectors
 
 
@@ -150,7 +192,7 @@ def embed_queries(model: Any, processor: Any, queries: list[str], batch_size: in
     """
     vectors: list[np.ndarray] = []
     for batch in batched(queries, batch_size):
-        vectors.extend(_encode(model, processor.process_queries(batch)))
+        vectors.extend(_encode(model, query_inputs(processor, batch)))
     return vectors
 
 
@@ -230,6 +272,19 @@ def visual_dir(data_root: Path, dataset: str, model: str) -> Path:
         Path: Folder holding `pages`, `queries` and `pooled_<factor>`.
     """
     return data_root / "derived" / "visual" / dataset / model.split("/")[-1]
+
+
+def pooled_dir(root: Path, factor: int) -> Path:
+    """Locate a dataset's merged page vectors; with factor 1 nothing is merged.
+
+    Args:
+        root (Path): Folder from `visual_dir`.
+        factor (int): Reduction factor.
+
+    Returns:
+        Path: `pages` for factor 1, else `pooled_<factor>`.
+    """
+    return root / "pages" if factor == 1 else root / f"pooled_{factor}"
 
 
 def part_files(folder: Path) -> list[Path]:

@@ -3,9 +3,9 @@
 Usage:
     python scripts/embed_visual.py --dataset v2_esg_reports [--workers 2]
 
-Saves every token vector, then merges each page's vectors so the page fits in one Qdrant point. Writes
-<DATA_ROOT>/derived/visual/<dataset>/<model>/{pages,queries,pooled_<factor>}/*.npz and
-<RESULTS_ROOT>/visual_embeddings/<dataset>/: config.yaml, run_info.json, summary.json.
+Saves every token vector, then merges each page's vectors so the page fits in one Qdrant point (unless
+`pool_factor` is 1). Writes <DATA_ROOT>/derived/visual/<dataset>/<model>/{pages,queries,pooled_<factor>}/*.npz and
+<RESULTS_ROOT>/<name>_embeddings/<dataset>/: config.yaml, run_info.json, summary.json (`name` from the config).
 """
 
 from __future__ import annotations
@@ -35,6 +35,7 @@ from doc_qa.retrieval.visual import (
     multivector_lengths,
     part_files,
     pool_vectors,
+    pooled_dir,
     save_multivectors,
     spread,
     visual_dir,
@@ -109,16 +110,16 @@ def run_worker(args: argparse.Namespace, cfg: dict[str, Any], out_dir: Path) -> 
         print(f"{tag} {count}/{len(pages)} ({(time.perf_counter() - start) / len(batch):.2f} s/page)", flush=True)
 
 
-def pool_pages(page_dir: Path, pooled_dir: Path, factor: int) -> None:
+def pool_pages(page_dir: Path, out_dir: Path, factor: int) -> None:
     """Merge the vectors of every saved page, skipping files already merged.
 
     Args:
         page_dir (Path): Full page vectors.
-        pooled_dir (Path): Output folder.
+        out_dir (Path): Output folder; with factor 1 it is `page_dir`, and nothing is written.
         factor (int): Reduction factor.
     """
     for path in part_files(page_dir):
-        target = pooled_dir / path.name
+        target = out_dir / path.name
         if not target.exists():
             for ids, vectors in iter_multivectors([path]):
                 save_multivectors(target, ids, [pool_vectors(page, factor) for page in vectors])
@@ -145,7 +146,7 @@ def main() -> None:
     if not workers:
         raise SystemExit("Embedding pages needs a GPU.")
     fetch_visual_model(cfg["model"], cfg["revision"])
-    results_dir = settings.results_root / "visual_embeddings" / args.dataset
+    results_dir = settings.results_root / f"{cfg['name']}_embeddings" / args.dataset
     write_run_info(results_dir, extra={
         "dataset": args.dataset, "model": {"repo": cfg["model"], "revision": cfg["revision"]},
     })
@@ -164,9 +165,9 @@ def main() -> None:
         raise SystemExit(f"{missing} pages or queries have no embedding; rerun to finish.")
 
     start = time.perf_counter()
-    pooled_dir = out_dir / f"pooled_{cfg['pool_factor']}"
-    pool_pages(page_dir, pooled_dir, cfg["pool_factor"])
-    pooled = multivector_lengths(part_files(pooled_dir))
+    merged_dir = pooled_dir(out_dir, cfg["pool_factor"])
+    pool_pages(page_dir, merged_dir, cfg["pool_factor"])
+    pooled = multivector_lengths(part_files(merged_dir))
     with np.load(part_files(page_dir)[0], allow_pickle=False) as data:
         dim = int(data["vectors"].shape[1])
 

@@ -1,12 +1,13 @@
 """Evaluate visual retrieval on a dataset, and what merging page vectors costs.
 
 Usage:
-    python scripts/eval_visual.py --dataset v2_esg_reports
+    python scripts/eval_visual.py --dataset v2_esg_reports [--config configs/visual.yaml] [--local-only]
 
 Ranks pages three ways, all exact MaxSim: `full` (every vector, computed here), `pooled` (merged vectors, computed
-here) and `qdrant` (merged vectors, searched in collection visual_<dataset>). Reports NDCG@10 and Recall@100 per query
-language. Writes <RESULTS_ROOT>/visual_eval/<dataset>/: metrics.json, summary.json (search time, agreement between
-rankings; updated during the search), rankings_<method>.jsonl ({query_id, pages: [[page_id, score], ...]}),
+here; skipped when `pool_factor` is 1) and `qdrant` (the vectors Qdrant holds, searched in collection
+visual_<dataset>; skipped with --local-only). Reports NDCG@10 and Recall@100 per query language. Writes
+<RESULTS_ROOT>/<name>_eval/<dataset>/ (`name` from the config): metrics.json, summary.json (search time, agreement
+between rankings; updated during the search), rankings_<method>.jsonl ({query_id, pages: [[page_id, score], ...]}),
 config.yaml, run_info.json.
 """
 
@@ -29,7 +30,7 @@ from doc_qa.core.run_info import write_run_info
 from doc_qa.evaluation.metrics import evaluate
 from doc_qa.evaluation.vidore import load_benchmark
 from doc_qa.retrieval.qdrant import VISUAL, search, visual_collection
-from doc_qa.retrieval.visual import iter_multivectors, maxsim_matrix, part_files, visual_dir
+from doc_qa.retrieval.visual import iter_multivectors, maxsim_matrix, part_files, pooled_dir, visual_dir
 
 Ranking = list[tuple[str, float]]
 
@@ -96,9 +97,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--config", type=Path, default=Path("configs/visual.yaml"))
     parser.add_argument("--dataset", required=True)
+    parser.add_argument("--local-only", action="store_true", help="Skip the Qdrant search.")
     args = parser.parse_args()
-
-    from qdrant_client import QdrantClient
 
     settings = get_settings()
     cfg = load_yaml(args.config)
@@ -121,16 +121,23 @@ def main() -> None:
     }
     if any(query_id not in queries for query_id in query_ids):
         raise SystemExit("Some queries have no embedding (run embed_visual.py).")
-    sources = {"full": root / "pages", "pooled": root / f"pooled_{cfg['pool_factor']}"}
+    sources = {"full": root / "pages"}
+    if cfg["pool_factor"] > 1:
+        sources["pooled"] = pooled_dir(root, cfg["pool_factor"])
+    stored = "pooled" if "pooled" in sources else "full"  # the vectors Qdrant holds
 
-    client = QdrantClient(url=settings.qdrant_url, timeout=cfg["qdrant_timeout"])
-    results_dir = settings.results_root / "visual_eval" / args.dataset
-    write_run_info(results_dir, extra={
+    extra: dict[str, Any] = {
         "dataset": {"key": args.dataset, "repo": spec["repo"], "revision": spec["revision"]},
-        "collection": name,
-        "qdrant_version": client.info().version,
         "model": {"repo": cfg["model"], "revision": cfg["revision"]},
-    })
+    }
+    client = None
+    if not args.local_only:
+        from qdrant_client import QdrantClient
+
+        client = QdrantClient(url=settings.qdrant_url, timeout=cfg["qdrant_timeout"])
+        extra.update(collection=name, qdrant_version=client.info().version)
+    results_dir = settings.results_root / f"{cfg['name']}_eval" / args.dataset
+    write_run_info(results_dir, extra=extra)
     (results_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
     rankings: dict[str, dict[str, Ranking]] = {}
@@ -152,29 +159,31 @@ def main() -> None:
         start = time.perf_counter()
         rankings[method] = exact_rankings(query_ids, queries, part_files(folder), limit)
         summary["local_seconds"][method] = round(time.perf_counter() - start, 1)
-    summary["top10_overlap_full_vs_pooled"] = mean_overlap(rankings["full"], rankings["pooled"])
+    if "pooled" in rankings:
+        summary["top10_overlap_full_vs_pooled"] = mean_overlap(rankings["full"], rankings["pooled"])
     save()
     print(f"Local search done: {summary['local_seconds']}", flush=True)
 
-    found: dict[str, Ranking] = {}
-    seconds: list[float] = []
-    for count, query_id in enumerate(query_ids, 1):
-        start = time.perf_counter()
-        hits = search(client, name, VISUAL, queries[query_id].tolist(), limit)
-        seconds.append(time.perf_counter() - start)
-        found[query_id] = [(payload["page_id"], score) for payload, score in hits]
-        if count % 10 == 0 or count == len(query_ids):
-            summary["qdrant_search"] = {
-                "queries_done": count,
-                "median_seconds": round(statistics.median(seconds), 2),
-                "mean_seconds": round(statistics.fmean(seconds), 2),
-                "max_seconds": round(max(seconds), 2),
-            }
-            (results_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-            print(f"{count}/{len(query_ids)} queries, {statistics.fmean(seconds):.1f} s each", flush=True)
-    rankings["qdrant"] = found
-    summary["top10_overlap_qdrant_vs_pooled"] = mean_overlap(found, rankings["pooled"])
-    save()
+    if client is not None:
+        found: dict[str, Ranking] = {}
+        seconds: list[float] = []
+        for count, query_id in enumerate(query_ids, 1):
+            start = time.perf_counter()
+            hits = search(client, name, VISUAL, queries[query_id].tolist(), limit)
+            seconds.append(time.perf_counter() - start)
+            found[query_id] = [(payload["page_id"], score) for payload, score in hits]
+            if count % 10 == 0 or count == len(query_ids):
+                summary["qdrant_search"] = {
+                    "queries_done": count,
+                    "median_seconds": round(statistics.median(seconds), 2),
+                    "mean_seconds": round(statistics.fmean(seconds), 2),
+                    "max_seconds": round(max(seconds), 2),
+                }
+                (results_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+                print(f"{count}/{len(query_ids)} queries, {statistics.fmean(seconds):.1f} s each", flush=True)
+        rankings["qdrant"] = found
+        summary[f"top10_overlap_qdrant_vs_{stored}"] = mean_overlap(found, rankings[stored])
+        save()
 
     metrics = json.loads((results_dir / "metrics.json").read_text(encoding="utf-8"))
     print(json.dumps(summary, indent=2))

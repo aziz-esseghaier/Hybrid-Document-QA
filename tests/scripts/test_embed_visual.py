@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from doc_qa.retrieval.visual import iter_multivectors, part_files, save_multivectors
+from doc_qa.retrieval.visual import iter_multivectors, part_files, pooled_dir, save_multivectors
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("embed_visual", ROOT / "scripts" / "embed_visual.py")
@@ -33,3 +33,12 @@ def test_pool_pages_merges_each_file_once(tmp_path):
     before = target.stat().st_mtime_ns
     embed_visual.pool_pages(pages, pooled, 2)
     assert target.stat().st_mtime_ns == before
+
+
+def test_pool_pages_with_factor_one_keeps_the_pages(tmp_path):
+    pages = tmp_path / "pages"
+    rows = np.random.default_rng(0).normal(size=(4, 8)).astype(np.float32)
+    save_multivectors(pages / "w0_00000.npz", ["a"], [rows / np.linalg.norm(rows, axis=1, keepdims=True)])
+    before = {path: path.stat().st_mtime_ns for path in tmp_path.rglob("*")}
+    embed_visual.pool_pages(pages, pooled_dir(tmp_path, 1), 1)
+    assert {path: path.stat().st_mtime_ns for path in tmp_path.rglob("*")} == before

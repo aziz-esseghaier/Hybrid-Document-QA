@@ -5,8 +5,8 @@ Usage:
 
 On a small sample of pages and questions, measures memory, speed per batch size and vectors per page. Checks that
 batching does not change the embeddings, that relevant pages rank well, and that the results match the model's own
-precision (run on CPU). Writes <RESULTS_ROOT>/visual_check/<dataset>/: summary.json (updated after each step),
-config.yaml, run_info.json. No document text.
+precision (run on CPU). Writes <RESULTS_ROOT>/<name>_check/<dataset>/ (`name` from the config): summary.json
+(updated after each step), config.yaml, run_info.json. No document text.
 """
 
 from __future__ import annotations
@@ -182,7 +182,7 @@ def main() -> None:
     bench = load_benchmark(dataset, spec, settings.data_root / "raw")
 
     model_info = {"repo": cfg["model"], "revision": cfg["revision"]}
-    results_dir = settings.results_root / "visual_check" / dataset
+    results_dir = settings.results_root / f"{cfg['name']}_check" / dataset
     write_run_info(results_dir, seed=check["seed"], extra={"dataset": dataset, "model": model_info})
     (results_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
@@ -226,7 +226,6 @@ def main() -> None:
     dim = int(single[0].shape[1])
     summary["dim"] = dim
     summary["vectors_per_page"] = spread(vectors)
-    summary["image_tokens_per_page"] = spread([processor.calculate_image_tokens(image) for image in images])
     summary["fp16_gb_per_1000_pages"] = round(float(np.mean(vectors)) * dim * 2 * 1000 / 1e9, 2)
 
     queries_single = embed_queries(model, processor, texts, 1)
