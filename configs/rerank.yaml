@@ -1,4 +1,5 @@
 # Text reranker: reads a question and a page's text, and scores how well they match.
+name: rerank                  # results go to results/<name>/<dataset>
 datasets_config: configs/datasets.yaml
 model: Qwen/Qwen3-Reranker-4B
 revision: 22e683669bc0f0bd69640a1354a6d0aebcfeede5

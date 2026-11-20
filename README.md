@@ -165,6 +165,8 @@ Rerank the top 30 pages of the saved visual ranking for every query of a dataset
 
 Output in `results/rerank/<dataset>/`: the candidates in reranker order, with scores. Then, locally, `python scripts/eval_fusion.py --config configs/fusion_rerank.yaml` scores the reranker's order alone and blended with the visual ranking (output in `results/fusion_rerank/`).
 
+The same steps with the Tomoro visual ranking use `configs/fusion_tomoro.yaml`, `configs/rerank_tomoro.yaml` (`rerank_pages.py --config configs/rerank_tomoro.yaml`) and `configs/fusion_rerank_tomoro.yaml`. Each config's name sets its results folder.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

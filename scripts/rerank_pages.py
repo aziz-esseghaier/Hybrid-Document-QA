@@ -1,11 +1,11 @@
 """Rerank the top pages of a dataset's saved visual ranking with the text reranker, one worker per GPU. Resumable.
 
 Usage:
-    python scripts/rerank_pages.py --dataset v2_esg_reports [--workers 2]
+    python scripts/rerank_pages.py --dataset v2_esg_reports [--config configs/rerank.yaml] [--workers 2]
 
 Scores (question, page OCR text) pairs for the top `candidates` pages of every judged query, reading
 <DATA_ROOT>/derived/chunks/<dataset>/pages.jsonl (build_chunks.py). Workers append to
-<DATA_ROOT>/derived/rerank/<dataset>/<model>/w<worker>.jsonl. Writes <RESULTS_ROOT>/rerank/<dataset>/:
+<DATA_ROOT>/derived/<name>/<dataset>/<model>/w<worker>.jsonl. Writes <RESULTS_ROOT>/<name>/<dataset>/:
 rankings_rerank.jsonl ({query_id, pages: [[page_id, score], ...]}, the candidates in reranker order; ties keep the
 visual order), summary.json, config.yaml, run_info.json. No document text.
 """
@@ -114,7 +114,7 @@ def main() -> None:
 
     settings = get_settings()
     cfg = load_yaml(args.config)
-    out_dir = settings.data_root / "derived" / "rerank" / args.dataset / cfg["model"].split("/")[-1]
+    out_dir = settings.data_root / "derived" / cfg["name"] / args.dataset / cfg["model"].split("/")[-1]
     if args.worker_index is not None:
         run_worker(args, cfg, out_dir)
         return
@@ -125,7 +125,7 @@ def main() -> None:
     from huggingface_hub import snapshot_download
 
     snapshot_download(cfg["model"], revision=cfg["revision"])  # once, before the workers start
-    results_dir = settings.results_root / "rerank" / args.dataset
+    results_dir = settings.results_root / cfg["name"] / args.dataset
     write_run_info(results_dir, extra={
         "dataset": args.dataset, "model": {"repo": cfg["model"], "revision": cfg["revision"]},
     })
