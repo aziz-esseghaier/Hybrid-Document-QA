@@ -1,11 +1,11 @@
-"""Load a dataset's merged page vectors into a Qdrant multi-vector collection.
+"""Load a dataset's page vectors (merged if `pool_factor` > 1) into a Qdrant multi-vector collection.
 
 Usage:
-    python scripts/index_visual.py --dataset v2_esg_reports
+    python scripts/index_visual.py --dataset v2_esg_reports [--config configs/visual.yaml]
 
-Creates (or replaces) collection visual_<dataset>: one point per page, payload {page_id}. Needs embed_visual.py's
-output and a running Qdrant (QDRANT_URL). Writes <RESULTS_ROOT>/visual_index/<dataset>/: config.yaml, run_info.json,
-summary.json.
+Creates (or replaces) collection <name>_<dataset> (`name` from the config): one point per page, payload {page_id}.
+Needs embed_visual.py's output and a running Qdrant (QDRANT_URL). Writes <RESULTS_ROOT>/<name>_index/<dataset>/:
+config.yaml, run_info.json, summary.json.
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ from doc_qa.retrieval.qdrant import (
     visual_collection,
     wait_until_ready,
 )
-from doc_qa.retrieval.visual import iter_multivectors, multivector_lengths, part_files, visual_dir
+from doc_qa.retrieval.visual import iter_multivectors, multivector_lengths, part_files, pooled_dir, visual_dir
 
 
 def main() -> None:
@@ -44,19 +44,19 @@ def main() -> None:
     cfg = load_yaml(args.config)
     spec = load_yaml(Path(cfg["datasets_config"]))["datasets"][args.dataset]
     bench = load_benchmark(args.dataset, spec, settings.data_root / "raw")
-    paths = part_files(visual_dir(settings.data_root, args.dataset, cfg["model"]) / f"pooled_{cfg['pool_factor']}")
+    paths = part_files(pooled_dir(visual_dir(settings.data_root, args.dataset, cfg["model"]), cfg["pool_factor"]))
     lengths = multivector_lengths(paths)
     if set(lengths) != set(bench.pages):
-        raise SystemExit(f"{len(lengths)} merged pages for {len(bench.pages)} pages (run embed_visual.py).")
+        raise SystemExit(f"{len(lengths)} embedded pages for {len(bench.pages)} pages (run embed_visual.py).")
 
     _, first = next(iter_multivectors(paths[:1]))
     dim = int(first[0].shape[1])
     if not fits_in_point(max(lengths.values()), dim):
         raise SystemExit(f"A page has {max(lengths.values())} vectors of {dim} dimensions: too large for Qdrant.")
 
-    name = visual_collection(args.dataset)
+    name = visual_collection(cfg["name"], args.dataset)
     client = QdrantClient(url=settings.qdrant_url, timeout=cfg["qdrant_timeout"])
-    results_dir = settings.results_root / "visual_index" / args.dataset
+    results_dir = settings.results_root / f"{cfg['name']}_index" / args.dataset
     write_run_info(results_dir, extra={
         "dataset": args.dataset,
         "collection": name,

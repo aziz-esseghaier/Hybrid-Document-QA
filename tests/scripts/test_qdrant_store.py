@@ -115,8 +115,18 @@ def test_handle(monkeypatch):
     monkeypatch.setenv("KAGGLE_USERNAME", "me")
     assert qdrant_store.dataset_handle("text", "v2_esg_reports-bridge-ocr") == "me/qdrant-text-v2-esg-reports-bridge-ocr"
     assert qdrant_store.dataset_handle("visual", "v2_esg_reports") == "me/qdrant-visual-v2-esg-reports"
+    assert qdrant_store.dataset_handle("visual_tomoro", "v2_esg_reports_human") == (
+        "me/qdrant-visual-tomoro-v2-esg-reports-human"
+    )
     with pytest.raises(SystemExit, match="too long"):
         qdrant_store.dataset_handle("text", "x" * 40)
+
+
+def test_locate_keeps_each_visual_retriever_apart():
+    assert qdrant_store.locate("text", CORPUS) == (COLLECTION, "index", "text")
+    assert qdrant_store.locate("visual", CORPUS) == (VISUAL_COLLECTION, "visual_index", "visual")
+    assert qdrant_store.locate("visual", CORPUS, "visual_tomoro") == ("visual_tomoro_v2_x", "visual_tomoro_index",
+                                                                       "visual_tomoro")
 
 
 def test_push_then_pull_in_a_new_session(env):
@@ -172,6 +182,21 @@ def test_visual_push_with_clean_then_pull(visual_env):
     qdrant_store.pull("visual", CORPUS, visual_env.settings, force=False)
     assert visual_env.restored == [VISUAL_COLLECTION]
     assert (visual_env.queries / "w0_00000.npz").read_bytes() == b"queries"
+
+
+def test_visual_push_under_another_config_name(fakes):
+    collection = "visual_tomoro_v2_x"
+    FakeClient.collections[collection] = 3
+    config = {"model": "org/other", "pool_factor": 1}
+    write_run(fakes.settings.results_root / "visual_tomoro_index" / CORPUS, config, {"pool_factor": 1, "vectors": 9},
+              collection)
+    [(queries, _)] = qdrant_store.stored_inputs(fakes.settings, "visual", CORPUS, config)
+    queries.mkdir(parents=True)
+    (queries / "w0_00000.npz").write_bytes(b"queries")
+    qdrant_store.push("visual", CORPUS, fakes.settings, visual_name="visual_tomoro")
+    manifest = json.loads((fakes.store / "manifest.json").read_text())
+    assert (manifest["collection"], manifest["pool_factor"]) == (collection, 1)
+    assert FakeClient.collections[VISUAL_COLLECTION] == 3  # the other retriever's collection is untouched
 
 
 def test_push_keeps_vectors_without_clean(visual_env):

@@ -2,11 +2,12 @@
 
 Usage:
     python scripts/qdrant_store.py push --dataset v2_esg_reports [--corpus NAME]
-    python scripts/qdrant_store.py push --branch visual --dataset v2_esg_reports [--clean]
-    python scripts/qdrant_store.py pull [--branch visual] --dataset v2_esg_reports [--corpus NAME] [--force]
+    python scripts/qdrant_store.py push --branch visual [--config configs/visual.yaml] --dataset v2_esg_reports [--clean]
+    python scripts/qdrant_store.py pull [--branch visual] [--config ...] --dataset v2_esg_reports [--corpus NAME] [--force]
 
 push uploads the collection snapshot, manifest.json, the index run files and the query embeddings (plus pages.jsonl
-for text) to <KAGGLE_USERNAME>/qdrant-<branch>-<corpus> (created private; a new version if it exists). pull restores
+for text) to <KAGGLE_USERNAME>/qdrant-<prefix>-<corpus> (created private; a new version if it exists). The prefix is
+"text", or the visual config's `name`, so each visual retriever has its own collections and Datasets. pull restores
 the collection into the running Qdrant and copies the other files back under <DATA_ROOT>/derived/, so search needs no
 embedding. Qdrant must be the version that made the snapshot. Visual --clean deletes the collection and the dataset's
 page and query vectors after the upload, to free disk.
@@ -22,52 +23,49 @@ import shutil
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, NamedTuple
+from typing import Any
 
 import yaml
 
-from doc_qa.core.config import Settings, get_settings
+from doc_qa.core.config import Settings, get_settings, load_yaml
 from doc_qa.retrieval.qdrant import restore_snapshot, save_snapshot, text_collection, visual_collection
 from doc_qa.retrieval.visual import visual_dir
 
 RUN_FILES = ("run_info.json", "config.yaml", "summary.json")
 MAX_SLUG_LENGTH = 50  # Kaggle's limit
+SUMMARY_KEYS = {"text": ("dim", "bm25_language"), "visual": ("dim", "pool_factor", "vectors")}  # copied to manifest
 
 
-class Branch(NamedTuple):
-    """Where a retrieval branch keeps its collection and index run.
-
-    Args:
-        collection (Callable[[str], str]): Collection name from the corpus name.
-        run_folder (str): Folder of the index run under the results root.
-        summary_keys (tuple[str, ...]): Index summary fields copied into the manifest.
-    """
-
-    collection: Callable[[str], str]
-    run_folder: str
-    summary_keys: tuple[str, ...]
-
-
-BRANCHES = {
-    "text": Branch(text_collection, "index", ("dim", "bm25_language")),
-    "visual": Branch(visual_collection, "visual_index", ("dim", "pool_factor", "vectors")),
-}
-
-
-def dataset_handle(branch: str, corpus: str) -> str:
-    """Return the Kaggle Dataset handle for a corpus's collection.
+def locate(branch: str, corpus: str, name: str = "visual") -> tuple[str, str, str]:
+    """Name a corpus's collection, its index run folder and its Kaggle Dataset prefix.
 
     Args:
         branch (str): "text" or "visual".
         corpus (str): Corpus name.
+        name (str): Visual only: config name, one per visual retriever.
 
     Returns:
-        str: `<username>/qdrant-<branch>-<corpus>`.
+        tuple[str, str, str]: (collection, run folder under the results root, Dataset prefix).
+    """
+    if branch == "text":
+        return text_collection(corpus), "index", "text"
+    return visual_collection(name, corpus), f"{name}_index", name
+
+
+def dataset_handle(prefix: str, corpus: str) -> str:
+    """Return the Kaggle Dataset handle for a corpus's collection.
+
+    Args:
+        prefix (str): "text", or the visual config name.
+        corpus (str): Corpus name.
+
+    Returns:
+        str: `<username>/qdrant-<prefix>-<corpus>`, with dashes for underscores.
     """
     username = os.environ.get("KAGGLE_USERNAME")
     if not username:
         raise SystemExit("KAGGLE_USERNAME is not set (attach the Kaggle secrets and run kaggle_setup.py).")
-    slug = f"qdrant-{branch}-{corpus.replace('_', '-')}"
+    slug = f"qdrant-{prefix}-{corpus}".replace("_", "-")
     if len(slug) > MAX_SLUG_LENGTH:
         raise SystemExit(f"Kaggle Dataset name too long: {slug}")
     return f"{username}/{slug}"
@@ -124,7 +122,7 @@ def build_manifest(
         "corpus": corpus,
         "dataset": run_info["dataset"],
         "points": points,
-        **{key: summary[key] for key in BRANCHES[branch].summary_keys},
+        **{key: summary[key] for key in SUMMARY_KEYS[branch]},
         "qdrant_version": qdrant_version,
         "model": run_info["model"],
         "config": yaml.safe_load((run_dir / "config.yaml").read_text(encoding="utf-8")),
@@ -137,7 +135,7 @@ def build_manifest(
     }
 
 
-def push(branch: str, corpus: str, settings: Settings, clean: bool = False) -> None:
+def push(branch: str, corpus: str, settings: Settings, clean: bool = False, visual_name: str = "visual") -> None:
     """Upload a collection and its stored inputs as a new Kaggle Dataset version.
 
     Args:
@@ -145,16 +143,17 @@ def push(branch: str, corpus: str, settings: Settings, clean: bool = False) -> N
         corpus (str): Corpus name.
         settings (Settings): Paths and Qdrant URL.
         clean (bool): Visual only: then delete the collection and the dataset's vectors.
+        visual_name (str): Visual only: config name.
     """
     import kagglehub
     from qdrant_client import QdrantClient
 
-    handle = dataset_handle(branch, corpus)
-    name = BRANCHES[branch].collection(corpus)
+    name, run_folder, prefix = locate(branch, corpus, visual_name)
+    handle = dataset_handle(prefix, corpus)
     client = QdrantClient(url=settings.qdrant_url, timeout=600)
     if not client.collection_exists(name):
         raise SystemExit(f"No collection {name} (run the index script first).")
-    run_dir = settings.results_root / BRANCHES[branch].run_folder / corpus
+    run_dir = settings.results_root / run_folder / corpus
     config = yaml.safe_load((run_dir / "config.yaml").read_text(encoding="utf-8"))
     inputs = stored_inputs(settings, branch, corpus, config)
     missing = [str(folder / pattern) for folder, pattern in inputs if not any(folder.glob(pattern))]
@@ -181,7 +180,7 @@ def push(branch: str, corpus: str, settings: Settings, clean: bool = False) -> N
         print(f"Deleted {name} and the local vectors of {corpus}")
 
 
-def pull(branch: str, corpus: str, settings: Settings, force: bool) -> None:
+def pull(branch: str, corpus: str, settings: Settings, force: bool, visual_name: str = "visual") -> None:
     """Restore a collection and its stored inputs from the latest Kaggle Dataset version.
 
     Args:
@@ -189,11 +188,13 @@ def pull(branch: str, corpus: str, settings: Settings, force: bool) -> None:
         corpus (str): Corpus name.
         settings (Settings): Paths and Qdrant URL.
         force (bool): Replace an existing collection and existing files.
+        visual_name (str): Visual only: config name.
     """
     import kagglehub
     from qdrant_client import QdrantClient
 
-    src = Path(kagglehub.dataset_download(dataset_handle(branch, corpus)))
+    _, _, prefix = locate(branch, corpus, visual_name)
+    src = Path(kagglehub.dataset_download(dataset_handle(prefix, corpus)))
     manifest = json.loads((src / "manifest.json").read_text(encoding="utf-8"))
     name = manifest["collection"]
     client = QdrantClient(url=settings.qdrant_url, timeout=600)
@@ -226,7 +227,8 @@ def main() -> None:
     """Parse arguments and push or pull."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("action", choices=["push", "pull"])
-    parser.add_argument("--branch", choices=list(BRANCHES), default="text")
+    parser.add_argument("--branch", choices=list(SUMMARY_KEYS), default="text")
+    parser.add_argument("--config", type=Path, help="Visual only: config whose name is used (configs/visual.yaml).")
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--corpus", help="Text only: chunk folder name (default: the dataset key).")
     parser.add_argument("--force", action="store_true", help="pull: replace an existing collection and files.")
@@ -234,14 +236,17 @@ def main() -> None:
     args = parser.parse_args()
     if args.branch == "visual" and args.corpus:
         parser.error("--corpus is for the text branch.")
+    if args.branch == "text" and args.config:
+        parser.error("--config is for the visual branch.")
     if args.clean and (args.branch != "visual" or args.action != "push"):
         parser.error("--clean is for pushing the visual branch.")
 
     corpus = args.corpus or args.dataset
+    visual_name = load_yaml(args.config or Path("configs/visual.yaml"))["name"] if args.branch == "visual" else ""
     if args.action == "push":
-        push(args.branch, corpus, get_settings(), args.clean)
+        push(args.branch, corpus, get_settings(), args.clean, visual_name)
     else:
-        pull(args.branch, corpus, get_settings(), args.force)
+        pull(args.branch, corpus, get_settings(), args.force, visual_name)
 
 
 if __name__ == "__main__":

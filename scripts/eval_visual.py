@@ -2,13 +2,14 @@
 
 Usage:
     python scripts/eval_visual.py --dataset v2_esg_reports [--config configs/visual.yaml] [--local-only]
+        [--results-name NAME]
 
 Ranks pages three ways, all exact MaxSim: `full` (every vector, computed here), `pooled` (merged vectors, computed
 here; skipped when `pool_factor` is 1) and `qdrant` (the vectors Qdrant holds, searched in collection
-visual_<dataset>; skipped with --local-only). Reports NDCG@10 and Recall@100 per query language. Writes
-<RESULTS_ROOT>/<name>_eval/<dataset>/ (`name` from the config): metrics.json, summary.json (search time, agreement
-between rankings; updated during the search), rankings_<method>.jsonl ({query_id, pages: [[page_id, score], ...]}),
-config.yaml, run_info.json.
+<name>_<dataset>, `name` from the config; skipped with --local-only). Reports NDCG@10 and Recall@100 per query
+language. Writes <RESULTS_ROOT>/<results name, default <name>_eval>/<dataset>/: metrics.json, summary.json (search
+time, agreement between rankings; updated during the search), rankings_<method>.jsonl ({query_id, pages: [[page_id,
+score], ...]}), config.yaml, run_info.json.
 """
 
 from __future__ import annotations
@@ -98,13 +99,14 @@ def main() -> None:
     parser.add_argument("--config", type=Path, default=Path("configs/visual.yaml"))
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--local-only", action="store_true", help="Skip the Qdrant search.")
+    parser.add_argument("--results-name", help="Results folder (default: <name>_eval), to keep earlier runs.")
     args = parser.parse_args()
 
     settings = get_settings()
     cfg = load_yaml(args.config)
     spec = load_yaml(Path(cfg["datasets_config"]))["datasets"][args.dataset]
     bench = load_benchmark(args.dataset, spec, settings.data_root / "raw")
-    name = visual_collection(args.dataset)
+    name = visual_collection(cfg["name"], args.dataset)
     limit = cfg["page_limit"]
 
     qrels: dict[str, dict[str, int]] = defaultdict(dict)
@@ -136,7 +138,7 @@ def main() -> None:
 
         client = QdrantClient(url=settings.qdrant_url, timeout=cfg["qdrant_timeout"])
         extra.update(collection=name, qdrant_version=client.info().version)
-    results_dir = settings.results_root / f"{cfg['name']}_eval" / args.dataset
+    results_dir = settings.results_root / (args.results_name or f"{cfg['name']}_eval") / args.dataset
     write_run_info(results_dir, extra=extra)
     (results_dir / "config.yaml").write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 

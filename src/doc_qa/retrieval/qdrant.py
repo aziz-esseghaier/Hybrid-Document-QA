@@ -16,16 +16,17 @@ VISUAL = "page"
 MAX_MULTIVECTOR_VALUES = 1_048_576  # Qdrant's limit on vectors x dimensions in one point; not configurable
 
 
-def visual_collection(dataset: str) -> str:
+def visual_collection(name: str, dataset: str) -> str:
     """Return the name of a dataset's page collection.
 
     Args:
+        name (str): Visual config name, one per retriever (e.g. "visual", "visual_tomoro").
         dataset (str): Dataset key.
 
     Returns:
-        str: Collection name.
+        str: Collection name, `<name>_<dataset>`.
     """
-    return f"visual_{dataset}"
+    return f"{name}_{dataset}"
 
 
 def fits_in_point(tokens: int, dim: int) -> bool:

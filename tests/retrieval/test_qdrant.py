@@ -59,7 +59,8 @@ class Client:
 
 
 def test_visual_collection_name():
-    assert visual_collection("v2_esg_reports") == "visual_v2_esg_reports"
+    assert visual_collection("visual", "v2_esg_reports") == "visual_v2_esg_reports"
+    assert visual_collection("visual_tomoro", "v2_esg_reports") == "visual_tomoro_v2_esg_reports"
 
 
 def test_fits_in_point_matches_the_server_limit():

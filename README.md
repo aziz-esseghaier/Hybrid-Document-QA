@@ -133,6 +133,14 @@ nemotron's license forbids commercial use. `configs/visual_tomoro.yaml` runs the
 !python scripts/eval_visual.py --config configs/visual_tomoro.yaml --dataset v2_esg_reports --local-only
 ```
 
+The config's `name` also names the Qdrant collection (`visual_tomoro_<dataset>`), the index results (`results/visual_tomoro_index/`) and the Kaggle Dataset (`<user>/qdrant-visual-tomoro-<dataset>`), so the two retrievers never overwrite each other. `--results-name` keeps an earlier evaluation in place:
+
+```python
+!python scripts/index_visual.py --config configs/visual_tomoro.yaml --dataset v2_esg_reports
+!python scripts/eval_visual.py --config configs/visual_tomoro.yaml --dataset v2_esg_reports --results-name visual_tomoro_eval_qdrant
+!python scripts/qdrant_store.py push --branch visual --config configs/visual_tomoro.yaml --dataset v2_esg_reports --clean
+```
+
 ## Fusion and reranking
 
 Fusion works on the saved rankings, so it runs locally once the dev judgments are exported (Kaggle, after `download_data.py`):
