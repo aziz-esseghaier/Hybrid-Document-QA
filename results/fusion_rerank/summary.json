@@ -1,0 +1,705 @@
+{
+  "selection": "mean NDCG@10 over dataset-language groups",
+  "best": {
+    "setting": {
+      "visual": 1,
+      "rerank": 0.25,
+      "bm25_same_language_only": false
+    },
+    "label": "visual 1 + rerank 0.25"
+  },
+  "settings_scored": 5,
+  "macro_ndcg@10": {
+    "visual": 0.7271,
+    "rerank": 0.696,
+    "best": 0.7313
+  },
+  "ndcg@10": {
+    "visual": {
+      "v1_shiftproject/fr": 0.9214,
+      "v1_tabfquad/fr": 0.9802,
+      "v2_biomedical_lectures/en": 0.6904,
+      "v2_biomedical_lectures/fr": 0.6797,
+      "v2_economics_reports/en": 0.6139,
+      "v2_economics_reports/fr": 0.5643,
+      "v2_esg_reports/en": 0.681,
+      "v2_esg_reports/fr": 0.6826,
+      "v2_esg_reports_human/en": 0.7298
+    },
+    "rerank": {
+      "v1_shiftproject/fr": 0.845,
+      "v1_tabfquad/fr": 0.9772,
+      "v2_biomedical_lectures/en": 0.6914,
+      "v2_biomedical_lectures/fr": 0.6722,
+      "v2_economics_reports/en": 0.6399,
+      "v2_economics_reports/fr": 0.5865,
+      "v2_esg_reports/en": 0.5842,
+      "v2_esg_reports/fr": 0.6103,
+      "v2_esg_reports_human/en": 0.657
+    },
+    "best": {
+      "v1_shiftproject/fr": 0.9045,
+      "v1_tabfquad/fr": 0.9811,
+      "v2_biomedical_lectures/en": 0.6915,
+      "v2_biomedical_lectures/fr": 0.6878,
+      "v2_economics_reports/en": 0.6183,
+      "v2_economics_reports/fr": 0.5712,
+      "v2_esg_reports/en": 0.683,
+      "v2_esg_reports/fr": 0.689,
+      "v2_esg_reports_human/en": 0.7548
+    }
+  },
+  "leave_one_dataset_out": {
+    "v2_esg_reports": {
+      "setting": "visual 1 + rerank 0.5",
+      "ndcg@10": 0.6803,
+      "reference": 0.6818
+    },
+    "v2_esg_reports_human": {
+      "setting": "visual 1 + rerank 0.5",
+      "ndcg@10": 0.7413,
+      "reference": 0.7298
+    },
+    "v2_economics_reports": {
+      "setting": "visual 1 + rerank 0.25",
+      "ndcg@10": 0.5948,
+      "reference": 0.5891
+    },
+    "v2_biomedical_lectures": {
+      "setting": "visual 1 + rerank 0.25",
+      "ndcg@10": 0.6897,
+      "reference": 0.6851
+    },
+    "v1_shiftproject": {
+      "setting": "visual 1 + rerank 0.5",
+      "ndcg@10": 0.899,
+      "reference": 0.9214
+    },
+    "v1_tabfquad": {
+      "setting": "visual 1 + rerank 0.25",
+      "ndcg@10": 0.9811,
+      "reference": 0.9802
+    }
+  },
+  "best_minus": {
+    "visual": {
+      "all": {
+        "queries": 982,
+        "delta": 0.0025,
+        "low": -0.0025,
+        "high": 0.0074
+      },
+      "v2_esg_reports/fr": {
+        "queries": 57,
+        "delta": 0.0064,
+        "low": -0.0196,
+        "high": 0.027
+      },
+      "v2_esg_reports/en": {
+        "queries": 57,
+        "delta": 0.002,
+        "low": -0.0268,
+        "high": 0.0236
+      },
+      "v2_esg_reports_human/en": {
+        "queries": 52,
+        "delta": 0.025,
+        "low": -0.0006,
+        "high": 0.0537
+      },
+      "v2_economics_reports/en": {
+        "queries": 58,
+        "delta": 0.0044,
+        "low": -0.0132,
+        "high": 0.0201
+      },
+      "v2_economics_reports/fr": {
+        "queries": 58,
+        "delta": 0.0068,
+        "low": -0.0061,
+        "high": 0.0211
+      },
+      "v2_biomedical_lectures/en": {
+        "queries": 160,
+        "delta": 0.0011,
+        "low": -0.007,
+        "high": 0.0096
+      },
+      "v2_biomedical_lectures/fr": {
+        "queries": 160,
+        "delta": 0.0081,
+        "low": -0.0018,
+        "high": 0.0183
+      },
+      "v1_shiftproject/fr": {
+        "queries": 100,
+        "delta": -0.0169,
+        "low": -0.039,
+        "high": 0.0017
+      },
+      "v1_tabfquad/fr": {
+        "queries": 280,
+        "delta": 0.0009,
+        "low": -0.004,
+        "high": 0.0061
+      }
+    },
+    "rerank": {
+      "all": {
+        "queries": 982,
+        "delta": 0.0231,
+        "low": 0.0082,
+        "high": 0.0382
+      },
+      "v2_esg_reports/fr": {
+        "queries": 57,
+        "delta": 0.0787,
+        "low": 0.0054,
+        "high": 0.1512
+      },
+      "v2_esg_reports/en": {
+        "queries": 57,
+        "delta": 0.0988,
+        "low": 0.0265,
+        "high": 0.1719
+      },
+      "v2_esg_reports_human/en": {
+        "queries": 52,
+        "delta": 0.0978,
+        "low": 0.0254,
+        "high": 0.1743
+      },
+      "v2_economics_reports/en": {
+        "queries": 58,
+        "delta": -0.0215,
+        "low": -0.0606,
+        "high": 0.0167
+      },
+      "v2_economics_reports/fr": {
+        "queries": 58,
+        "delta": -0.0153,
+        "low": -0.0637,
+        "high": 0.0336
+      },
+      "v2_biomedical_lectures/en": {
+        "queries": 160,
+        "delta": 0.0002,
+        "low": -0.0291,
+        "high": 0.0302
+      },
+      "v2_biomedical_lectures/fr": {
+        "queries": 160,
+        "delta": 0.0157,
+        "low": -0.0162,
+        "high": 0.0487
+      },
+      "v1_shiftproject/fr": {
+        "queries": 100,
+        "delta": 0.0595,
+        "low": 0.0196,
+        "high": 0.1006
+      },
+      "v1_tabfquad/fr": {
+        "queries": 280,
+        "delta": 0.0039,
+        "low": -0.0066,
+        "high": 0.015
+      }
+    }
+  },
+  "baselines_match_saved_metrics": true,
+  "metrics": {
+    "visual": {
+      "v2_esg_reports": {
+        "all": {
+          "queries": 114,
+          "ndcg@10": 0.6818,
+          "recall@5": 0.6283,
+          "recall@10": 0.789,
+          "recall@20": 0.883,
+          "recall@30": 0.9135,
+          "recall@50": 0.9491,
+          "recall@100": 0.989
+        },
+        "en": {
+          "queries": 57,
+          "ndcg@10": 0.681,
+          "recall@5": 0.6225,
+          "recall@10": 0.805,
+          "recall@20": 0.8885,
+          "recall@30": 0.915,
+          "recall@50": 0.9484,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 57,
+          "ndcg@10": 0.6826,
+          "recall@5": 0.6342,
+          "recall@10": 0.7729,
+          "recall@20": 0.8775,
+          "recall@30": 0.9121,
+          "recall@50": 0.9498,
+          "recall@100": 0.9781
+        }
+      },
+      "v2_esg_reports_human": {
+        "all": {
+          "queries": 52,
+          "ndcg@10": 0.7298,
+          "recall@5": 0.7776,
+          "recall@10": 0.8097,
+          "recall@20": 0.8701,
+          "recall@30": 0.9052,
+          "recall@50": 0.943,
+          "recall@100": 0.9727
+        },
+        "en": {
+          "queries": 52,
+          "ndcg@10": 0.7298,
+          "recall@5": 0.7776,
+          "recall@10": 0.8097,
+          "recall@20": 0.8701,
+          "recall@30": 0.9052,
+          "recall@50": 0.943,
+          "recall@100": 0.9727
+        }
+      },
+      "v2_economics_reports": {
+        "all": {
+          "queries": 116,
+          "ndcg@10": 0.5891,
+          "recall@5": 0.3413,
+          "recall@10": 0.4646,
+          "recall@20": 0.6121,
+          "recall@30": 0.7213,
+          "recall@50": 0.8073,
+          "recall@100": 0.9116
+        },
+        "en": {
+          "queries": 58,
+          "ndcg@10": 0.6139,
+          "recall@5": 0.359,
+          "recall@10": 0.4872,
+          "recall@20": 0.6378,
+          "recall@30": 0.7394,
+          "recall@50": 0.8218,
+          "recall@100": 0.922
+        },
+        "fr": {
+          "queries": 58,
+          "ndcg@10": 0.5643,
+          "recall@5": 0.3237,
+          "recall@10": 0.4421,
+          "recall@20": 0.5863,
+          "recall@30": 0.7031,
+          "recall@50": 0.7929,
+          "recall@100": 0.9013
+        }
+      },
+      "v2_biomedical_lectures": {
+        "all": {
+          "queries": 320,
+          "ndcg@10": 0.6851,
+          "recall@5": 0.6787,
+          "recall@10": 0.7892,
+          "recall@20": 0.8464,
+          "recall@30": 0.8773,
+          "recall@50": 0.9049,
+          "recall@100": 0.9459
+        },
+        "en": {
+          "queries": 160,
+          "ndcg@10": 0.6904,
+          "recall@5": 0.6846,
+          "recall@10": 0.796,
+          "recall@20": 0.8458,
+          "recall@30": 0.8767,
+          "recall@50": 0.905,
+          "recall@100": 0.9533
+        },
+        "fr": {
+          "queries": 160,
+          "ndcg@10": 0.6797,
+          "recall@5": 0.6727,
+          "recall@10": 0.7824,
+          "recall@20": 0.847,
+          "recall@30": 0.8778,
+          "recall@50": 0.9049,
+          "recall@100": 0.9385
+        }
+      },
+      "v1_shiftproject": {
+        "all": {
+          "queries": 100,
+          "ndcg@10": 0.9214,
+          "recall@5": 0.98,
+          "recall@10": 0.99,
+          "recall@20": 1.0,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 100,
+          "ndcg@10": 0.9214,
+          "recall@5": 0.98,
+          "recall@10": 0.99,
+          "recall@20": 1.0,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        }
+      },
+      "v1_tabfquad": {
+        "all": {
+          "queries": 280,
+          "ndcg@10": 0.9802,
+          "recall@5": 0.9929,
+          "recall@10": 0.9964,
+          "recall@20": 0.9964,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 280,
+          "ndcg@10": 0.9802,
+          "recall@5": 0.9929,
+          "recall@10": 0.9964,
+          "recall@20": 0.9964,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        }
+      }
+    },
+    "rerank": {
+      "v2_esg_reports": {
+        "all": {
+          "queries": 114,
+          "ndcg@10": 0.5973,
+          "recall@5": 0.5823,
+          "recall@10": 0.7181,
+          "recall@20": 0.8319,
+          "recall@30": 0.9135,
+          "recall@50": 0.9491,
+          "recall@100": 0.989
+        },
+        "en": {
+          "queries": 57,
+          "ndcg@10": 0.5842,
+          "recall@5": 0.596,
+          "recall@10": 0.7056,
+          "recall@20": 0.8317,
+          "recall@30": 0.915,
+          "recall@50": 0.9484,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 57,
+          "ndcg@10": 0.6103,
+          "recall@5": 0.5687,
+          "recall@10": 0.7307,
+          "recall@20": 0.8321,
+          "recall@30": 0.9121,
+          "recall@50": 0.9498,
+          "recall@100": 0.9781
+        }
+      },
+      "v2_esg_reports_human": {
+        "all": {
+          "queries": 52,
+          "ndcg@10": 0.657,
+          "recall@5": 0.6561,
+          "recall@10": 0.7987,
+          "recall@20": 0.8794,
+          "recall@30": 0.9052,
+          "recall@50": 0.943,
+          "recall@100": 0.9727
+        },
+        "en": {
+          "queries": 52,
+          "ndcg@10": 0.657,
+          "recall@5": 0.6561,
+          "recall@10": 0.7987,
+          "recall@20": 0.8794,
+          "recall@30": 0.9052,
+          "recall@50": 0.943,
+          "recall@100": 0.9727
+        }
+      },
+      "v2_economics_reports": {
+        "all": {
+          "queries": 116,
+          "ndcg@10": 0.6132,
+          "recall@5": 0.3247,
+          "recall@10": 0.4685,
+          "recall@20": 0.6187,
+          "recall@30": 0.7213,
+          "recall@50": 0.8073,
+          "recall@100": 0.9116
+        },
+        "en": {
+          "queries": 58,
+          "ndcg@10": 0.6399,
+          "recall@5": 0.3386,
+          "recall@10": 0.4895,
+          "recall@20": 0.6332,
+          "recall@30": 0.7394,
+          "recall@50": 0.8218,
+          "recall@100": 0.922
+        },
+        "fr": {
+          "queries": 58,
+          "ndcg@10": 0.5865,
+          "recall@5": 0.3108,
+          "recall@10": 0.4475,
+          "recall@20": 0.6043,
+          "recall@30": 0.7031,
+          "recall@50": 0.7929,
+          "recall@100": 0.9013
+        }
+      },
+      "v2_biomedical_lectures": {
+        "all": {
+          "queries": 320,
+          "ndcg@10": 0.6818,
+          "recall@5": 0.6514,
+          "recall@10": 0.757,
+          "recall@20": 0.8332,
+          "recall@30": 0.8773,
+          "recall@50": 0.9049,
+          "recall@100": 0.9459
+        },
+        "en": {
+          "queries": 160,
+          "ndcg@10": 0.6914,
+          "recall@5": 0.6576,
+          "recall@10": 0.7633,
+          "recall@20": 0.8369,
+          "recall@30": 0.8767,
+          "recall@50": 0.905,
+          "recall@100": 0.9533
+        },
+        "fr": {
+          "queries": 160,
+          "ndcg@10": 0.6722,
+          "recall@5": 0.6451,
+          "recall@10": 0.7506,
+          "recall@20": 0.8295,
+          "recall@30": 0.8778,
+          "recall@50": 0.9049,
+          "recall@100": 0.9385
+        }
+      },
+      "v1_shiftproject": {
+        "all": {
+          "queries": 100,
+          "ndcg@10": 0.845,
+          "recall@5": 0.93,
+          "recall@10": 0.95,
+          "recall@20": 0.96,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 100,
+          "ndcg@10": 0.845,
+          "recall@5": 0.93,
+          "recall@10": 0.95,
+          "recall@20": 0.96,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        }
+      },
+      "v1_tabfquad": {
+        "all": {
+          "queries": 280,
+          "ndcg@10": 0.9772,
+          "recall@5": 0.9857,
+          "recall@10": 0.9929,
+          "recall@20": 1.0,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 280,
+          "ndcg@10": 0.9772,
+          "recall@5": 0.9857,
+          "recall@10": 0.9929,
+          "recall@20": 1.0,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        }
+      }
+    },
+    "best": {
+      "v2_esg_reports": {
+        "all": {
+          "queries": 114,
+          "ndcg@10": 0.686,
+          "recall@5": 0.6664,
+          "recall@10": 0.809,
+          "recall@20": 0.8878,
+          "recall@30": 0.9135,
+          "recall@50": 0.9491,
+          "recall@100": 0.989
+        },
+        "en": {
+          "queries": 57,
+          "ndcg@10": 0.683,
+          "recall@5": 0.6854,
+          "recall@10": 0.8207,
+          "recall@20": 0.8947,
+          "recall@30": 0.915,
+          "recall@50": 0.9484,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 57,
+          "ndcg@10": 0.689,
+          "recall@5": 0.6475,
+          "recall@10": 0.7973,
+          "recall@20": 0.8808,
+          "recall@30": 0.9121,
+          "recall@50": 0.9498,
+          "recall@100": 0.9781
+        }
+      },
+      "v2_esg_reports_human": {
+        "all": {
+          "queries": 52,
+          "ndcg@10": 0.7548,
+          "recall@5": 0.754,
+          "recall@10": 0.8193,
+          "recall@20": 0.874,
+          "recall@30": 0.9052,
+          "recall@50": 0.943,
+          "recall@100": 0.9727
+        },
+        "en": {
+          "queries": 52,
+          "ndcg@10": 0.7548,
+          "recall@5": 0.754,
+          "recall@10": 0.8193,
+          "recall@20": 0.874,
+          "recall@30": 0.9052,
+          "recall@50": 0.943,
+          "recall@100": 0.9727
+        }
+      },
+      "v2_economics_reports": {
+        "all": {
+          "queries": 116,
+          "ndcg@10": 0.5948,
+          "recall@5": 0.3371,
+          "recall@10": 0.4763,
+          "recall@20": 0.6288,
+          "recall@30": 0.7213,
+          "recall@50": 0.8073,
+          "recall@100": 0.9116
+        },
+        "en": {
+          "queries": 58,
+          "ndcg@10": 0.6183,
+          "recall@5": 0.3611,
+          "recall@10": 0.4957,
+          "recall@20": 0.6476,
+          "recall@30": 0.7394,
+          "recall@50": 0.8218,
+          "recall@100": 0.922
+        },
+        "fr": {
+          "queries": 58,
+          "ndcg@10": 0.5712,
+          "recall@5": 0.3132,
+          "recall@10": 0.4569,
+          "recall@20": 0.61,
+          "recall@30": 0.7031,
+          "recall@50": 0.7929,
+          "recall@100": 0.9013
+        }
+      },
+      "v2_biomedical_lectures": {
+        "all": {
+          "queries": 320,
+          "ndcg@10": 0.6897,
+          "recall@5": 0.6826,
+          "recall@10": 0.7887,
+          "recall@20": 0.845,
+          "recall@30": 0.8773,
+          "recall@50": 0.9049,
+          "recall@100": 0.9459
+        },
+        "en": {
+          "queries": 160,
+          "ndcg@10": 0.6915,
+          "recall@5": 0.6836,
+          "recall@10": 0.7952,
+          "recall@20": 0.8481,
+          "recall@30": 0.8767,
+          "recall@50": 0.905,
+          "recall@100": 0.9533
+        },
+        "fr": {
+          "queries": 160,
+          "ndcg@10": 0.6878,
+          "recall@5": 0.6816,
+          "recall@10": 0.7822,
+          "recall@20": 0.842,
+          "recall@30": 0.8778,
+          "recall@50": 0.9049,
+          "recall@100": 0.9385
+        }
+      },
+      "v1_shiftproject": {
+        "all": {
+          "queries": 100,
+          "ndcg@10": 0.9045,
+          "recall@5": 0.98,
+          "recall@10": 0.99,
+          "recall@20": 1.0,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 100,
+          "ndcg@10": 0.9045,
+          "recall@5": 0.98,
+          "recall@10": 0.99,
+          "recall@20": 1.0,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        }
+      },
+      "v1_tabfquad": {
+        "all": {
+          "queries": 280,
+          "ndcg@10": 0.9811,
+          "recall@5": 0.9929,
+          "recall@10": 0.9964,
+          "recall@20": 0.9964,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        },
+        "fr": {
+          "queries": 280,
+          "ndcg@10": 0.9811,
+          "recall@5": 0.9929,
+          "recall@10": 0.9964,
+          "recall@20": 0.9964,
+          "recall@30": 1.0,
+          "recall@50": 1.0,
+          "recall@100": 1.0
+        }
+      }
+    }
+  }
+}

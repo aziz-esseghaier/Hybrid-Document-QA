@@ -1,0 +1,9 @@
+{
+  "workers": 2,
+  "queries": 280,
+  "candidates": 30,
+  "pairs": 8400,
+  "seconds": 1595,
+  "seconds_per_pair_two_gpus": 0.19,
+  "candidates_without_text": 0
+}
