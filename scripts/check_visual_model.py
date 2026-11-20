@@ -33,6 +33,8 @@ from doc_qa.retrieval.visual import (
     embed_queries,
     load_visual_model,
     maxsim,
+    maxsim_matrix,
+    page_inputs,
     spread,
     token_cosines,
 )
@@ -120,6 +122,72 @@ def cosine_stats(first: list[np.ndarray], second: list[np.ndarray]) -> dict[str,
     """
     cosines = np.concatenate([token_cosines(a, b) for a, b in zip(first, second)])
     return {"mean": round(float(cosines.mean()), 5), "min": round(float(cosines.min()), 5)}
+
+
+def image_token_masks(processor: Any, images: list[Any], image_token_id: int) -> list[np.ndarray]:
+    """Mark which of each page's vectors come from image tokens (the others come from the prompt).
+
+    Args:
+        processor (Any): The model's processor.
+        images (list[Any]): Pages.
+        image_token_id (int): Token id of image patches.
+
+    Returns:
+        list[np.ndarray]: One boolean array per page, aligned with its embedding.
+    """
+    masks = []
+    for image in images:
+        inputs = page_inputs(processor, [image])
+        keep = np.asarray(inputs["attention_mask"][0]).astype(bool)
+        masks.append(np.asarray(inputs["input_ids"][0])[keep] == image_token_id)
+    return masks
+
+
+def cosine_stats_by_kind(first: list[np.ndarray], second: list[np.ndarray], masks: list[np.ndarray]) -> dict:
+    """Compare two embeddings of the same pages, separately for image tokens and prompt tokens.
+
+    Args:
+        first (list[np.ndarray]): Embeddings.
+        second (list[np.ndarray]): The same pages, embedded another way.
+        masks (list[np.ndarray]): True for image tokens, per page.
+
+    Returns:
+        dict: Mean, lowest and 5th-percentile cosine per kind, and the prompt tokens per page.
+    """
+    cosines = [token_cosines(a, b) for a, b in zip(first, second)]
+    stats = {}
+    for kind, pick in (("image_tokens", lambda m: m), ("prompt_tokens", lambda m: ~m)):
+        values = np.concatenate([c[pick(m)] for c, m in zip(cosines, masks)])
+        stats[kind] = {
+            "mean": round(float(values.mean()), 5),
+            "p5": round(float(np.percentile(values, 5)), 5),
+            "min": round(float(values.min()), 5),
+        }
+    stats["prompt_tokens_per_page"] = int(np.mean([(~m).sum() for m in masks]))
+    return stats
+
+
+def score_agreement(reference: np.ndarray, test: np.ndarray) -> dict[str, float]:
+    """Compare two MaxSim score matrices of the same queries and pages.
+
+    Args:
+        reference (np.ndarray): (queries, pages) reference scores.
+        test (np.ndarray): (queries, pages) scores to check.
+
+    Returns:
+        dict[str, float]: Largest and mean score difference, the median gap between each query's two best pages
+            (differences far below it cannot change rankings), and the share of queries ranking the pages the same.
+    """
+    ordered = np.sort(reference, axis=1)
+    same = [
+        np.array_equal(np.argsort(-r, kind="stable"), np.argsort(-t, kind="stable")) for r, t in zip(reference, test)
+    ]
+    return {
+        "max_abs_diff": round(float(np.abs(test - reference).max()), 4),
+        "mean_abs_diff": round(float(np.abs(test - reference).mean()), 4),
+        "median_top_gap": round(float(np.median(ordered[:, -1] - ordered[:, -2])), 4),
+        "same_order": round(float(np.mean(same)), 3),
+    }
 
 
 def probe_batch_sizes(
@@ -242,6 +310,7 @@ def main() -> None:
     summary["retrieval"] = retrieval_check(query_ids, languages, relevant, page_ids, scores)
     save("embeddings")
 
+    image_token_id = getattr(model.config, "image_token_id", None)
     del model, processor
     gc.collect()
     torch.cuda.empty_cache()
@@ -261,7 +330,14 @@ def main() -> None:
         "cpu_seconds_per_page": round(seconds, 1),
         "pages": cosine_stats(single, reference_pages),
         "queries": cosine_stats(queries_single, reference_queries),
+        "scores": score_agreement(
+            maxsim_matrix(reference_queries, reference_pages),
+            maxsim_matrix(queries_single[: len(queries_ref)], single[: len(pages_ref)]),
+        ),
     }
+    if image_token_id is not None:
+        masks = image_token_masks(processor, pages_ref, image_token_id)
+        summary["matches_reference"]["pages_by_kind"] = cosine_stats_by_kind(single, reference_pages, masks)
     save("reference")
     print(json.dumps(summary, indent=2))
 

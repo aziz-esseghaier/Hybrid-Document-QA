@@ -59,3 +59,30 @@ def test_cosine_stats_and_spread():
     other = [np.array([[1.0, 0.0]]), np.array([[0.6, 0.8]])]
     assert check_visual_model.cosine_stats(same, other) == {"mean": 0.9, "min": 0.8}
     assert check_visual_model.spread([2, 4]) == {"min": 2, "mean": 3.0, "max": 4}
+
+
+class Processor:
+    def process_images(self, images):  # left padding, like ColQwen3
+        return {"input_ids": np.array([[0, 7, 9, 9, 5]]), "attention_mask": np.array([[0, 1, 1, 1, 1]])}
+
+
+def test_image_token_masks_follow_the_real_tokens():
+    [mask] = check_visual_model.image_token_masks(Processor(), ["page"], 9)
+    assert mask.tolist() == [False, True, True, False]
+
+
+def test_cosine_stats_by_kind_separates_image_and_prompt_tokens():
+    first = [np.array([[1.0, 0.0], [1.0, 0.0], [0.0, 1.0]])]
+    second = [np.array([[1.0, 0.0], [0.6, 0.8], [1.0, 0.0]])]
+    stats = check_visual_model.cosine_stats_by_kind(first, second, [np.array([True, True, False])])
+    assert stats["image_tokens"]["mean"] == 0.8 and stats["image_tokens"]["min"] == 0.6
+    assert stats["prompt_tokens"] == {"mean": 0.0, "p5": 0.0, "min": 0.0}
+    assert stats["prompt_tokens_per_page"] == 1
+
+
+def test_score_agreement():
+    reference = np.array([[10.0, 8.0, 7.0], [5.0, 6.0, 9.0]])
+    same = check_visual_model.score_agreement(reference, reference + 0.1)
+    assert same == {"max_abs_diff": 0.1, "mean_abs_diff": 0.1, "median_top_gap": 2.5, "same_order": 1.0}
+    swapped = check_visual_model.score_agreement(reference, np.array([[10.0, 8.0, 7.0], [6.0, 5.0, 9.0]]))
+    assert swapped["same_order"] == 0.5 and swapped["max_abs_diff"] == 1.0

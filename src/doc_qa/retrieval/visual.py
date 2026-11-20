@@ -151,7 +151,8 @@ def _encode(model: Any, inputs: Any) -> list[np.ndarray]:
 
     parameter = next(model.parameters())
     inputs = {key: value.to(parameter.device) if torch.is_tensor(value) else value for key, value in inputs.items()}
-    with torch.inference_mode(), torch.autocast(device_type=parameter.device.type, dtype=parameter.dtype):
+    low_precision = parameter.dtype in (torch.float16, torch.bfloat16)
+    with torch.inference_mode(), torch.autocast(parameter.device.type, parameter.dtype, enabled=low_precision):
         output = model(**inputs)
         hidden = output.embeddings if "embeddings" in output else output.last_hidden_state  # ColQwen3 or nemotron
         vectors = torch.nn.functional.normalize(hidden.float(), dim=-1)  # float32: an fp16 norm can overflow

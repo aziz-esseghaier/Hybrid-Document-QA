@@ -19,6 +19,6 @@ check:                        # does the model run correctly on this GPU, and at
   pages: 20                   # one relevant page per question, the rest at random
   questions: 8                # with all their translations
   batch_sizes: [1, 2, 4, 8]   # stops at the first that runs out of memory
-  reference_dtype: bfloat16   # the model's own precision, on CPU
-  reference_pages: 2          # CPU is slow
-  reference_queries: 2
+  reference_dtype: float32    # full precision, on CPU: neither fp16 nor bf16 rounding
+  reference_pages: 4          # CPU is slow
+  reference_queries: 16       # queries are short: all of them
