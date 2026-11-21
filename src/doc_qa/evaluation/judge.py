@@ -50,18 +50,41 @@ class Verdict:
     errors: tuple[str, ...]
 
 
-def judge_messages(question: str, references: list[str], answer: str) -> list[dict[str, Any]]:
+def reference_block(references: list[str], max_chars: int) -> str:
+    """List reference answers in order until a length budget, noting how many were left out.
+
+    Args:
+        references (list[str]): Reference answers.
+        max_chars (int): Characters of references kept; the first one is always kept whole.
+
+    Returns:
+        str: Bulleted references.
+    """
+    kept, used = [], 0
+    for reference in references:
+        if kept and used + len(reference) > max_chars:
+            break
+        kept.append(f"- {reference}")
+        used += len(reference)
+    left_out = len(references) - len(kept)
+    return "\n".join(kept) + (f"\n({left_out} more reference answers not shown)" if left_out else "")
+
+
+def judge_messages(question: str, references: list[str], answer: str, max_reference_chars: int) -> list[dict[str, Any]]:
     """Build the judge's chat: one user turn, since some chat templates have no system role.
 
     Args:
         question (str): Question.
         references (list[str]): Reference answers.
         answer (str): Answer to grade.
+        max_reference_chars (int): Characters of references kept, so long reference lists don't exhaust memory.
 
     Returns:
         list[dict[str, Any]]: Chat messages.
     """
-    text = JUDGE_PROMPT.format(question=question, references="\n".join(f"- {r}" for r in references), answer=answer)
+    text = JUDGE_PROMPT.format(
+        question=question, references=reference_block(references, max_reference_chars), answer=answer
+    )
     return [{"role": "user", "content": [{"type": "text", "text": text}]}]
 
 

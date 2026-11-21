@@ -14,6 +14,7 @@ The explanations quote the answers, so they go to TEXT_DIR/judge_<judge>/<datase
 from __future__ import annotations
 
 import argparse
+import gc
 import json
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -113,6 +114,8 @@ def main() -> None:
         summary = {setting: summarize(read_jsonl([verdicts_file(setting)])) for setting in answers}
         (results_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
+    import torch
+
     chat = load_judge(spec, cfg["max_new_tokens"]) if any(row["found"] is not None for _, row in todo) else None
     for count, (setting, row) in enumerate(todo, 1):
         record = {"query_id": row["query_id"], "language": row["language"], "setting": setting, "label": "incorrect",
@@ -126,14 +129,23 @@ def main() -> None:
                 replies.append(chat(messages))
                 return replies[-1].text
 
-            messages = judge_messages(row["question"], row["reference_answers"], row["answer"])
-            verdict = judge_with_retries(generate, messages, cfg["retries"])
-            record.update(
-                label=verdict.label, auto=False, attempts=verdict.attempts,
-                seconds=round(sum(r.seconds for r in replies), 2), prompt_tokens=replies[0].prompt_tokens,
-                finite=all(r.finite for r in replies),
+            messages = judge_messages(
+                row["question"], row["reference_answers"], row["answer"], cfg["max_reference_chars"]
             )
-            explanation, errors = verdict.explanation, list(verdict.errors)
+            try:
+                verdict = judge_with_retries(generate, messages, cfg["retries"])
+            except torch.cuda.OutOfMemoryError:  # recorded as unjudged; the run goes on
+                gc.collect()
+                torch.cuda.empty_cache()
+                record.update(label=None, auto=False, error="out of memory")
+                explanation, errors = "", ["out of memory"]
+            else:
+                record.update(
+                    label=verdict.label, auto=False, attempts=verdict.attempts,
+                    seconds=round(sum(r.seconds for r in replies), 2), prompt_tokens=replies[0].prompt_tokens,
+                    finite=all(r.finite for r in replies),
+                )
+                explanation, errors = verdict.explanation, list(verdict.errors)
         append_jsonl(text_dir / f"explanations_{setting}.jsonl", [{
             "query_id": row["query_id"], "setting": setting, "label": record["label"], "explanation": explanation,
             "errors": errors,

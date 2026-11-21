@@ -3,12 +3,18 @@
 import pytest
 
 from doc_qa.answer.output import InvalidAnswer
-from doc_qa.evaluation.judge import judge_messages, judge_with_retries, parse_verdict, with_system_prompt
+from doc_qa.evaluation.judge import (
+    judge_messages,
+    judge_with_retries,
+    parse_verdict,
+    reference_block,
+    with_system_prompt,
+)
 from doc_qa.evaluation.metrics import cohen_kappa
 
 
 def test_prompt_holds_question_references_and_answer():
-    [message] = judge_messages("How much?", ["7 %", "7 % et 23 %"], "Seven percent.")
+    [message] = judge_messages("How much?", ["7 %", "7 % et 23 %"], "Seven percent.", 1000)
     text = message["content"][0]["text"]
     assert message["role"] == "user"
     assert "Question: How much?" in text and "- 7 %\n- 7 % et 23 %" in text and "Seven percent." in text
@@ -35,14 +41,20 @@ def test_invalid_replies(reply):
 
 def test_retry_then_give_up():
     replies = iter(["Correct!", '{"judgment": "Correct", "explanation": "ok"}'])
-    verdict = judge_with_retries(lambda messages: next(replies), judge_messages("q", ["r"], "a"), retries=2)
+    verdict = judge_with_retries(lambda messages: next(replies), judge_messages("q", ["r"], "a", 1000), retries=2)
     assert (verdict.label, verdict.explanation, verdict.attempts) == ("correct", "ok", 2)
-    failed = judge_with_retries(lambda messages: "no", judge_messages("q", ["r"], "a"), retries=1)
+    failed = judge_with_retries(lambda messages: "no", judge_messages("q", ["r"], "a", 1000), retries=1)
     assert failed.label is None and failed.attempts == 2 and len(failed.errors) == 2
 
 
+def test_long_reference_lists_are_cut_with_a_note():
+    assert reference_block(["aaa", "bbb"], 10) == "- aaa\n- bbb"
+    assert reference_block(["aaa", "bbb", "ccc"], 7) == "- aaa\n- bbb\n(1 more reference answers not shown)"
+    assert reference_block(["a" * 50, "b"], 10) == "- " + "a" * 50 + "\n(1 more reference answers not shown)"
+
+
 def test_fixed_system_prompt_goes_first():
-    messages = judge_messages("q", ["r"], "a")
+    messages = judge_messages("q", ["r"], "a", 1000)
     assert with_system_prompt(messages, None) == messages
     first, *rest = with_system_prompt(messages, "Grade carefully.")
     assert first == {"role": "system", "content": [{"type": "text", "text": "Grade carefully."}]} and rest == messages
