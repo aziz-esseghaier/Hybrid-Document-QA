@@ -2,12 +2,14 @@
 
 Usage:
     python scripts/label_sheet.py make --answers ANSWERS_DIR --out SHEET.md [--n 50] [--seed 0]
+    python scripts/label_sheet.py ids --sheet SHEET.md --out results/human_labels/v2_esg_reports/sample.jsonl
     python scripts/label_sheet.py read --sheet SHEET.md --out results/human_labels/v2_esg_reports/labels.jsonl
 
 `make` samples answers from ANSWERS_DIR/answers_<setting>.jsonl (answer_questions.py): distinct questions, half
 English and half French, the settings in turn; replies that failed the checks are left out. The sheet shows each
 question, its reference answers and the model's answer, so it contains document text: keep it out of the repo. Write
-C, P or I after each "Label:". `read` keeps only ids and grades.
+C, P or I after each "Label:". `ids` lists the sheet's answers (for judging the same ones), `read` the grades; both
+keep only ids.
 """
 
 from __future__ import annotations
@@ -104,6 +106,23 @@ def make_sheet(answers: dict[str, dict[str, dict[str, Any]]], picks: list[tuple[
     return "\n".join(blocks)
 
 
+def sheet_ids(text: str) -> list[dict[str, Any]]:
+    """List the answers on a sheet, graded or not.
+
+    Args:
+        text (str): Sheet content.
+
+    Returns:
+        list[dict[str, Any]]: {number, query_id, setting, language} per answer.
+    """
+    rows = []
+    for line in text.splitlines():
+        if header := HEADER.match(line.strip()):
+            number, query_id, setting, language = header.groups()
+            rows.append({"number": int(number), "query_id": query_id, "setting": setting, "language": language})
+    return rows
+
+
 def read_sheet(text: str) -> list[dict[str, Any]]:
     """Read the grades from a filled sheet.
 
@@ -130,7 +149,7 @@ def read_sheet(text: str) -> list[dict[str, Any]]:
 def main() -> None:
     """Make a sheet or read one."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("action", choices=["make", "read"])
+    parser.add_argument("action", choices=["make", "ids", "read"])
     parser.add_argument("--answers", type=Path, help="make: folder with answers_<setting>.jsonl.")
     parser.add_argument("--sheet", type=Path, help="read: the filled sheet.")
     parser.add_argument("--out", type=Path, required=True)
@@ -143,6 +162,10 @@ def main() -> None:
         picks = sample(answers, args.n, args.seed)
         args.out.write_text(make_sheet(answers, picks), encoding="utf-8")
         print(f"{len(picks)} answers to grade in {args.out}")
+    elif args.action == "ids":
+        rows = sheet_ids(args.sheet.read_text(encoding="utf-8"))
+        write_jsonl(args.out, rows)
+        print(f"{len(rows)} answer ids -> {args.out}")
     else:
         labels = read_sheet(args.sheet.read_text(encoding="utf-8"))
         write_jsonl(args.out, labels)

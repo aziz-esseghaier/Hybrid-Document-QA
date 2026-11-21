@@ -43,6 +43,12 @@ def test_sheet_round_trip():
     assert [label["grade"] for label in labels] == ["correct", "incorrect", "partially correct", "partially correct"]
 
 
+def test_ids_list_the_sheet_answers_without_grades():
+    picks = label_sheet.sample(ANSWERS, 4, 2)
+    rows = label_sheet.sheet_ids(label_sheet.make_sheet(ANSWERS, picks))
+    assert [(row["query_id"], row["setting"]) for row in rows] == picks and rows[0]["number"] == 1
+
+
 def test_missing_grade_is_reported():
     sheet = label_sheet.make_sheet(ANSWERS, label_sheet.sample(ANSWERS, 2, 0))
     with pytest.raises(ValueError, match="Answer 1"):

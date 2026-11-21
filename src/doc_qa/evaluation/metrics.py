@@ -12,6 +12,23 @@ import numpy as np
 _WORD = re.compile(r"\w+")
 
 
+def cohen_kappa(first: Sequence[Hashable], second: Sequence[Hashable]) -> float:
+    """Agreement between two raters beyond what their label frequencies give by chance.
+
+    Args:
+        first (Sequence[Hashable]): Labels from one rater.
+        second (Sequence[Hashable]): Labels from the other, same items.
+
+    Returns:
+        float: Kappa: 1 for perfect agreement, 0 for chance level; 1 if both use a single label throughout.
+    """
+    n = len(first)
+    observed = sum(a == b for a, b in zip(first, second)) / n
+    counts_first, counts_second = Counter(first), Counter(second)
+    expected = sum(counts_first[label] * counts_second[label] for label in counts_first) / n**2
+    return 1.0 if expected == 1 else (observed - expected) / (1 - expected)
+
+
 def token_f1(a: str, b: str) -> float:
     """F1 of the lowercased word multisets of two texts.
 

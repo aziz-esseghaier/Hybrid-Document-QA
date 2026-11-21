@@ -197,6 +197,16 @@ Answer every question that has a reference answer, under each setting in the con
 
 `results/answer_answers/<dataset>/` gets ids, cited pages, cost and a summary per setting. The answers contain document text, so they go to `--out` only (kept with the notebook output, never committed).
 
+Answers are graded by an LLM judge against the reference answers: Correct, Partially correct or Incorrect; accuracy is the share graded Correct. The judge is chosen once, by agreement with hand grades on a sample, then never changed (`configs/judges.yaml`: 4-bit Gemma 4 31B and Mistral Small 3.2):
+
+```
+python scripts/label_sheet.py make --answers ANSWERS_DIR --out SHEET.md   # outside the repo; grade C/P/I by hand
+python scripts/label_sheet.py ids --sheet SHEET.md --out results/human_labels/v2_esg_reports/sample.jsonl
+python scripts/judge_answers.py --judge gemma4_31b --dataset v2_esg_reports --answers ANSWERS_DIR --out TEXT_DIR --only results/human_labels/v2_esg_reports/sample.jsonl
+python scripts/label_sheet.py read --sheet SHEET.md --out results/human_labels/v2_esg_reports/labels.jsonl
+python scripts/compare_judges.py --dataset v2_esg_reports --judges gemma4_31b mistral_small_32
+```
+
 ## Web demo
 
 A page where you upload PDFs, ask a question, and get an answer with the pages it cites. The pipeline is `doc_qa.pipeline` (`configs/demo.yaml`): visual search over the uploaded pages, the reranker on the top 20, the two orders merged by reciprocal rank fusion, and the answer model on the top 5 pages. All three models (about 35 GB in fp16) share one GPU of at least 48 GB. Pages without a text layer are read from their image only (no OCR yet), and only the first 50 pages of a PDF are indexed.
