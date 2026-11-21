@@ -1,0 +1,36 @@
+{
+  "full": {
+    "all": {
+      "queries": 116,
+      "ndcg@10": 0.5487,
+      "recall@100": 0.906
+    },
+    "en": {
+      "queries": 58,
+      "ndcg@10": 0.5756,
+      "recall@100": 0.908
+    },
+    "fr": {
+      "queries": 58,
+      "ndcg@10": 0.5218,
+      "recall@100": 0.904
+    }
+  },
+  "qdrant": {
+    "all": {
+      "queries": 116,
+      "ndcg@10": 0.5487,
+      "recall@100": 0.906
+    },
+    "en": {
+      "queries": 58,
+      "ndcg@10": 0.5756,
+      "recall@100": 0.908
+    },
+    "fr": {
+      "queries": 58,
+      "ndcg@10": 0.5218,
+      "recall@100": 0.904
+    }
+  }
+}

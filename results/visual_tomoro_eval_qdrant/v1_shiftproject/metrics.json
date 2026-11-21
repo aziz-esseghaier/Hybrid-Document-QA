@@ -1,0 +1,26 @@
+{
+  "full": {
+    "all": {
+      "queries": 100,
+      "ndcg@10": 0.882,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 100,
+      "ndcg@10": 0.882,
+      "recall@100": 1.0
+    }
+  },
+  "qdrant": {
+    "all": {
+      "queries": 100,
+      "ndcg@10": 0.882,
+      "recall@100": 1.0
+    },
+    "fr": {
+      "queries": 100,
+      "ndcg@10": 0.882,
+      "recall@100": 1.0
+    }
+  }
+}

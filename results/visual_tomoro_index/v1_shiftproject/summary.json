@@ -1,0 +1,10 @@
+{
+  "collection": "visual_tomoro_v1_shiftproject",
+  "points": 1000,
+  "dim": 320,
+  "pool_factor": 1,
+  "vectors": 1271000,
+  "upload_seconds_per_page": 0.173,
+  "total_seconds": 186,
+  "segments": 2
+}

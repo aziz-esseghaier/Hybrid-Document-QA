@@ -1,0 +1,26 @@
+name: visual_tomoro
+datasets_config: configs/datasets.yaml
+model: TomoroAI/tomoro-colqwen3-embed-4b
+revision: 13517a29e8c5e408f7f2684337ed407df3acb212
+dtype: float16
+attn_implementation: sdpa
+page_batch_size: 1
+query_batch_size: 8
+part_pages: 64
+pool_factor: 1
+page_limit: 100
+upload_threads: 4
+qdrant_timeout: 600
+check:
+  dataset: v2_esg_reports
+  seed: 0
+  pages: 20
+  questions: 8
+  batch_sizes:
+  - 1
+  - 2
+  - 4
+  - 8
+  reference_dtype: float32
+  reference_pages: 4
+  reference_queries: 16

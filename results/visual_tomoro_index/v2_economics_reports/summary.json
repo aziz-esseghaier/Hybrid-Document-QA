@@ -1,0 +1,10 @@
+{
+  "collection": "visual_tomoro_v2_economics_reports",
+  "points": 452,
+  "dim": 320,
+  "pool_factor": 1,
+  "vectors": 387008,
+  "upload_seconds_per_page": 0.102,
+  "total_seconds": 50,
+  "segments": 2
+}

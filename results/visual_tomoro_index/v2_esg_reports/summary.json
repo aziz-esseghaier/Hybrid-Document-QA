@@ -1,0 +1,10 @@
+{
+  "collection": "visual_tomoro_v2_esg_reports",
+  "points": 1538,
+  "dim": 320,
+  "pool_factor": 1,
+  "vectors": 1921720,
+  "upload_seconds_per_page": 0.176,
+  "total_seconds": 272,
+  "segments": 3
+}

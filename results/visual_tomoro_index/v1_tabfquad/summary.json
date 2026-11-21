@@ -1,0 +1,10 @@
+{
+  "collection": "visual_tomoro_v1_tabfquad",
+  "points": 70,
+  "dim": 320,
+  "pool_factor": 1,
+  "vectors": 53729,
+  "upload_seconds_per_page": 0.087,
+  "total_seconds": 8,
+  "segments": 2
+}

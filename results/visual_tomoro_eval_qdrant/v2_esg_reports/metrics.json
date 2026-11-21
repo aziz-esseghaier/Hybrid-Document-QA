@@ -1,0 +1,36 @@
+{
+  "full": {
+    "all": {
+      "queries": 114,
+      "ndcg@10": 0.6565,
+      "recall@100": 0.9803
+    },
+    "en": {
+      "queries": 57,
+      "ndcg@10": 0.6605,
+      "recall@100": 0.9781
+    },
+    "fr": {
+      "queries": 57,
+      "ndcg@10": 0.6525,
+      "recall@100": 0.9825
+    }
+  },
+  "qdrant": {
+    "all": {
+      "queries": 114,
+      "ndcg@10": 0.6565,
+      "recall@100": 0.9803
+    },
+    "en": {
+      "queries": 57,
+      "ndcg@10": 0.6605,
+      "recall@100": 0.9781
+    },
+    "fr": {
+      "queries": 57,
+      "ndcg@10": 0.6525,
+      "recall@100": 0.9825
+    }
+  }
+}
