@@ -1,0 +1,19 @@
+# Answer model: reads the top retrieved pages (images and text) and answers with page citations.
+name: answer                  # results go to results/<name>_check/<dataset>
+datasets_config: configs/datasets.yaml
+model: Qwen/Qwen3-VL-8B-Instruct
+revision: 0c351dd01ed87e9c1b53cbc748cba10e6187ff3b
+dtype: float16                # T4 has no bf16
+attn_implementation: sdpa     # T4 has no FlashAttention 2
+max_memory: {0: 11GiB, 1: 12GiB}  # weights per GPU (about 17.5 GB in fp16); the rest is left for long prompts
+rankings: results/fusion_rerank_tomoro_top20/{dataset}/rankings_fused.jsonl  # retrieval setting chosen on dev
+max_text_chars: 4000          # OCR text kept per page (90% of ESG pages have under about 780 tokens)
+max_new_tokens: 512
+retries: 2                    # extra attempts when a reply breaks the rules
+
+check:                        # does the model run on 2 x T4, and at what cost?
+  dataset: v2_esg_reports
+  seed: 0
+  questions: 6                # with all their translations
+  pages: [5, 10]              # pages given per question
+  page_tokens: [640, 1280]    # image token budget per page (32 x 32 pixels per token)

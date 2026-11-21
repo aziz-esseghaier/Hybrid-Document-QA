@@ -177,6 +177,18 @@ The same steps with the Tomoro visual ranking use `configs/fusion_tomoro.yaml`, 
 
 The retrieval setting chosen on dev is `configs/fusion_rerank_tomoro_top20.yaml`: the reranker reorders the visual ranking's top 20 pages, and its order is merged with the visual ranking at equal weight. Merging in text search (dense and BM25) scored lower on dev, so text search is kept only as an evaluation baseline.
 
+## Answering
+
+The answer model (Qwen3-VL-8B, `configs/answer.yaml`) reads the top pages of the chosen ranking, each labelled `[Page i]` with its image and text, and replies in JSON: `{"answer", "pages", "found"}`. Replies that break the rules (bad JSON, unknown labels, a found answer without a cited page) are sent back with the reason, up to `retries` times. Check it on ESG first (GPU session, split over both GPUs):
+
+```python
+!python scripts/ocr_store.py pull --dataset v2_esg_reports
+!python scripts/build_chunks.py --dataset v2_esg_reports
+!python scripts/check_answer_model.py   # configs/answer.yaml
+```
+
+Reports memory, prompt length, time per question, retries, cited pages and NaN/inf scores for each number of pages and image size. Output in `results/answer_check/v2_esg_reports/` (no document text); the replies go to the log and the data folder.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).
