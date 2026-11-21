@@ -152,7 +152,7 @@ def main() -> None:
 
             def generate(chat: list[dict[str, Any]]) -> str:
                 """Call the model and keep the cost of the call."""
-                generations.append(generate_reply(model, processor, chat, cfg["max_new_tokens"]))
+                generations.append(generate_reply(model, processor, chat, cfg["max_new_tokens"], cfg.get("sdpa_backend")))
                 return generations[-1].reply
 
             try:
@@ -193,7 +193,8 @@ def main() -> None:
 
     if first_chat is not None:
         messages, reply = first_chat
-        summary["same_reply_twice"] = generate_reply(model, processor, messages, cfg["max_new_tokens"]).reply == reply
+        again = generate_reply(model, processor, messages, cfg["max_new_tokens"], cfg.get("sdpa_backend"))
+        summary["same_reply_twice"] = again.reply == reply
     write_jsonl(replies_file, all_replies)
     save()
     print(json.dumps(summary, indent=2))

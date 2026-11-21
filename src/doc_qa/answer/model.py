@@ -53,7 +53,7 @@ def load_answer_model(
         name (str): Hugging Face repo id.
         revision (str): Commit hash.
         dtype (str): Torch dtype name, e.g. "float16".
-        attn_implementation (str): Attention backend, e.g. "sdpa".
+        attn_implementation (str): Attention backend, e.g. "sdpa", or "sdpa_repeat_kv" for GPUs without FlashAttention.
         max_memory (dict[int, str] | None): Weight budget per GPU (e.g. {0: "11GiB"}), leaving room for activations.
 
     Returns:
@@ -61,6 +61,11 @@ def load_answer_model(
     """
     import torch
     from transformers import AutoModelForImageTextToText, AutoProcessor
+
+    from doc_qa.core.attention import SDPA_REPEAT_KV, register_sdpa_repeat_kv
+
+    if attn_implementation == SDPA_REPEAT_KV:
+        register_sdpa_repeat_kv()
 
     processor = AutoProcessor.from_pretrained(name, revision=revision)
     model = AutoModelForImageTextToText.from_pretrained(
@@ -89,7 +94,9 @@ def chat_inputs(processor: Any, messages: list[dict[str, Any]]) -> Any:
     return processor(text=[text], images=images or None, return_tensors="pt")
 
 
-def generate_reply(model: Any, processor: Any, messages: list[dict[str, Any]], max_new_tokens: int) -> Generation:
+def generate_reply(
+    model: Any, processor: Any, messages: list[dict[str, Any]], max_new_tokens: int, sdpa_backend: str | None = None
+) -> Generation:
     """Generate one reply greedily.
 
     Args:
@@ -97,16 +104,22 @@ def generate_reply(model: Any, processor: Any, messages: list[dict[str, Any]], m
         processor (Any): Its processor.
         messages (list[dict[str, Any]]): Chat messages.
         max_new_tokens (int): Reply length limit.
+        sdpa_backend (str | None): Only allow this attention kernel (e.g. "EFFICIENT_ATTENTION"), so a fall back to the
+            math kernel, whose memory grows with the square of the prompt, fails loudly; None allows any.
 
     Returns:
         Generation: Reply text, token counts, seconds and whether the scores stayed finite.
     """
+    import contextlib
+
     import torch
+    from torch.nn.attention import SDPBackend, sdpa_kernel
 
     inputs = chat_inputs(processor, messages).to(model.device)
     prompt_tokens = int(inputs["input_ids"].shape[1])
+    kernels = sdpa_kernel(getattr(SDPBackend, sdpa_backend)) if sdpa_backend else contextlib.nullcontext()
     start = time.perf_counter()
-    with torch.inference_mode():
+    with torch.inference_mode(), kernels:
         output = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
