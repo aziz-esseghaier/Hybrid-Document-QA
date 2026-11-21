@@ -13,4 +13,7 @@ def test_space_has_the_app_its_config_and_the_package(tmp_path):
     files = push_space.build_space(tmp_path)
     assert {"app.py", "requirements.txt", "README.md", "demo.yaml", "doc_qa/pipeline.py"} <= set(files)
     assert not any("__pycache__" in name or name.endswith(".pyc") for name in files)
-    assert "sdk: gradio" in (tmp_path / "README.md").read_text(encoding="utf-8")
+    card = (tmp_path / "README.md").read_text(encoding="utf-8")
+    assert "sdk: gradio" in card
+    [description] = [line for line in card.splitlines() if line.startswith("short_description:")]
+    assert len(description.split(":", 1)[1].strip()) <= 60  # Hugging Face's limit

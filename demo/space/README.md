@@ -8,7 +8,7 @@ sdk_version: 6.30.0
 python_version: "3.12"
 app_file: app.py
 pinned: false
-short_description: Ask questions about English and French PDFs, with cited pages
+short_description: Ask questions about PDFs, with cited pages
 ---
 
 Upload English or French PDFs and ask a question. The answer cites the pages it comes from.

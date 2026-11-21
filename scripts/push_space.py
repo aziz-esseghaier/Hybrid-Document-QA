@@ -4,8 +4,8 @@ Usage:
     python scripts/push_space.py --space <user>/doc-qa-demo [--public]
 
 Puts demo/space/ (app, requirements, Space card), configs/demo.yaml and the doc_qa package in one folder and uploads it
-as a Gradio Space (created private unless --public). Choose the ZeroGPU hardware once in the Space settings. Needs a
-Hugging Face token with write access (`hf auth login`, or HF_TOKEN).
+as a Gradio Space on ZeroGPU hardware (created private unless --public). Needs a Hugging Face account older than 30
+days with a verified email, and a token with write access (`hf auth login`, or HF_TOKEN).
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+ZEROGPU = "zero-a10g"  # huggingface_hub's name for ZeroGPU hardware (kept from its first GPU type)
 
 
 def build_space(folder: Path) -> list[str]:
@@ -57,7 +58,14 @@ def main() -> None:
     from huggingface_hub import HfApi
 
     api = HfApi()
-    api.create_repo(args.space, repo_type="space", space_sdk="gradio", private=not args.public, exist_ok=True)
+    api.create_repo(
+        args.space,
+        repo_type="space",
+        space_sdk="gradio",
+        space_hardware=ZEROGPU,  # free Gradio Spaces must be ZeroGPU: CPU ones need a PRO subscription
+        private=not args.public,
+        exist_ok=True,
+    )
     with tempfile.TemporaryDirectory() as tmp:
         files = build_space(Path(tmp))
         api.upload_folder(
