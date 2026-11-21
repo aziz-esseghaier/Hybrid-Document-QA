@@ -7,6 +7,27 @@ import re
 from dataclasses import dataclass
 
 _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
+_LABEL = re.compile(r"\s*\[?\s*(?:page\s*)?(\d+)\s*\]?\s*", re.IGNORECASE)  # 3, "3", "Page 3", "[Page 3]"
+
+
+def page_label(value: object) -> int | None:
+    """Read one cited page label, as a number or as text such as "Page 3".
+
+    Args:
+        value (object): One item of the reply's "pages" list.
+
+    Returns:
+        int | None: The label, or None if the item is not a label.
+    """
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    if isinstance(value, str) and (match := _LABEL.fullmatch(value)):
+        return int(match.group(1))
+    return None
 
 
 class InvalidAnswer(ValueError):
@@ -62,8 +83,10 @@ def parse_answer(reply: str, page_count: int) -> Answer:
         raise InvalidAnswer('"answer" must be a string')
     if not isinstance(found, bool):
         raise InvalidAnswer('"found" must be true or false')
-    if not isinstance(pages, list) or not all(isinstance(p, int) and not isinstance(p, bool) for p in pages):
-        raise InvalidAnswer('"pages" must be a list of label numbers')
+    labels = [page_label(p) for p in pages] if isinstance(pages, list) else [None]
+    if None in labels:
+        raise InvalidAnswer('"pages" must be a list of label numbers, e.g. [1, 3]')
+    pages = labels
     unknown = [p for p in pages if not 1 <= p <= page_count]
     if unknown:
         raise InvalidAnswer(f"pages {unknown} do not exist; labels go from 1 to {page_count}")

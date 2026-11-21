@@ -25,8 +25,9 @@ def test_not_found_answer():
         ('{"answer": "42", "pages": [1]}', "keys missing: found"),
         ('{"answer": 42, "pages": [1], "found": true}', '"answer" must be a string'),
         ('{"answer": "42", "pages": [1], "found": "true"}', '"found" must be true or false'),
-        ('{"answer": "42", "pages": ["1"], "found": true}', '"pages" must be a list'),
+        ('{"answer": "42", "pages": ["one"], "found": true}', '"pages" must be a list'),
         ('{"answer": "42", "pages": [true], "found": true}', '"pages" must be a list'),
+        ('{"answer": "42", "pages": 1, "found": true}', '"pages" must be a list'),
         ('{"answer": "42", "pages": [0, 4], "found": true}', r"pages \[0, 4\] do not exist"),
         ('{"answer": " ", "pages": [1], "found": true}', '"answer" is empty'),
         ('{"answer": "42", "pages": [], "found": true}', "must cite at least one page"),
@@ -36,6 +37,11 @@ def test_not_found_answer():
 def test_rejects_replies_that_break_the_rules(reply, reason):
     with pytest.raises(InvalidAnswer, match=reason):
         parse_answer(reply, 3)
+
+
+def test_labels_written_as_text_are_accepted():
+    reply = '{"answer": "42", "pages": ["2", "Page 3", "[Page 1]", 2.0], "found": true}'
+    assert parse_answer(reply, 3).pages == (2, 3, 1)
 
 
 def test_cited_labels_map_back_to_page_ids():
