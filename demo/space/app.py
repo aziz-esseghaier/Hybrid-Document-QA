@@ -21,7 +21,7 @@ from doc_qa.pipeline import answer, document_id, embed_pages, index_pages, load_
 CFG = yaml.safe_load((Path(__file__).parent / "demo.yaml").read_text(encoding="utf-8"))
 MODELS = load_models(CFG)  # moved to "cuda" at start-up; ZeroGPU emulates CUDA until a GPU function runs
 
-INTRO = """# 📄 Document Q&A
+INTRO = """# Document Q&A
 Ask questions about your PDFs, in English or French. Every answer cites the pages it comes from."""
 PLACEHOLDER = "*The answer will appear here, with the pages it comes from.*"
 
@@ -32,11 +32,6 @@ HOW_IT_WORKS = """1. **Search by image.** Each page is read as an image by a vis
 
 All models are open (Apache 2.0)."""
 
-NOTE = f"""<div id="note">Preliminary demo: answers are not checked yet.
-Only the first {CFG['max_pages_per_pdf']} pages of each PDF are read, and pages without a text layer are read from
-their image only. GPU time is limited per visitor and day; logging in to Hugging Face gives more. Documents stay in
-your browser session only. Don't upload confidential files.</div>"""
-
 CSS = """
 .gradio-container {max-width: 1200px !important; margin: 0 auto !important;}
 #answer {min-height: 140px; padding: 18px 20px; border-radius: 12px;
@@ -45,7 +40,6 @@ CSS = """
 .source {display: inline-block; margin: 2px 6px 2px 0; padding: 2px 10px; border-radius: 999px;
          background: var(--color-accent-soft); font-size: 0.9rem; white-space: nowrap;}
 .muted {opacity: 0.65; font-size: 0.85rem;}
-#note {opacity: 0.7; font-size: 0.85rem; margin-top: 8px;}
 """
 THEME = gr.themes.Soft(primary_hue="indigo", neutral_hue="slate")
 STYLE = {"theme": THEME, "css": CSS}
@@ -87,7 +81,7 @@ def documents_markdown(documents: dict, notes: list[str] | None = None) -> str:
     Returns:
         str: Markdown.
     """
-    lines = [f"📄 **{html.escape(pages[0].document)}** · {len(pages)} pages" for pages in documents.values() if pages]
+    lines = [f"**{html.escape(pages[0].document)}** · {len(pages)} pages" for pages in documents.values() if pages]
     if not lines:
         lines = ["*No document yet. Upload one or more PDFs.*"]
     return "\n\n".join([*lines, *(f"<span class='muted'>{html.escape(n)}</span>" for n in notes or [])])
@@ -103,12 +97,12 @@ def answer_markdown(result: dict) -> str:
         str: Markdown (with a little HTML for the source labels).
     """
     if result["answer"] is None:
-        return "⚠️ The model gave no usable answer. Try rephrasing the question."
+        return "The model gave no usable answer. Try rephrasing the question."
     text = html.escape(result["answer"])
     s = result["seconds"]
     timing = f"<span class='muted'>search {s['search']} s · rerank {s['rerank']} s · answer {s['answer']} s</span>"
     if not result["found"]:
-        return f"🔍 {text}\n\n<span class='muted'>Not found in the retrieved pages.</span> {timing}"
+        return f"{text}\n\n<span class='muted'>Not found in the retrieved pages.</span> {timing}"
     sources = "".join(
         f"<span class='source'>{html.escape(c['document'])} · p. {c['page']}</span>" for c in result["citations"]
     )
@@ -126,7 +120,7 @@ def gallery_items(result: dict) -> list[tuple[Image.Image, str]]:
     """
     ordered = sorted(result["pages"], key=lambda p: not p["cited"])  # stable: keeps the retrieval order within groups
     return [
-        (Image.open(io.BytesIO(p["jpeg"])), f"{'✅ cited · ' if p['cited'] else ''}{p['document']} · p. {p['page']}")
+        (Image.open(io.BytesIO(p["jpeg"])), f"{'Cited · ' if p['cited'] else ''}{p['document']} · p. {p['page']}")
         for p in ordered
     ]
 
@@ -141,10 +135,10 @@ def upload(paths: list[str] | None, documents: dict):
         if doc_id in documents:
             notes.append(f"{name}: already loaded")
             continue
-        yield documents, documents_markdown(documents, [*notes, f"⏳ Reading {name}..."])
+        yield documents, documents_markdown(documents, [*notes, f"Reading {name}..."])
         try:
             read, total = read_document(data, CFG)
-            progress = f"⏳ Indexing {len(read)} pages of {name} on the GPU..."
+            progress = f"Indexing {len(read)} pages of {name} on the GPU..."
             yield documents, documents_markdown(documents, [*notes, progress])
             vectors = embed([image for _, image, _ in read])
         except Exception as error:  # e.g. not a PDF, too large, GPU quota used up
@@ -167,12 +161,12 @@ def ask(question: str, documents: dict):
     if not question.strip():
         yield "Type a question.", []
         return
-    yield "⏳ Searching your documents and writing the answer...", []
+    yield "Searching your documents and writing the answer...", []
     pages = [page for doc_pages in documents.values() for page in doc_pages]
     try:
         result = respond(question.strip(), pages)
     except Exception as error:  # e.g. GPU quota used up
-        yield f"⚠️ Something went wrong: {html.escape(str(error))}", []
+        yield f"Something went wrong: {html.escape(str(error))}", []
         return
     yield answer_markdown(result), gallery_items(result)
 
@@ -202,7 +196,6 @@ with gr.Blocks(title="Document Q&A", **({} if STYLE_IN_LAUNCH else STYLE)) as de
             pages = gr.Gallery(
                 label="Pages read to answer (cited first)", columns=5, height="auto", object_fit="contain"
             )
-    gr.HTML(NOTE)
 
     files.upload(upload, inputs=[files, documents], outputs=[documents, status])
     remove.click(clear, outputs=[documents, status, files, reply, pages])
