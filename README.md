@@ -197,6 +197,20 @@ Answer every question that has a reference answer, under each setting in the con
 
 `results/answer_answers/<dataset>/` gets ids, cited pages, cost and a summary per setting. The answers contain document text, so they go to `--out` only (kept with the notebook output, never committed).
 
+## Web demo
+
+`demo/modal_app.py` serves a page where you upload PDFs, ask a question, and get an answer with the pages it cites. It runs on [Modal](https://modal.com): one L40S GPU holds the visual retriever, the reranker and the answer model (`configs/demo.yaml`), scales to zero after two idle minutes, and never runs more than one GPU. Pages without a text layer are read from their image only (no OCR yet), and only the first 50 pages of a PDF are indexed.
+
+```
+pip install modal
+python -m modal setup                              # log in once (opens the browser)
+modal run demo/modal_app.py::download_weights     # once: model weights into a Modal Volume, on a CPU machine
+modal serve demo/modal_app.py                      # temporary URL while it runs
+modal deploy demo/modal_app.py                     # lasting URL
+```
+
+The pipeline itself is `doc_qa.pipeline.DocumentQA`: visual search over the uploaded pages, the reranker on the top 20, the two orders merged by reciprocal rank fusion, and the answer model on the top 5 pages.
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

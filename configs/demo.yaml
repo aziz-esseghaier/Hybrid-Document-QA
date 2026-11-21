@@ -1,0 +1,42 @@
+# Demo pipeline on one GPU (e.g. L40S, 48 GB): visual search, text reranker on the top pages, answer model.
+# Models and settings follow the evaluated configs (visual_tomoro, rerank, answer, fusion_rerank_tomoro_top20).
+device: cuda:0
+dtype: float16                # the precision every model was checked in
+render_scale: 2.0             # PDF pages rendered at 144 dpi
+min_word_chars: 50            # pages with less text are read from the image only
+max_file_mb: 25
+max_pages_per_pdf: 50         # the rest of a longer PDF is left out (cost and memory)
+max_documents: 3              # oldest uploads are dropped from memory first
+thumbnail_side: 1000          # pixels, for the pages shown with the answer
+
+visual:
+  model: TomoroAI/tomoro-colqwen3-embed-4b
+  revision: 13517a29e8c5e408f7f2684337ed407df3acb212
+  attn_implementation: sdpa
+  batch_size: 4
+
+reranker:
+  model: Qwen/Qwen3-Reranker-4B
+  revision: 22e683669bc0f0bd69640a1354a6d0aebcfeede5
+  attn_implementation: sdpa
+  instruction: Given a question, judge whether this document page contains the information that answers it
+  max_tokens: 4096
+  batch_size: 4
+  candidates: 20              # top visual pages reranked
+
+fusion:                       # reranker order merged with the visual ranking
+  rrf_k: 60
+  visual_weight: 1
+  rerank_weight: 1
+
+answer:
+  model: Qwen/Qwen3-VL-8B-Instruct
+  revision: 0c351dd01ed87e9c1b53cbc748cba10e6187ff3b
+  attn_implementation: sdpa_repeat_kv
+  sdpa_backend: EFFICIENT_ATTENTION
+  max_memory: {0: 30GiB}      # what is left after the other two models; never spill weights to the CPU
+  pages: 5                    # pages given per question (to revisit once answers are judged)
+  page_tokens: 1280
+  max_text_chars: 4000
+  max_new_tokens: 512
+  retries: 2
