@@ -37,7 +37,7 @@ GPU_PACKAGES = [  # versions of the Kaggle runs the models were checked with
     "PyYAML==6.0.3",
     "python-dotenv==1.2.4",
 ]
-UI_PACKAGES = ["gradio==6.30.0", "fastapi==0.141.1", "pillow==13.0.0"]
+UI_PACKAGES = ["gradio==6.30.0", "fastapi==0.141.1"]  # gradio brings a Pillow it supports (< 13)
 
 weights = modal.Volume.from_name("doc-qa-weights", create_if_missing=True)
 gpu_image = (

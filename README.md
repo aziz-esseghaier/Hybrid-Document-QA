@@ -199,17 +199,18 @@ Answer every question that has a reference answer, under each setting in the con
 
 ## Web demo
 
-`demo/modal_app.py` serves a page where you upload PDFs, ask a question, and get an answer with the pages it cites. It runs on [Modal](https://modal.com): one L40S GPU holds the visual retriever, the reranker and the answer model (`configs/demo.yaml`), scales to zero after two idle minutes, and never runs more than one GPU. Pages without a text layer are read from their image only (no OCR yet), and only the first 50 pages of a PDF are indexed.
+A page where you upload PDFs, ask a question, and get an answer with the pages it cites. The pipeline is `doc_qa.pipeline` (`configs/demo.yaml`): visual search over the uploaded pages, the reranker on the top 20, the two orders merged by reciprocal rank fusion, and the answer model on the top 5 pages. All three models (about 35 GB in fp16) share one GPU of at least 48 GB. Pages without a text layer are read from their image only (no OCR yet), and only the first 50 pages of a PDF are indexed.
+
+It runs as a [Hugging Face ZeroGPU Space](https://huggingface.co/docs/hub/en/spaces-zerogpu) (`demo/space/`), free for accounts older than 30 days with a verified email: the GPU is attached only while a request runs, and each visitor gets a few minutes of GPU time a day. To publish it:
 
 ```
-pip install modal
-python -m modal setup                              # log in once (opens the browser)
-modal run demo/modal_app.py::download_weights     # once: model weights into a Modal Volume, on a CPU machine
-modal serve demo/modal_app.py                      # temporary URL while it runs
-modal deploy demo/modal_app.py                     # lasting URL
+hf auth login                                          # a token with write access
+python scripts/push_space.py --space <user>/doc-qa-demo  # private; add --public to share it
 ```
 
-The pipeline itself is `doc_qa.pipeline.DocumentQA`: visual search over the uploaded pages, the reranker on the top 20, the two orders merged by reciprocal rank fusion, and the answer model on the top 5 pages.
+Then select ZeroGPU in the Space settings once. The Space builds and starts by itself (the models download from the Hub on first start).
+
+`demo/modal_app.py` runs the same pipeline on [Modal](https://modal.com) (one L40S, scale to zero), which needs a payment method on the Modal account.
 
 ## Bridge check: PDF text vs OCR
 

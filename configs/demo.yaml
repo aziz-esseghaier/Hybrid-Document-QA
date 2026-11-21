@@ -1,8 +1,8 @@
-# Demo pipeline on one GPU (e.g. L40S, 48 GB): visual search, text reranker on the top pages, answer model.
+# Demo pipeline on one GPU of at least 48 GB: visual search, text reranker on the top pages, answer model.
 # Models and settings follow the evaluated configs (visual_tomoro, rerank, answer, fusion_rerank_tomoro_top20).
-device: cuda:0
+device: cuda                  # all three models (about 35 GB in fp16) on this one GPU
 dtype: float16                # the precision every model was checked in
-render_scale: 2.0             # PDF pages rendered at 144 dpi
+render_scale: 1.6             # PDF pages rendered at 115 dpi: an A4 page is about 1.3 megapixels, what both models use
 min_word_chars: 50            # pages with less text are read from the image only
 max_file_mb: 25
 max_pages_per_pdf: 50         # the rest of a longer PDF is left out (cost and memory)
@@ -33,9 +33,8 @@ answer:
   model: Qwen/Qwen3-VL-8B-Instruct
   revision: 0c351dd01ed87e9c1b53cbc748cba10e6187ff3b
   attn_implementation: sdpa_repeat_kv
-  sdpa_backend: EFFICIENT_ATTENTION
-  max_memory: {0: 30GiB}      # what is left after the other two models; never spill weights to the CPU
-  pages: 5                    # pages given per question (to revisit once answers are judged)
+  sdpa_backend: null          # any kernel: demo GPUs have FlashAttention (the T4 runs force the memory-efficient one)
+  pages: 5                  # pages given per question (to revisit once answers are judged)
   page_tokens: 1280
   max_text_chars: 4000
   max_new_tokens: 512

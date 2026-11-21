@@ -48,9 +48,14 @@ def fit_pixels(image: Image.Image, max_tokens: int) -> Image.Image:
 
 
 def load_answer_model(
-    name: str, revision: str, dtype: str, attn_implementation: str, max_memory: dict[int, str] | None = None
+    name: str,
+    revision: str,
+    dtype: str,
+    attn_implementation: str,
+    max_memory: dict[int, str] | None = None,
+    device: str | None = None,
 ) -> tuple[Any, Any]:
-    """Load the answer model spread over all GPUs, and its processor.
+    """Load the answer model and its processor, spread over all GPUs or on one device.
 
     Args:
         name (str): Hugging Face repo id.
@@ -58,6 +63,8 @@ def load_answer_model(
         dtype (str): Torch dtype name, e.g. "float16".
         attn_implementation (str): Attention backend, e.g. "sdpa", or "sdpa_repeat_kv" for GPUs without FlashAttention.
         max_memory (dict[int, str] | None): Weight budget per GPU (e.g. {0: "11GiB"}), leaving room for activations.
+        device (str | None): Put the whole model on this device instead (e.g. "cuda" on hosts that attach a GPU per
+            call); `max_memory` is then unused.
 
     Returns:
         tuple[Any, Any]: Model, processor.
@@ -71,15 +78,11 @@ def load_answer_model(
         register_sdpa_repeat_kv()
 
     processor = AutoProcessor.from_pretrained(name, revision=revision)
+    placement = {"device_map": "auto", "max_memory": max_memory} if device is None else {}
     model = AutoModelForImageTextToText.from_pretrained(
-        name,
-        revision=revision,
-        dtype=getattr(torch, dtype),
-        attn_implementation=attn_implementation,
-        device_map="auto",
-        max_memory=max_memory,
+        name, revision=revision, dtype=getattr(torch, dtype), attn_implementation=attn_implementation, **placement
     )
-    return model.eval(), processor
+    return (model if device is None else model.to(device)).eval(), processor
 
 
 def chat_inputs(processor: Any, messages: list[dict[str, Any]]) -> Any:
