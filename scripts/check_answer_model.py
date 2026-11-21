@@ -25,8 +25,7 @@ from typing import Any, Iterable
 
 import yaml
 
-from doc_qa.answer.generate import answer_with_retries
-from doc_qa.answer.model import Generation, fit_pixels, generate_reply, load_answer_model
+from doc_qa.answer.model import Generation, answer_question, fit_pixels, generate_reply, load_answer_model
 from doc_qa.answer.output import cited_page_ids
 from doc_qa.answer.prompt import PageInput, build_messages
 from doc_qa.core.config import REPO_ROOT, get_settings, load_yaml
@@ -147,23 +146,18 @@ def main() -> None:
             query = bench.queries[query_id]
             given = ranked[query_id][:pages_kept]
             pages = [PageInput(page_id, sized[page_id], texts.get(page_id, "")) for page_id in given]
-            messages = build_messages(query.text, pages, cfg["max_text_chars"])
-            generations: list[Generation] = []
-
-            def generate(chat: list[dict[str, Any]]) -> str:
-                """Call the model and keep the cost of the call."""
-                generations.append(generate_reply(model, processor, chat, cfg["max_new_tokens"], cfg.get("sdpa_backend")))
-                return generations[-1].reply
-
             try:
-                result = answer_with_retries(generate, messages, len(pages), cfg["retries"])
+                result, generations = answer_question(
+                    model, processor, query.text, pages, cfg["max_text_chars"], cfg["max_new_tokens"], cfg["retries"],
+                    cfg.get("sdpa_backend"),
+                )
             except torch.cuda.OutOfMemoryError:
                 status = f"out of memory at query {len(records) + 1}"
                 gc.collect()
                 torch.cuda.empty_cache()
                 break
             if first_chat is None:
-                first_chat = (messages, generations[0].reply)
+                first_chat = (build_messages(query.text, pages, cfg["max_text_chars"]), generations[0].reply)
             cited = tuple(cited_page_ids(result.answer, given)) if result.answer else ()
             records.append(AnswerRecord(
                 query.language, tuple(given), relevance[query_id], result.answer.found if result.answer else None,

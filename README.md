@@ -189,6 +189,14 @@ The answer model (Qwen3-VL-8B, `configs/answer.yaml`) reads the top pages of the
 
 Reports memory, prompt length, time per question, retries, cited pages and NaN/inf scores for each number of pages and image size. Output in `results/answer_check/v2_esg_reports/` (no document text); the replies go to the log and the data folder.
 
+Answer every question that has a reference answer, under each setting in the config (`pages` x `page_tokens`), resumable:
+
+```python
+!python scripts/answer_questions.py --dataset v2_esg_reports --out /kaggle/working/answers
+```
+
+`results/answer_answers/<dataset>/` gets ids, cited pages, cost and a summary per setting. The answers contain document text, so they go to `--out` only (kept with the notebook output, never committed).
+
 ## Bridge check: PDF text vs OCR
 
 Dev datasets ship page images only, so dev text comes from OCR, while the product reads the PDF text layer. This check compares both on the ESG pages whose PDF can still be downloaded (`configs/bridge.yaml`).

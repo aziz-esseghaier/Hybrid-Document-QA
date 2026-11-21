@@ -12,6 +12,9 @@ from typing import Any
 
 from PIL import Image
 
+from doc_qa.answer.generate import AnswerResult, answer_with_retries
+from doc_qa.answer.prompt import PageInput, build_messages
+
 PIXELS_PER_TOKEN = 32 * 32  # Qwen3-VL: 16-pixel patches, merged 2 x 2 into one token
 
 
@@ -132,3 +135,39 @@ def generate_reply(
     finite = all(not (torch.isnan(s).any() or torch.isposinf(s).any()) for s in output.scores)
     reply = processor.decode(new_ids, skip_special_tokens=True)
     return Generation(reply, prompt_tokens, int(new_ids.shape[0]), seconds, bool(finite))
+
+
+def answer_question(
+    model: Any,
+    processor: Any,
+    question: str,
+    pages: list[PageInput],
+    max_text_chars: int,
+    max_new_tokens: int,
+    retries: int,
+    sdpa_backend: str | None = None,
+) -> tuple[AnswerResult, list[Generation]]:
+    """Answer one question from its pages, retrying replies that break the rules.
+
+    Args:
+        model (Any): Answer model.
+        processor (Any): Its processor.
+        question (str): Question.
+        pages (list[PageInput]): Retrieved pages, best first.
+        max_text_chars (int): Characters of text kept per page.
+        max_new_tokens (int): Reply length limit.
+        retries (int): Extra attempts after the first.
+        sdpa_backend (str | None): Only allowed attention kernel, or None for any.
+
+    Returns:
+        tuple[AnswerResult, list[Generation]]: The outcome, and one generation per attempt.
+    """
+    generations: list[Generation] = []
+
+    def generate(chat: list[dict[str, Any]]) -> str:
+        """Call the model and keep the cost of the call."""
+        generations.append(generate_reply(model, processor, chat, max_new_tokens, sdpa_backend))
+        return generations[-1].reply
+
+    messages = build_messages(question, pages, max_text_chars)
+    return answer_with_retries(generate, messages, len(pages), retries), generations
