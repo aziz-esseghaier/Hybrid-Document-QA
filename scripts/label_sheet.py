@@ -123,14 +123,15 @@ def sheet_ids(text: str) -> list[dict[str, Any]]:
     return rows
 
 
-def read_sheet(text: str) -> list[dict[str, Any]]:
+def read_sheet(text: str, grader: str = "human") -> list[dict[str, Any]]:
     """Read the grades from a filled sheet.
 
     Args:
         text (str): Sheet content.
+        grader (str): Who graded, recorded with each grade.
 
     Returns:
-        list[dict[str, Any]]: {number, query_id, setting, language, grade} per graded answer.
+        list[dict[str, Any]]: {number, query_id, setting, language, grade, grader} per graded answer.
     """
     labels, current = [], None
     for line in text.splitlines():
@@ -141,7 +142,7 @@ def read_sheet(text: str) -> list[dict[str, Any]]:
             letter = line.split(":", 1)[1].strip().upper()[:1]
             if letter not in GRADES:
                 raise ValueError(f"Answer {current['number']}: write C, P or I after 'Label:' (found {letter!r}).")
-            labels.append({**current, "grade": GRADES[letter]})
+            labels.append({**current, "grade": GRADES[letter], "grader": grader})
             current = None
     return labels
 
@@ -155,6 +156,7 @@ def main() -> None:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--n", type=int, default=50)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--grader", default="human", help="read: who graded the sheet.")
     args = parser.parse_args()
 
     if args.action == "make":
@@ -167,7 +169,7 @@ def main() -> None:
         write_jsonl(args.out, rows)
         print(f"{len(rows)} answer ids -> {args.out}")
     else:
-        labels = read_sheet(args.sheet.read_text(encoding="utf-8"))
+        labels = read_sheet(args.sheet.read_text(encoding="utf-8"), args.grader)
         write_jsonl(args.out, labels)
         counts = {grade: sum(label["grade"] == grade for label in labels) for grade in GRADES.values()}
         print(f"{len(labels)} grades: {json.dumps(counts)} -> {args.out}")

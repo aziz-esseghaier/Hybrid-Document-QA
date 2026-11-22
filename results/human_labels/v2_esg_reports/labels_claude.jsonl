@@ -1,0 +1,50 @@
+{"number": 1, "query_id": "v2_esg_reports/107", "setting": "10x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 2, "query_id": "v2_esg_reports/57", "setting": "10x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 3, "query_id": "v2_esg_reports/43", "setting": "5x1280", "language": "fr", "grade": "incorrect", "grader": "claude"}
+{"number": 4, "query_id": "v2_esg_reports/63", "setting": "5x640", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 5, "query_id": "v2_esg_reports/50", "setting": "10x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 6, "query_id": "v2_esg_reports/101", "setting": "10x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 7, "query_id": "v2_esg_reports/21", "setting": "5x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 8, "query_id": "v2_esg_reports/1", "setting": "5x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 9, "query_id": "v2_esg_reports/16", "setting": "10x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 10, "query_id": "v2_esg_reports/98", "setting": "10x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 11, "query_id": "v2_esg_reports/44", "setting": "5x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 12, "query_id": "v2_esg_reports/29", "setting": "5x640", "language": "fr", "grade": "partially correct", "grader": "claude"}
+{"number": 13, "query_id": "v2_esg_reports/66", "setting": "10x1280", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 14, "query_id": "v2_esg_reports/18", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 15, "query_id": "v2_esg_reports/36", "setting": "5x1280", "language": "fr", "grade": "incorrect", "grader": "claude"}
+{"number": 16, "query_id": "v2_esg_reports/79", "setting": "10x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 17, "query_id": "v2_esg_reports/112", "setting": "10x640", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 18, "query_id": "v2_esg_reports/71", "setting": "10x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 19, "query_id": "v2_esg_reports/2", "setting": "5x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 20, "query_id": "v2_esg_reports/87", "setting": "5x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 21, "query_id": "v2_esg_reports/31", "setting": "10x1280", "language": "fr", "grade": "partially correct", "grader": "claude"}
+{"number": 22, "query_id": "v2_esg_reports/23", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 23, "query_id": "v2_esg_reports/9", "setting": "5x1280", "language": "fr", "grade": "partially correct", "grader": "claude"}
+{"number": 24, "query_id": "v2_esg_reports/95", "setting": "5x640", "language": "en", "grade": "partially correct", "grader": "claude"}
+{"number": 25, "query_id": "v2_esg_reports/78", "setting": "10x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 26, "query_id": "v2_esg_reports/32", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 27, "query_id": "v2_esg_reports/70", "setting": "5x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 28, "query_id": "v2_esg_reports/99", "setting": "5x640", "language": "en", "grade": "partially correct", "grader": "claude"}
+{"number": 29, "query_id": "v2_esg_reports/3", "setting": "10x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 30, "query_id": "v2_esg_reports/0", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 31, "query_id": "v2_esg_reports/96", "setting": "5x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 32, "query_id": "v2_esg_reports/83", "setting": "5x640", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 33, "query_id": "v2_esg_reports/51", "setting": "10x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 34, "query_id": "v2_esg_reports/82", "setting": "10x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 35, "query_id": "v2_esg_reports/85", "setting": "5x1280", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 36, "query_id": "v2_esg_reports/100", "setting": "5x640", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 37, "query_id": "v2_esg_reports/88", "setting": "10x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 38, "query_id": "v2_esg_reports/72", "setting": "10x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 39, "query_id": "v2_esg_reports/19", "setting": "5x1280", "language": "fr", "grade": "incorrect", "grader": "claude"}
+{"number": 40, "query_id": "v2_esg_reports/49", "setting": "5x640", "language": "fr", "grade": "partially correct", "grader": "claude"}
+{"number": 41, "query_id": "v2_esg_reports/105", "setting": "10x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 42, "query_id": "v2_esg_reports/42", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 43, "query_id": "v2_esg_reports/89", "setting": "5x1280", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 44, "query_id": "v2_esg_reports/92", "setting": "5x640", "language": "en", "grade": "correct", "grader": "claude"}
+{"number": 45, "query_id": "v2_esg_reports/76", "setting": "10x1280", "language": "en", "grade": "incorrect", "grader": "claude"}
+{"number": 46, "query_id": "v2_esg_reports/10", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 47, "query_id": "v2_esg_reports/24", "setting": "5x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 48, "query_id": "v2_esg_reports/12", "setting": "5x640", "language": "fr", "grade": "incorrect", "grader": "claude"}
+{"number": 49, "query_id": "v2_esg_reports/35", "setting": "10x1280", "language": "fr", "grade": "correct", "grader": "claude"}
+{"number": 50, "query_id": "v2_esg_reports/11", "setting": "10x640", "language": "fr", "grade": "correct", "grader": "claude"}
