@@ -11,8 +11,10 @@ rankings: results/fusion_rerank_tomoro_top20/{dataset}/rankings_fused.jsonl  # r
 max_text_chars: 4000          # OCR text kept per page (90% of ESG pages have under about 780 tokens)
 max_new_tokens: 512
 retries: 2                    # extra attempts when a reply breaks the rules
-pages: [5, 10]                # answer_questions.py: one answer per question for each number of pages ...
-page_tokens: [640, 1280]      # ... and each image token budget per page (32 x 32 pixels per token)
+# answer_questions.py answers each question once per setting (pages given x image tokens per page). Chosen on ESG dev
+# (results/answer_settings/): 5 x 1280 is within 3 points of the best (not significant) at half its time.
+pages: [5]
+page_tokens: [1280]           # 32 x 32 pixels per token
 
 check:                        # does the model run on 2 x T4, and at what cost?
   dataset: v2_esg_reports
