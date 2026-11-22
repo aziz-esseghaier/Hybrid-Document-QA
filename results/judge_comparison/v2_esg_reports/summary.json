@@ -1,0 +1,70 @@
+{
+  "gemma4_31b": {
+    "answers": 50,
+    "agreement": 0.84,
+    "kappa": 0.6992,
+    "agreement_correct_or_not": 0.86,
+    "kappa_correct_or_not": 0.7009,
+    "accuracy_by_hand": 0.66,
+    "accuracy_by_judge": 0.6,
+    "confusion": {
+      "correct": {
+        "correct": 28,
+        "partially correct": 5
+      },
+      "partially correct": {
+        "correct": 2,
+        "incorrect": 1,
+        "partially correct": 3
+      },
+      "incorrect": {
+        "incorrect": 11
+      }
+    },
+    "missing": 0,
+    "en": {
+      "answers": 25,
+      "agreement": 0.92,
+      "agreement_correct_or_not": 0.92
+    },
+    "fr": {
+      "answers": 25,
+      "agreement": 0.76,
+      "agreement_correct_or_not": 0.8
+    }
+  },
+  "mistral_small_32": {
+    "answers": 50,
+    "agreement": 0.58,
+    "kappa": 0.3578,
+    "agreement_correct_or_not": 0.7,
+    "kappa_correct_or_not": 0.4361,
+    "accuracy_by_hand": 0.66,
+    "accuracy_by_judge": 0.4,
+    "confusion": {
+      "correct": {
+        "correct": 19,
+        "partially correct": 14
+      },
+      "partially correct": {
+        "correct": 1,
+        "partially correct": 5
+      },
+      "incorrect": {
+        "incorrect": 5,
+        "partially correct": 6
+      }
+    },
+    "missing": 0,
+    "en": {
+      "answers": 25,
+      "agreement": 0.68,
+      "agreement_correct_or_not": 0.76
+    },
+    "fr": {
+      "answers": 25,
+      "agreement": 0.48,
+      "agreement_correct_or_not": 0.64
+    }
+  }
+}

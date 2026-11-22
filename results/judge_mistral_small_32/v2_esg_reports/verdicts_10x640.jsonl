@@ -1,0 +1,14 @@
+{"query_id": "v2_esg_reports/0", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 5.58, "prompt_tokens": 516, "finite": true}
+{"query_id": "v2_esg_reports/10", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 7.18, "prompt_tokens": 328, "finite": true}
+{"query_id": "v2_esg_reports/101", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 6.46, "prompt_tokens": 453, "finite": true}
+{"query_id": "v2_esg_reports/11", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 6.92, "prompt_tokens": 362, "finite": true}
+{"query_id": "v2_esg_reports/112", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 5.61, "prompt_tokens": 284, "finite": true}
+{"query_id": "v2_esg_reports/18", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 17.13, "prompt_tokens": 1398, "finite": true}
+{"query_id": "v2_esg_reports/23", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 5.61, "prompt_tokens": 317, "finite": true}
+{"query_id": "v2_esg_reports/32", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.85, "prompt_tokens": 1213, "finite": true}
+{"query_id": "v2_esg_reports/42", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 8.17, "prompt_tokens": 543, "finite": true}
+{"query_id": "v2_esg_reports/57", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 5.58, "prompt_tokens": 513, "finite": true}
+{"query_id": "v2_esg_reports/71", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 7.39, "prompt_tokens": 420, "finite": true}
+{"query_id": "v2_esg_reports/72", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 7.85, "prompt_tokens": 460, "finite": true}
+{"query_id": "v2_esg_reports/82", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.6, "prompt_tokens": 1371, "finite": true}
+{"query_id": "v2_esg_reports/98", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 5.77, "prompt_tokens": 317, "finite": true}

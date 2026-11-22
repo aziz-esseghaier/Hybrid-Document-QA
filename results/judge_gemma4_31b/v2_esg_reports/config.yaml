@@ -1,0 +1,21 @@
+max_new_tokens: 256
+retries: 2
+max_reference_chars: 8000
+judges:
+  gemma4_31b:
+    model: unsloth/gemma-4-31B-it-unsloth-bnb-4bit
+    revision: 8e256fc6d63003fc0ca8c91b976e6dcc38433385
+    template_kwargs:
+      enable_thinking: false
+    max_memory:
+      0: 9GiB
+      1: 13GiB
+  mistral_small_32:
+    model: unsloth/Mistral-Small-3.2-24B-Instruct-2506-bnb-4bit
+    revision: 07735581e6480b532be5e8433813df15108cb66a
+    system_prompt: You grade answers carefully and reply only with the JSON asked
+      for.
+    max_memory:
+      0: 9GiB
+      1: 13GiB
+judge: gemma4_31b
