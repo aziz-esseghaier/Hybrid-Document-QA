@@ -10,3 +10,105 @@
 {"query_id": "v2_esg_reports/89", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 20.06, "prompt_tokens": 1133, "finite": true}
 {"query_id": "v2_esg_reports/9", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 13.37, "prompt_tokens": 334, "finite": true}
 {"query_id": "v2_esg_reports/96", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.34, "prompt_tokens": 363, "finite": true}
+{"query_id": "v2_esg_reports/0", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.67, "prompt_tokens": 522, "finite": true}
+{"query_id": "v2_esg_reports/1", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.44, "prompt_tokens": 281, "finite": true}
+{"query_id": "v2_esg_reports/10", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.19, "prompt_tokens": 329, "finite": true}
+{"query_id": "v2_esg_reports/100", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.37, "prompt_tokens": 281, "finite": true}
+{"query_id": "v2_esg_reports/101", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.02, "prompt_tokens": 435, "finite": true}
+{"query_id": "v2_esg_reports/102", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.92, "prompt_tokens": 704, "finite": true}
+{"query_id": "v2_esg_reports/103", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.36, "prompt_tokens": 360, "finite": true}
+{"query_id": "v2_esg_reports/104", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 18.36, "prompt_tokens": 836, "finite": true}
+{"query_id": "v2_esg_reports/105", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.29, "prompt_tokens": 637, "finite": true}
+{"query_id": "v2_esg_reports/106", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.5, "prompt_tokens": 450, "finite": true}
+{"query_id": "v2_esg_reports/107", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.61, "prompt_tokens": 475, "finite": true}
+{"query_id": "v2_esg_reports/108", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.77, "prompt_tokens": 565, "finite": true}
+{"query_id": "v2_esg_reports/109", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.73, "prompt_tokens": 500, "finite": true}
+{"query_id": "v2_esg_reports/11", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.29, "prompt_tokens": 342, "finite": true}
+{"query_id": "v2_esg_reports/110", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.7, "prompt_tokens": 479, "finite": true}
+{"query_id": "v2_esg_reports/111", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.72, "prompt_tokens": 484, "finite": true}
+{"query_id": "v2_esg_reports/112", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": true, "attempts": 0, "seconds": 0.0, "prompt_tokens": 0, "finite": true}
+{"query_id": "v2_esg_reports/113", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": true, "attempts": 0, "seconds": 0.0, "prompt_tokens": 0, "finite": true}
+{"query_id": "v2_esg_reports/12", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.47, "prompt_tokens": 311, "finite": true}
+{"query_id": "v2_esg_reports/13", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.62, "prompt_tokens": 394, "finite": true}
+{"query_id": "v2_esg_reports/14", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.65, "prompt_tokens": 520, "finite": true}
+{"query_id": "v2_esg_reports/15", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 12.1, "prompt_tokens": 448, "finite": true}
+{"query_id": "v2_esg_reports/16", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.84, "prompt_tokens": 712, "finite": true}
+{"query_id": "v2_esg_reports/17", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.14, "prompt_tokens": 415, "finite": true}
+{"query_id": "v2_esg_reports/18", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 18.18, "prompt_tokens": 1478, "finite": true}
+{"query_id": "v2_esg_reports/20", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 15.91, "prompt_tokens": 313, "finite": true}
+{"query_id": "v2_esg_reports/22", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.34, "prompt_tokens": 813, "finite": true}
+{"query_id": "v2_esg_reports/23", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.0, "prompt_tokens": 318, "finite": true}
+{"query_id": "v2_esg_reports/25", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.25, "prompt_tokens": 1376, "finite": true}
+{"query_id": "v2_esg_reports/26", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 13.5, "prompt_tokens": 533, "finite": true}
+{"query_id": "v2_esg_reports/27", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.97, "prompt_tokens": 1993, "finite": true}
+{"query_id": "v2_esg_reports/28", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.66, "prompt_tokens": 679, "finite": true}
+{"query_id": "v2_esg_reports/29", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.08, "prompt_tokens": 1117, "finite": true}
+{"query_id": "v2_esg_reports/3", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.27, "prompt_tokens": 592, "finite": true}
+{"query_id": "v2_esg_reports/30", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.06, "prompt_tokens": 302, "finite": true}
+{"query_id": "v2_esg_reports/31", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.56, "prompt_tokens": 1961, "finite": true}
+{"query_id": "v2_esg_reports/32", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 18.63, "prompt_tokens": 1252, "finite": true}
+{"query_id": "v2_esg_reports/33", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.18, "prompt_tokens": 496, "finite": true}
+{"query_id": "v2_esg_reports/34", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.07, "prompt_tokens": 247, "finite": true}
+{"query_id": "v2_esg_reports/35", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.45, "prompt_tokens": 449, "finite": true}
+{"query_id": "v2_esg_reports/37", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 14.48, "prompt_tokens": 482, "finite": true}
+{"query_id": "v2_esg_reports/38", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.4, "prompt_tokens": 519, "finite": true}
+{"query_id": "v2_esg_reports/39", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.45, "prompt_tokens": 389, "finite": true}
+{"query_id": "v2_esg_reports/4", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.77, "prompt_tokens": 402, "finite": true}
+{"query_id": "v2_esg_reports/40", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.14, "prompt_tokens": 319, "finite": true}
+{"query_id": "v2_esg_reports/41", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.07, "prompt_tokens": 312, "finite": true}
+{"query_id": "v2_esg_reports/42", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.16, "prompt_tokens": 518, "finite": true}
+{"query_id": "v2_esg_reports/45", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.27, "prompt_tokens": 724, "finite": true}
+{"query_id": "v2_esg_reports/46", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.03, "prompt_tokens": 449, "finite": true}
+{"query_id": "v2_esg_reports/47", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 16.05, "prompt_tokens": 803, "finite": true}
+{"query_id": "v2_esg_reports/48", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.25, "prompt_tokens": 625, "finite": true}
+{"query_id": "v2_esg_reports/49", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 12.73, "prompt_tokens": 482, "finite": true}
+{"query_id": "v2_esg_reports/5", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.49, "prompt_tokens": 496, "finite": true}
+{"query_id": "v2_esg_reports/50", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.89, "prompt_tokens": 420, "finite": true}
+{"query_id": "v2_esg_reports/51", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.83, "prompt_tokens": 545, "finite": true}
+{"query_id": "v2_esg_reports/52", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.47, "prompt_tokens": 513, "finite": true}
+{"query_id": "v2_esg_reports/53", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.56, "prompt_tokens": 481, "finite": true}
+{"query_id": "v2_esg_reports/54", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.11, "prompt_tokens": 491, "finite": true}
+{"query_id": "v2_esg_reports/55", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.19, "prompt_tokens": 287, "finite": true}
+{"query_id": "v2_esg_reports/56", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 7.15, "prompt_tokens": 249, "finite": true}
+{"query_id": "v2_esg_reports/57", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.9, "prompt_tokens": 520, "finite": true}
+{"query_id": "v2_esg_reports/58", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.55, "prompt_tokens": 277, "finite": true}
+{"query_id": "v2_esg_reports/59", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 22.12, "prompt_tokens": 1322, "finite": true}
+{"query_id": "v2_esg_reports/6", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.08, "prompt_tokens": 486, "finite": true}
+{"query_id": "v2_esg_reports/60", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.82, "prompt_tokens": 606, "finite": true}
+{"query_id": "v2_esg_reports/61", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.83, "prompt_tokens": 366, "finite": true}
+{"query_id": "v2_esg_reports/62", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.73, "prompt_tokens": 524, "finite": true}
+{"query_id": "v2_esg_reports/63", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.18, "prompt_tokens": 499, "finite": true}
+{"query_id": "v2_esg_reports/64", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.87, "prompt_tokens": 968, "finite": true}
+{"query_id": "v2_esg_reports/65", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 12.36, "prompt_tokens": 383, "finite": true}
+{"query_id": "v2_esg_reports/66", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.25, "prompt_tokens": 392, "finite": true}
+{"query_id": "v2_esg_reports/67", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.98, "prompt_tokens": 320, "finite": true}
+{"query_id": "v2_esg_reports/68", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.47, "prompt_tokens": 325, "finite": true}
+{"query_id": "v2_esg_reports/69", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.18, "prompt_tokens": 273, "finite": true}
+{"query_id": "v2_esg_reports/7", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.11, "prompt_tokens": 1112, "finite": true}
+{"query_id": "v2_esg_reports/71", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": true, "attempts": 0, "seconds": 0.0, "prompt_tokens": 0, "finite": true}
+{"query_id": "v2_esg_reports/72", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.86, "prompt_tokens": 463, "finite": true}
+{"query_id": "v2_esg_reports/73", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.94, "prompt_tokens": 630, "finite": true}
+{"query_id": "v2_esg_reports/74", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.17, "prompt_tokens": 412, "finite": true}
+{"query_id": "v2_esg_reports/75", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.56, "prompt_tokens": 1418, "finite": true}
+{"query_id": "v2_esg_reports/76", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.29, "prompt_tokens": 474, "finite": true}
+{"query_id": "v2_esg_reports/77", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.69, "prompt_tokens": 311, "finite": true}
+{"query_id": "v2_esg_reports/78", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 21.37, "prompt_tokens": 1391, "finite": true}
+{"query_id": "v2_esg_reports/79", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 18.95, "prompt_tokens": 1188, "finite": true}
+{"query_id": "v2_esg_reports/8", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 12.83, "prompt_tokens": 404, "finite": true}
+{"query_id": "v2_esg_reports/80", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.56, "prompt_tokens": 339, "finite": true}
+{"query_id": "v2_esg_reports/81", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.72, "prompt_tokens": 455, "finite": true}
+{"query_id": "v2_esg_reports/82", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.29, "prompt_tokens": 1386, "finite": true}
+{"query_id": "v2_esg_reports/83", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 18.82, "prompt_tokens": 583, "finite": true}
+{"query_id": "v2_esg_reports/84", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.93, "prompt_tokens": 1960, "finite": true}
+{"query_id": "v2_esg_reports/86", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.5, "prompt_tokens": 1169, "finite": true}
+{"query_id": "v2_esg_reports/87", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.14, "prompt_tokens": 299, "finite": true}
+{"query_id": "v2_esg_reports/88", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.5, "prompt_tokens": 1952, "finite": true}
+{"query_id": "v2_esg_reports/90", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.25, "prompt_tokens": 415, "finite": true}
+{"query_id": "v2_esg_reports/91", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 9.98, "prompt_tokens": 248, "finite": true}
+{"query_id": "v2_esg_reports/92", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.98, "prompt_tokens": 493, "finite": true}
+{"query_id": "v2_esg_reports/93", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.06, "prompt_tokens": 486, "finite": true}
+{"query_id": "v2_esg_reports/94", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.95, "prompt_tokens": 451, "finite": true}
+{"query_id": "v2_esg_reports/95", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.27, "prompt_tokens": 589, "finite": true}
+{"query_id": "v2_esg_reports/97", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.14, "prompt_tokens": 314, "finite": true}
+{"query_id": "v2_esg_reports/98", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.07, "prompt_tokens": 310, "finite": true}
+{"query_id": "v2_esg_reports/99", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.71, "prompt_tokens": 408, "finite": true}

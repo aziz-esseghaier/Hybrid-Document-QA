@@ -12,3 +12,103 @@
 {"query_id": "v2_esg_reports/72", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.72, "prompt_tokens": 463, "finite": true}
 {"query_id": "v2_esg_reports/82", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 22.54, "prompt_tokens": 1418, "finite": true}
 {"query_id": "v2_esg_reports/98", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.76, "prompt_tokens": 310, "finite": true}
+{"query_id": "v2_esg_reports/1", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.19, "prompt_tokens": 281, "finite": true}
+{"query_id": "v2_esg_reports/100", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.08, "prompt_tokens": 324, "finite": true}
+{"query_id": "v2_esg_reports/102", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.69, "prompt_tokens": 710, "finite": true}
+{"query_id": "v2_esg_reports/103", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 15.55, "prompt_tokens": 391, "finite": true}
+{"query_id": "v2_esg_reports/104", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 17.93, "prompt_tokens": 897, "finite": true}
+{"query_id": "v2_esg_reports/105", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.49, "prompt_tokens": 640, "finite": true}
+{"query_id": "v2_esg_reports/106", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.94, "prompt_tokens": 476, "finite": true}
+{"query_id": "v2_esg_reports/107", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.3, "prompt_tokens": 418, "finite": true}
+{"query_id": "v2_esg_reports/108", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.17, "prompt_tokens": 619, "finite": true}
+{"query_id": "v2_esg_reports/109", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 12.6, "prompt_tokens": 499, "finite": true}
+{"query_id": "v2_esg_reports/110", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.82, "prompt_tokens": 479, "finite": true}
+{"query_id": "v2_esg_reports/111", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.36, "prompt_tokens": 451, "finite": true}
+{"query_id": "v2_esg_reports/113", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 7.23, "prompt_tokens": 247, "finite": true}
+{"query_id": "v2_esg_reports/12", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.21, "prompt_tokens": 402, "finite": true}
+{"query_id": "v2_esg_reports/13", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.85, "prompt_tokens": 522, "finite": true}
+{"query_id": "v2_esg_reports/14", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.37, "prompt_tokens": 492, "finite": true}
+{"query_id": "v2_esg_reports/15", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.76, "prompt_tokens": 513, "finite": true}
+{"query_id": "v2_esg_reports/16", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.99, "prompt_tokens": 700, "finite": true}
+{"query_id": "v2_esg_reports/17", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.2, "prompt_tokens": 415, "finite": true}
+{"query_id": "v2_esg_reports/19", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.24, "prompt_tokens": 484, "finite": true}
+{"query_id": "v2_esg_reports/2", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 20.02, "prompt_tokens": 1368, "finite": true}
+{"query_id": "v2_esg_reports/20", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.12, "prompt_tokens": 314, "finite": true}
+{"query_id": "v2_esg_reports/21", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 19.01, "prompt_tokens": 1338, "finite": true}
+{"query_id": "v2_esg_reports/22", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.24, "prompt_tokens": 811, "finite": true}
+{"query_id": "v2_esg_reports/24", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 11.86, "prompt_tokens": 418, "finite": true}
+{"query_id": "v2_esg_reports/25", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 24.48, "prompt_tokens": 1373, "finite": true}
+{"query_id": "v2_esg_reports/26", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.01, "prompt_tokens": 558, "finite": true}
+{"query_id": "v2_esg_reports/27", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.44, "prompt_tokens": 1943, "finite": true}
+{"query_id": "v2_esg_reports/28", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.02, "prompt_tokens": 721, "finite": true}
+{"query_id": "v2_esg_reports/29", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.98, "prompt_tokens": 1089, "finite": true}
+{"query_id": "v2_esg_reports/3", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.37, "prompt_tokens": 592, "finite": true}
+{"query_id": "v2_esg_reports/30", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.06, "prompt_tokens": 302, "finite": true}
+{"query_id": "v2_esg_reports/31", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 24.67, "prompt_tokens": 1926, "finite": true}
+{"query_id": "v2_esg_reports/33", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.19, "prompt_tokens": 447, "finite": true}
+{"query_id": "v2_esg_reports/34", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 9.68, "prompt_tokens": 240, "finite": true}
+{"query_id": "v2_esg_reports/35", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.16, "prompt_tokens": 412, "finite": true}
+{"query_id": "v2_esg_reports/36", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 15.89, "prompt_tokens": 582, "finite": true}
+{"query_id": "v2_esg_reports/37", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.59, "prompt_tokens": 552, "finite": true}
+{"query_id": "v2_esg_reports/38", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.5, "prompt_tokens": 547, "finite": true}
+{"query_id": "v2_esg_reports/39", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.85, "prompt_tokens": 396, "finite": true}
+{"query_id": "v2_esg_reports/4", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 14.42, "prompt_tokens": 452, "finite": true}
+{"query_id": "v2_esg_reports/40", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.18, "prompt_tokens": 319, "finite": true}
+{"query_id": "v2_esg_reports/41", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.1, "prompt_tokens": 312, "finite": true}
+{"query_id": "v2_esg_reports/43", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.27, "prompt_tokens": 382, "finite": true}
+{"query_id": "v2_esg_reports/44", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.84, "prompt_tokens": 430, "finite": true}
+{"query_id": "v2_esg_reports/45", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.46, "prompt_tokens": 758, "finite": true}
+{"query_id": "v2_esg_reports/46", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.45, "prompt_tokens": 404, "finite": true}
+{"query_id": "v2_esg_reports/47", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 16.63, "prompt_tokens": 822, "finite": true}
+{"query_id": "v2_esg_reports/48", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.95, "prompt_tokens": 649, "finite": true}
+{"query_id": "v2_esg_reports/49", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.03, "prompt_tokens": 539, "finite": true}
+{"query_id": "v2_esg_reports/5", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.38, "prompt_tokens": 569, "finite": true}
+{"query_id": "v2_esg_reports/50", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.9, "prompt_tokens": 430, "finite": true}
+{"query_id": "v2_esg_reports/51", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.38, "prompt_tokens": 672, "finite": true}
+{"query_id": "v2_esg_reports/52", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.11, "prompt_tokens": 516, "finite": true}
+{"query_id": "v2_esg_reports/53", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.5, "prompt_tokens": 481, "finite": true}
+{"query_id": "v2_esg_reports/54", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.19, "prompt_tokens": 478, "finite": true}
+{"query_id": "v2_esg_reports/55", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 2, "seconds": 49.42, "prompt_tokens": 282, "finite": true}
+{"query_id": "v2_esg_reports/56", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 7.15, "prompt_tokens": 249, "finite": true}
+{"query_id": "v2_esg_reports/58", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.36, "prompt_tokens": 277, "finite": true}
+{"query_id": "v2_esg_reports/59", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.19, "prompt_tokens": 1327, "finite": true}
+{"query_id": "v2_esg_reports/6", "language": "fr", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.15, "prompt_tokens": 569, "finite": true}
+{"query_id": "v2_esg_reports/60", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.79, "prompt_tokens": 598, "finite": true}
+{"query_id": "v2_esg_reports/61", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 13.55, "prompt_tokens": 412, "finite": true}
+{"query_id": "v2_esg_reports/62", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.88, "prompt_tokens": 503, "finite": true}
+{"query_id": "v2_esg_reports/63", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.38, "prompt_tokens": 486, "finite": true}
+{"query_id": "v2_esg_reports/64", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.07, "prompt_tokens": 995, "finite": true}
+{"query_id": "v2_esg_reports/65", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 13.57, "prompt_tokens": 420, "finite": true}
+{"query_id": "v2_esg_reports/66", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 13.67, "prompt_tokens": 362, "finite": true}
+{"query_id": "v2_esg_reports/67", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.93, "prompt_tokens": 320, "finite": true}
+{"query_id": "v2_esg_reports/68", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.51, "prompt_tokens": 325, "finite": true}
+{"query_id": "v2_esg_reports/69", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.74, "prompt_tokens": 356, "finite": true}
+{"query_id": "v2_esg_reports/7", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 17.29, "prompt_tokens": 975, "finite": true}
+{"query_id": "v2_esg_reports/70", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.54, "prompt_tokens": 403, "finite": true}
+{"query_id": "v2_esg_reports/73", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.25, "prompt_tokens": 676, "finite": true}
+{"query_id": "v2_esg_reports/74", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.2, "prompt_tokens": 412, "finite": true}
+{"query_id": "v2_esg_reports/75", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 23.54, "prompt_tokens": 1551, "finite": true}
+{"query_id": "v2_esg_reports/76", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 15.01, "prompt_tokens": 430, "finite": true}
+{"query_id": "v2_esg_reports/77", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.2, "prompt_tokens": 311, "finite": true}
+{"query_id": "v2_esg_reports/78", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.78, "prompt_tokens": 1394, "finite": true}
+{"query_id": "v2_esg_reports/79", "language": "en", "setting": "10x640", "label": "incorrect", "auto": true, "attempts": 0, "seconds": 0.0, "prompt_tokens": 0, "finite": true}
+{"query_id": "v2_esg_reports/8", "language": "fr", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 11.7, "prompt_tokens": 392, "finite": true}
+{"query_id": "v2_esg_reports/80", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 9.36, "prompt_tokens": 317, "finite": true}
+{"query_id": "v2_esg_reports/81", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.33, "prompt_tokens": 422, "finite": true}
+{"query_id": "v2_esg_reports/83", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.66, "prompt_tokens": 516, "finite": true}
+{"query_id": "v2_esg_reports/84", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 21.71, "prompt_tokens": 1912, "finite": true}
+{"query_id": "v2_esg_reports/85", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.43, "prompt_tokens": 666, "finite": true}
+{"query_id": "v2_esg_reports/86", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.41, "prompt_tokens": 1193, "finite": true}
+{"query_id": "v2_esg_reports/87", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.0, "prompt_tokens": 299, "finite": true}
+{"query_id": "v2_esg_reports/88", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 22.11, "prompt_tokens": 2018, "finite": true}
+{"query_id": "v2_esg_reports/89", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.57, "prompt_tokens": 1127, "finite": true}
+{"query_id": "v2_esg_reports/9", "language": "fr", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 12.01, "prompt_tokens": 369, "finite": true}
+{"query_id": "v2_esg_reports/90", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.67, "prompt_tokens": 424, "finite": true}
+{"query_id": "v2_esg_reports/91", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 9.82, "prompt_tokens": 239, "finite": true}
+{"query_id": "v2_esg_reports/92", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.84, "prompt_tokens": 428, "finite": true}
+{"query_id": "v2_esg_reports/93", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 12.1, "prompt_tokens": 486, "finite": true}
+{"query_id": "v2_esg_reports/94", "language": "en", "setting": "10x640", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 10.65, "prompt_tokens": 395, "finite": true}
+{"query_id": "v2_esg_reports/95", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.42, "prompt_tokens": 510, "finite": true}
+{"query_id": "v2_esg_reports/96", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 8.7, "prompt_tokens": 363, "finite": true}
+{"query_id": "v2_esg_reports/97", "language": "en", "setting": "10x640", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.13, "prompt_tokens": 314, "finite": true}
+{"query_id": "v2_esg_reports/99", "language": "en", "setting": "10x640", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 11.74, "prompt_tokens": 455, "finite": true}

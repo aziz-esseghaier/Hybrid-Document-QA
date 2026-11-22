@@ -1,105 +1,105 @@
 {
   "10x1280": {
     "all": {
-      "questions": 13,
-      "accuracy": 0.6154,
-      "correct": 8,
-      "partially correct": 3,
-      "incorrect": 2,
+      "questions": 114,
+      "accuracy": 0.6053,
+      "correct": 69,
+      "partially correct": 19,
+      "incorrect": 26,
       "unjudged": 0
     },
     "en": {
-      "questions": 7,
-      "accuracy": 0.7143,
-      "correct": 5,
-      "partially correct": 0,
-      "incorrect": 2,
+      "questions": 57,
+      "accuracy": 0.614,
+      "correct": 35,
+      "partially correct": 7,
+      "incorrect": 15,
       "unjudged": 0
     },
     "fr": {
-      "questions": 6,
-      "accuracy": 0.5,
-      "correct": 3,
-      "partially correct": 3,
-      "incorrect": 0,
+      "questions": 57,
+      "accuracy": 0.5965,
+      "correct": 34,
+      "partially correct": 12,
+      "incorrect": 11,
       "unjudged": 0
     }
   },
   "10x640": {
     "all": {
-      "questions": 14,
-      "accuracy": 0.9286,
-      "correct": 13,
-      "partially correct": 0,
-      "incorrect": 1,
+      "questions": 114,
+      "accuracy": 0.5614,
+      "correct": 64,
+      "partially correct": 20,
+      "incorrect": 30,
       "unjudged": 0
     },
     "fr": {
-      "questions": 7,
-      "accuracy": 1.0,
-      "correct": 7,
-      "partially correct": 0,
-      "incorrect": 0,
+      "questions": 57,
+      "accuracy": 0.5439,
+      "correct": 31,
+      "partially correct": 13,
+      "incorrect": 13,
       "unjudged": 0
     },
     "en": {
-      "questions": 7,
-      "accuracy": 0.8571,
-      "correct": 6,
-      "partially correct": 0,
-      "incorrect": 1,
+      "questions": 57,
+      "accuracy": 0.5789,
+      "correct": 33,
+      "partially correct": 7,
+      "incorrect": 17,
       "unjudged": 0
     }
   },
   "5x1280": {
     "all": {
-      "questions": 12,
-      "accuracy": 0.3333,
-      "correct": 4,
-      "partially correct": 4,
-      "incorrect": 4,
+      "questions": 114,
+      "accuracy": 0.5789,
+      "correct": 66,
+      "partially correct": 19,
+      "incorrect": 29,
       "unjudged": 0
     },
     "fr": {
-      "questions": 8,
-      "accuracy": 0.25,
-      "correct": 2,
-      "partially correct": 3,
-      "incorrect": 3,
+      "questions": 57,
+      "accuracy": 0.5263,
+      "correct": 30,
+      "partially correct": 15,
+      "incorrect": 12,
       "unjudged": 0
     },
     "en": {
-      "questions": 4,
-      "accuracy": 0.5,
-      "correct": 2,
-      "partially correct": 1,
-      "incorrect": 1,
+      "questions": 57,
+      "accuracy": 0.6316,
+      "correct": 36,
+      "partially correct": 4,
+      "incorrect": 17,
       "unjudged": 0
     }
   },
   "5x640": {
     "all": {
-      "questions": 11,
-      "accuracy": 0.4545,
-      "correct": 5,
-      "partially correct": 1,
-      "incorrect": 5,
+      "questions": 114,
+      "accuracy": 0.5614,
+      "correct": 64,
+      "partially correct": 19,
+      "incorrect": 31,
       "unjudged": 0
     },
     "fr": {
-      "questions": 4,
-      "accuracy": 0.5,
-      "correct": 2,
-      "partially correct": 0,
-      "incorrect": 2,
+      "questions": 57,
+      "accuracy": 0.5789,
+      "correct": 33,
+      "partially correct": 10,
+      "incorrect": 14,
       "unjudged": 0
     },
     "en": {
-      "questions": 7,
-      "accuracy": 0.4286,
-      "correct": 3,
-      "partially correct": 1,
-      "incorrect": 3,
+      "questions": 57,
+      "accuracy": 0.5439,
+      "correct": 31,
+      "partially correct": 9,
+      "incorrect": 17,
       "unjudged": 0
     }
   }

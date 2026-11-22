@@ -1,3 +1,4 @@
+judge: gemma4_31b
 max_new_tokens: 256
 retries: 2
 max_reference_chars: 8000
@@ -18,4 +19,3 @@ judges:
     max_memory:
       0: 9GiB
       1: 13GiB
-judge: gemma4_31b

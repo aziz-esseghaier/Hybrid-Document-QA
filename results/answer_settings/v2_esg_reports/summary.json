@@ -1,0 +1,96 @@
+{
+  "questions": 114,
+  "settings": {
+    "10x1280": {
+      "accuracy": {
+        "mean": 0.6053,
+        "low": 0.5088,
+        "high": 0.7034
+      },
+      "correct_or_partial": 0.7719,
+      "en": {
+        "questions": 57,
+        "accuracy": 0.614
+      },
+      "fr": {
+        "questions": 57,
+        "accuracy": 0.5965
+      },
+      "seconds_per_question": 64.3,
+      "prompt_tokens": 17646.0
+    },
+    "10x640": {
+      "accuracy": {
+        "mean": 0.5614,
+        "low": 0.4561,
+        "high": 0.6607
+      },
+      "correct_or_partial": 0.7368,
+      "en": {
+        "questions": 57,
+        "accuracy": 0.5789
+      },
+      "fr": {
+        "questions": 57,
+        "accuracy": 0.5439
+      },
+      "seconds_per_question": 38.0,
+      "prompt_tokens": 11195.2
+    },
+    "5x1280": {
+      "accuracy": {
+        "mean": 0.5789,
+        "low": 0.4746,
+        "high": 0.6842
+      },
+      "correct_or_partial": 0.7456,
+      "en": {
+        "questions": 57,
+        "accuracy": 0.6316
+      },
+      "fr": {
+        "questions": 57,
+        "accuracy": 0.5263
+      },
+      "seconds_per_question": 31.1,
+      "prompt_tokens": 9001.9
+    },
+    "5x640": {
+      "accuracy": {
+        "mean": 0.5614,
+        "low": 0.4561,
+        "high": 0.6607
+      },
+      "correct_or_partial": 0.7281,
+      "en": {
+        "questions": 57,
+        "accuracy": 0.5439
+      },
+      "fr": {
+        "questions": 57,
+        "accuracy": 0.5789
+      },
+      "seconds_per_question": 20.5,
+      "prompt_tokens": 5762.4
+    }
+  },
+  "best": "10x1280",
+  "minus_best": {
+    "10x640": {
+      "mean": -0.0439,
+      "low": -0.1429,
+      "high": 0.0536
+    },
+    "5x1280": {
+      "mean": -0.0263,
+      "low": -0.1071,
+      "high": 0.0536
+    },
+    "5x640": {
+      "mean": -0.0439,
+      "low": -0.125,
+      "high": 0.0357
+    }
+  },
+  "judge": "gemma4_31b"
+}
