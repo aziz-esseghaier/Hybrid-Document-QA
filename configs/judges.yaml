@@ -1,4 +1,6 @@
-# Candidate judges for answer accuracy; one is chosen once by agreement with hand grades, then never changed.
+# Judges for answer accuracy. The judge is gemma4_31b, chosen once by agreement with reference grades on 50 ESG dev
+# answers (results/judge_comparison/), and never changed. mistral_small_32 was the other candidate.
+judge: gemma4_31b
 # Unsloth's 4-bit (NF4) copies of the original models: the originals (62 and 48 GB in bf16) don't fit Kaggle's disk.
 # The T4 has no bf16, so the 4-bit layers compute in fp16 and the other weights load in fp16.
 max_new_tokens: 256           # a short explanation, then the label

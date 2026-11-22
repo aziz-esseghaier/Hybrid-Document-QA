@@ -207,6 +207,8 @@ python scripts/label_sheet.py read --sheet SHEET.md --out results/human_labels/v
 python scripts/compare_judges.py --dataset v2_esg_reports --judges gemma4_31b mistral_small_32
 ```
 
+The judge is `gemma4_31b` (`judge:` in `configs/judges.yaml`; comparison in `results/judge_comparison/`). Once it has graded every answer, `python scripts/compare_settings.py --dataset v2_esg_reports` compares the settings: accuracy per setting and language, and each setting's paired difference from the best, with 95% intervals that resample questions (translations together).
+
 ## Web demo
 
 A page where you upload PDFs, ask a question, and get an answer with the pages it cites. The pipeline is `doc_qa.pipeline` (`configs/demo.yaml`): visual search over the uploaded pages, the reranker on the top 20, the two orders merged by reciprocal rank fusion, and the answer model on the top 5 pages. All three models (about 35 GB in fp16) share one GPU of at least 48 GB. Pages without a text layer are read from their image only (no OCR yet), and only the first 50 pages of a PDF are indexed.
