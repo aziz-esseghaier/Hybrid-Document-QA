@@ -1,0 +1,116 @@
+{"query_id": "v2_economics_reports/0", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.9, "prompt_tokens": 403, "finite": true}
+{"query_id": "v2_economics_reports/1", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.56, "prompt_tokens": 1662, "finite": true}
+{"query_id": "v2_economics_reports/10", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.15, "prompt_tokens": 1494, "finite": true}
+{"query_id": "v2_economics_reports/100", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 14.24, "prompt_tokens": 675, "finite": true}
+{"query_id": "v2_economics_reports/101", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.97, "prompt_tokens": 605, "finite": true}
+{"query_id": "v2_economics_reports/102", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.12, "prompt_tokens": 1651, "finite": true}
+{"query_id": "v2_economics_reports/103", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.91, "prompt_tokens": 1658, "finite": true}
+{"query_id": "v2_economics_reports/104", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.94, "prompt_tokens": 905, "finite": true}
+{"query_id": "v2_economics_reports/105", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 17.13, "prompt_tokens": 464, "finite": true}
+{"query_id": "v2_economics_reports/106", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.87, "prompt_tokens": 1635, "finite": true}
+{"query_id": "v2_economics_reports/107", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 23.97, "prompt_tokens": 1180, "finite": true}
+{"query_id": "v2_economics_reports/108", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.97, "prompt_tokens": 786, "finite": true}
+{"query_id": "v2_economics_reports/109", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.98, "prompt_tokens": 445, "finite": true}
+{"query_id": "v2_economics_reports/11", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.4, "prompt_tokens": 337, "finite": true}
+{"query_id": "v2_economics_reports/110", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.82, "prompt_tokens": 835, "finite": true}
+{"query_id": "v2_economics_reports/111", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.18, "prompt_tokens": 355, "finite": true}
+{"query_id": "v2_economics_reports/112", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.88, "prompt_tokens": 755, "finite": true}
+{"query_id": "v2_economics_reports/113", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.48, "prompt_tokens": 770, "finite": true}
+{"query_id": "v2_economics_reports/114", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.5, "prompt_tokens": 800, "finite": true}
+{"query_id": "v2_economics_reports/115", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 14.13, "prompt_tokens": 533, "finite": true}
+{"query_id": "v2_economics_reports/12", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 23.72, "prompt_tokens": 2168, "finite": true}
+{"query_id": "v2_economics_reports/13", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.79, "prompt_tokens": 578, "finite": true}
+{"query_id": "v2_economics_reports/14", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.54, "prompt_tokens": 364, "finite": true}
+{"query_id": "v2_economics_reports/15", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 20.55, "prompt_tokens": 862, "finite": true}
+{"query_id": "v2_economics_reports/16", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.17, "prompt_tokens": 1740, "finite": true}
+{"query_id": "v2_economics_reports/17", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 22.06, "prompt_tokens": 1684, "finite": true}
+{"query_id": "v2_economics_reports/18", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 20.99, "prompt_tokens": 1150, "finite": true}
+{"query_id": "v2_economics_reports/19", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.68, "prompt_tokens": 1711, "finite": true}
+{"query_id": "v2_economics_reports/2", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.08, "prompt_tokens": 1087, "finite": true}
+{"query_id": "v2_economics_reports/20", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.08, "prompt_tokens": 594, "finite": true}
+{"query_id": "v2_economics_reports/21", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 21.75, "prompt_tokens": 2119, "finite": true}
+{"query_id": "v2_economics_reports/22", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.85, "prompt_tokens": 559, "finite": true}
+{"query_id": "v2_economics_reports/23", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.39, "prompt_tokens": 455, "finite": true}
+{"query_id": "v2_economics_reports/24", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.13, "prompt_tokens": 1593, "finite": true}
+{"query_id": "v2_economics_reports/25", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.67, "prompt_tokens": 1899, "finite": true}
+{"query_id": "v2_economics_reports/26", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.72, "prompt_tokens": 732, "finite": true}
+{"query_id": "v2_economics_reports/27", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 17.21, "prompt_tokens": 856, "finite": true}
+{"query_id": "v2_economics_reports/28", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 21.16, "prompt_tokens": 1049, "finite": true}
+{"query_id": "v2_economics_reports/29", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.24, "prompt_tokens": 793, "finite": true}
+{"query_id": "v2_economics_reports/3", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.34, "prompt_tokens": 1679, "finite": true}
+{"query_id": "v2_economics_reports/30", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.3, "prompt_tokens": 484, "finite": true}
+{"query_id": "v2_economics_reports/31", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 20.92, "prompt_tokens": 915, "finite": true}
+{"query_id": "v2_economics_reports/32", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.95, "prompt_tokens": 530, "finite": true}
+{"query_id": "v2_economics_reports/33", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.49, "prompt_tokens": 2185, "finite": true}
+{"query_id": "v2_economics_reports/34", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 14.74, "prompt_tokens": 517, "finite": true}
+{"query_id": "v2_economics_reports/35", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.59, "prompt_tokens": 890, "finite": true}
+{"query_id": "v2_economics_reports/36", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.97, "prompt_tokens": 1015, "finite": true}
+{"query_id": "v2_economics_reports/37", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 21.96, "prompt_tokens": 1710, "finite": true}
+{"query_id": "v2_economics_reports/38", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.42, "prompt_tokens": 1027, "finite": true}
+{"query_id": "v2_economics_reports/39", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.39, "prompt_tokens": 715, "finite": true}
+{"query_id": "v2_economics_reports/4", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.22, "prompt_tokens": 715, "finite": true}
+{"query_id": "v2_economics_reports/40", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.94, "prompt_tokens": 401, "finite": true}
+{"query_id": "v2_economics_reports/41", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 9.32, "prompt_tokens": 507, "finite": true}
+{"query_id": "v2_economics_reports/42", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 14.94, "prompt_tokens": 668, "finite": true}
+{"query_id": "v2_economics_reports/43", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 15.28, "prompt_tokens": 626, "finite": true}
+{"query_id": "v2_economics_reports/44", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.39, "prompt_tokens": 1645, "finite": true}
+{"query_id": "v2_economics_reports/45", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.06, "prompt_tokens": 1646, "finite": true}
+{"query_id": "v2_economics_reports/46", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.88, "prompt_tokens": 822, "finite": true}
+{"query_id": "v2_economics_reports/47", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 13.85, "prompt_tokens": 448, "finite": true}
+{"query_id": "v2_economics_reports/48", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 17.97, "prompt_tokens": 1591, "finite": true}
+{"query_id": "v2_economics_reports/49", "language": "en", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 15.01, "prompt_tokens": 1126, "finite": true}
+{"query_id": "v2_economics_reports/5", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.6, "prompt_tokens": 909, "finite": true}
+{"query_id": "v2_economics_reports/50", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.02, "prompt_tokens": 768, "finite": true}
+{"query_id": "v2_economics_reports/51", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.82, "prompt_tokens": 405, "finite": true}
+{"query_id": "v2_economics_reports/52", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.67, "prompt_tokens": 834, "finite": true}
+{"query_id": "v2_economics_reports/53", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.34, "prompt_tokens": 356, "finite": true}
+{"query_id": "v2_economics_reports/54", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.52, "prompt_tokens": 832, "finite": true}
+{"query_id": "v2_economics_reports/55", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.79, "prompt_tokens": 540, "finite": true}
+{"query_id": "v2_economics_reports/56", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.58, "prompt_tokens": 790, "finite": true}
+{"query_id": "v2_economics_reports/57", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.07, "prompt_tokens": 580, "finite": true}
+{"query_id": "v2_economics_reports/58", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.89, "prompt_tokens": 408, "finite": true}
+{"query_id": "v2_economics_reports/59", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.59, "prompt_tokens": 1686, "finite": true}
+{"query_id": "v2_economics_reports/6", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.41, "prompt_tokens": 1122, "finite": true}
+{"query_id": "v2_economics_reports/60", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.04, "prompt_tokens": 1089, "finite": true}
+{"query_id": "v2_economics_reports/61", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.33, "prompt_tokens": 1672, "finite": true}
+{"query_id": "v2_economics_reports/62", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 14.16, "prompt_tokens": 646, "finite": true}
+{"query_id": "v2_economics_reports/63", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.59, "prompt_tokens": 865, "finite": true}
+{"query_id": "v2_economics_reports/64", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.49, "prompt_tokens": 1173, "finite": true}
+{"query_id": "v2_economics_reports/65", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.34, "prompt_tokens": 1118, "finite": true}
+{"query_id": "v2_economics_reports/66", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 19.41, "prompt_tokens": 1249, "finite": true}
+{"query_id": "v2_economics_reports/67", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.55, "prompt_tokens": 1061, "finite": true}
+{"query_id": "v2_economics_reports/68", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.57, "prompt_tokens": 1514, "finite": true}
+{"query_id": "v2_economics_reports/69", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.63, "prompt_tokens": 343, "finite": true}
+{"query_id": "v2_economics_reports/7", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 16.28, "prompt_tokens": 1128, "finite": true}
+{"query_id": "v2_economics_reports/70", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": true, "attempts": 0, "seconds": 0.0, "prompt_tokens": 0, "finite": true}
+{"query_id": "v2_economics_reports/71", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.69, "prompt_tokens": 674, "finite": true}
+{"query_id": "v2_economics_reports/72", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 13.6, "prompt_tokens": 367, "finite": true}
+{"query_id": "v2_economics_reports/73", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.51, "prompt_tokens": 852, "finite": true}
+{"query_id": "v2_economics_reports/74", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.76, "prompt_tokens": 1767, "finite": true}
+{"query_id": "v2_economics_reports/75", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 18.74, "prompt_tokens": 1610, "finite": true}
+{"query_id": "v2_economics_reports/76", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.93, "prompt_tokens": 1174, "finite": true}
+{"query_id": "v2_economics_reports/77", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 19.06, "prompt_tokens": 1753, "finite": true}
+{"query_id": "v2_economics_reports/78", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 11.41, "prompt_tokens": 610, "finite": true}
+{"query_id": "v2_economics_reports/79", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 23.07, "prompt_tokens": 2055, "finite": true}
+{"query_id": "v2_economics_reports/8", "language": "en", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 19.02, "prompt_tokens": 1242, "finite": true}
+{"query_id": "v2_economics_reports/80", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.48, "prompt_tokens": 591, "finite": true}
+{"query_id": "v2_economics_reports/81", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.01, "prompt_tokens": 468, "finite": true}
+{"query_id": "v2_economics_reports/82", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.46, "prompt_tokens": 1594, "finite": true}
+{"query_id": "v2_economics_reports/83", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 20.38, "prompt_tokens": 1907, "finite": true}
+{"query_id": "v2_economics_reports/84", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 13.32, "prompt_tokens": 747, "finite": true}
+{"query_id": "v2_economics_reports/85", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": false, "attempts": 1, "seconds": 15.48, "prompt_tokens": 891, "finite": true}
+{"query_id": "v2_economics_reports/86", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 17.83, "prompt_tokens": 1030, "finite": true}
+{"query_id": "v2_economics_reports/87", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.19, "prompt_tokens": 838, "finite": true}
+{"query_id": "v2_economics_reports/88", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.58, "prompt_tokens": 497, "finite": true}
+{"query_id": "v2_economics_reports/89", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.65, "prompt_tokens": 1029, "finite": true}
+{"query_id": "v2_economics_reports/9", "language": "en", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.15, "prompt_tokens": 1034, "finite": true}
+{"query_id": "v2_economics_reports/90", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.83, "prompt_tokens": 547, "finite": true}
+{"query_id": "v2_economics_reports/91", "language": "fr", "setting": "5x1280", "label": "incorrect", "auto": true, "attempts": 0, "seconds": 0.0, "prompt_tokens": 0, "finite": true}
+{"query_id": "v2_economics_reports/92", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.85, "prompt_tokens": 559, "finite": true}
+{"query_id": "v2_economics_reports/93", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.6, "prompt_tokens": 930, "finite": true}
+{"query_id": "v2_economics_reports/94", "language": "fr", "setting": "5x1280", "label": "partially correct", "auto": false, "attempts": 1, "seconds": 16.25, "prompt_tokens": 1004, "finite": true}
+{"query_id": "v2_economics_reports/95", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 17.17, "prompt_tokens": 1723, "finite": true}
+{"query_id": "v2_economics_reports/96", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 15.47, "prompt_tokens": 1052, "finite": true}
+{"query_id": "v2_economics_reports/97", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 12.77, "prompt_tokens": 736, "finite": true}
+{"query_id": "v2_economics_reports/98", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.68, "prompt_tokens": 425, "finite": true}
+{"query_id": "v2_economics_reports/99", "language": "fr", "setting": "5x1280", "label": "correct", "auto": false, "attempts": 1, "seconds": 10.37, "prompt_tokens": 527, "finite": true}

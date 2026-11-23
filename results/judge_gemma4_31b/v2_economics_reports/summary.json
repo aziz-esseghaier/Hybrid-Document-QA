@@ -1,0 +1,28 @@
+{
+  "5x1280": {
+    "all": {
+      "questions": 116,
+      "accuracy": 0.7931,
+      "correct": 92,
+      "partially correct": 17,
+      "incorrect": 7,
+      "unjudged": 0
+    },
+    "en": {
+      "questions": 58,
+      "accuracy": 0.7759,
+      "correct": 45,
+      "partially correct": 10,
+      "incorrect": 3,
+      "unjudged": 0
+    },
+    "fr": {
+      "questions": 58,
+      "accuracy": 0.8103,
+      "correct": 47,
+      "partially correct": 7,
+      "incorrect": 4,
+      "unjudged": 0
+    }
+  }
+}

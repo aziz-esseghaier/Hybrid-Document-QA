@@ -1,0 +1,128 @@
+{
+  "judge": "gemma4_31b",
+  "setting": "5x1280",
+  "datasets": [
+    "v1_shiftproject",
+    "v2_biomedical_lectures",
+    "v2_economics_reports",
+    "v2_esg_reports",
+    "v2_esg_reports_human"
+  ],
+  "questions": 702,
+  "groups": {
+    "v1_shiftproject/fr": {
+      "questions": 100,
+      "accuracy": {
+        "mean": 0.74,
+        "low": 0.65,
+        "high": 0.82
+      },
+      "correct_or_partial": 0.82,
+      "relevant_page_given": 0.92,
+      "accuracy_when_relevant_given": 0.7935,
+      "accuracy_when_none_given": 0.125
+    },
+    "v2_biomedical_lectures/en": {
+      "questions": 160,
+      "accuracy": {
+        "mean": 0.7625,
+        "low": 0.6968,
+        "high": 0.8272
+      },
+      "correct_or_partial": 0.8562,
+      "relevant_page_given": 0.9187,
+      "accuracy_when_relevant_given": 0.7959,
+      "accuracy_when_none_given": 0.3846
+    },
+    "v2_biomedical_lectures/fr": {
+      "questions": 160,
+      "accuracy": {
+        "mean": 0.7562,
+        "low": 0.6859,
+        "high": 0.8199
+      },
+      "correct_or_partial": 0.8375,
+      "relevant_page_given": 0.9062,
+      "accuracy_when_relevant_given": 0.8207,
+      "accuracy_when_none_given": 0.1333
+    },
+    "v2_economics_reports/en": {
+      "questions": 58,
+      "accuracy": {
+        "mean": 0.7759,
+        "low": 0.6607,
+        "high": 0.8793
+      },
+      "correct_or_partial": 0.9483,
+      "relevant_page_given": 0.9483,
+      "accuracy_when_relevant_given": 0.7818,
+      "accuracy_when_none_given": 0.6667
+    },
+    "v2_economics_reports/fr": {
+      "questions": 58,
+      "accuracy": {
+        "mean": 0.8103,
+        "low": 0.7069,
+        "high": 0.9107
+      },
+      "correct_or_partial": 0.931,
+      "relevant_page_given": 0.9138,
+      "accuracy_when_relevant_given": 0.8302,
+      "accuracy_when_none_given": 0.6
+    },
+    "v2_esg_reports/en": {
+      "questions": 57,
+      "accuracy": {
+        "mean": 0.6316,
+        "low": 0.5,
+        "high": 0.7544
+      },
+      "correct_or_partial": 0.7018,
+      "relevant_page_given": 0.8596,
+      "accuracy_when_relevant_given": 0.7347,
+      "accuracy_when_none_given": 0.0
+    },
+    "v2_esg_reports/fr": {
+      "questions": 57,
+      "accuracy": {
+        "mean": 0.5263,
+        "low": 0.4,
+        "high": 0.6552
+      },
+      "correct_or_partial": 0.7895,
+      "relevant_page_given": 0.8772,
+      "accuracy_when_relevant_given": 0.6,
+      "accuracy_when_none_given": 0.0
+    },
+    "v2_esg_reports_human/en": {
+      "questions": 52,
+      "accuracy": {
+        "mean": 0.5962,
+        "low": 0.46,
+        "high": 0.7308
+      },
+      "correct_or_partial": 0.7692,
+      "relevant_page_given": 0.9808,
+      "accuracy_when_relevant_given": 0.6078,
+      "accuracy_when_none_given": 0.0
+    }
+  },
+  "macro": {
+    "all": {
+      "mean": 0.6999,
+      "low": 0.6571,
+      "high": 0.7418
+    },
+    "en": {
+      "mean": 0.6915,
+      "low": 0.6338,
+      "high": 0.747
+    },
+    "fr": {
+      "mean": 0.7082,
+      "low": 0.6582,
+      "high": 0.7571
+    }
+  },
+  "micro_accuracy": 0.7208
+}
