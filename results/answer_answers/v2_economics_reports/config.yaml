@@ -1,0 +1,28 @@
+name: answer
+datasets_config: configs/datasets.yaml
+model: Qwen/Qwen3-VL-8B-Instruct
+revision: 0c351dd01ed87e9c1b53cbc748cba10e6187ff3b
+dtype: float16
+attn_implementation: sdpa_repeat_kv
+sdpa_backend: EFFICIENT_ATTENTION
+max_memory:
+  0: 11GiB
+  1: 12GiB
+rankings: results/fusion_rerank_tomoro_top20/{dataset}/rankings_fused.jsonl
+max_text_chars: 4000
+max_new_tokens: 512
+retries: 2
+pages:
+- 5
+page_tokens:
+- 1280
+check:
+  dataset: v2_esg_reports
+  seed: 0
+  questions: 6
+  pages:
+  - 5
+  - 10
+  page_tokens:
+  - 640
+  - 1280

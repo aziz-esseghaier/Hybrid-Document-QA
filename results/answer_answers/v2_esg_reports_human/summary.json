@@ -1,0 +1,53 @@
+{
+  "questions": 52,
+  "skipped_without_reference_answer": 0,
+  "settings": {
+    "5x1280": {
+      "answers": {
+        "all": {
+          "questions": 52,
+          "relevant_page_given": 0.9808,
+          "found": 0.9615,
+          "not_found": 0.0385,
+          "failed": 0.0,
+          "not_found_when_no_relevant_page": 0.0,
+          "citation_precision": 0.7083,
+          "retried": 0.0192,
+          "seconds_per_question": 23.0569,
+          "judged": 0,
+          "accuracy": null
+        },
+        "en": {
+          "questions": 52,
+          "relevant_page_given": 0.9808,
+          "found": 0.9615,
+          "not_found": 0.0385,
+          "failed": 0.0,
+          "not_found_when_no_relevant_page": 0.0,
+          "citation_precision": 0.7083,
+          "retried": 0.0192,
+          "seconds_per_question": 23.0569,
+          "judged": 0,
+          "accuracy": null
+        }
+      },
+      "prompt_tokens": {
+        "min": 7552,
+        "mean": 8995.5,
+        "max": 11547
+      },
+      "seconds_per_question": {
+        "min": 15.85,
+        "mean": 23.1,
+        "max": 49.16
+      },
+      "new_tokens": {
+        "min": 18,
+        "mean": 47.6,
+        "max": 117
+      },
+      "replies_with_nan_or_inf": 0,
+      "out_of_memory": 0
+    }
+  }
+}

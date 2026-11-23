@@ -1,0 +1,66 @@
+{
+  "questions": 320,
+  "skipped_without_reference_answer": 0,
+  "settings": {
+    "5x1280": {
+      "answers": {
+        "all": {
+          "questions": 320,
+          "relevant_page_given": 0.9125,
+          "found": 0.9812,
+          "not_found": 0.0187,
+          "failed": 0.0,
+          "not_found_when_no_relevant_page": 0.0714,
+          "citation_precision": 0.6273,
+          "retried": 0.0156,
+          "seconds_per_question": 15.3332,
+          "judged": 0,
+          "accuracy": null
+        },
+        "en": {
+          "questions": 160,
+          "relevant_page_given": 0.9187,
+          "found": 0.9875,
+          "not_found": 0.0125,
+          "failed": 0.0,
+          "not_found_when_no_relevant_page": 0.0,
+          "citation_precision": 0.618,
+          "retried": 0.0063,
+          "seconds_per_question": 14.3133,
+          "judged": 0,
+          "accuracy": null
+        },
+        "fr": {
+          "questions": 160,
+          "relevant_page_given": 0.9062,
+          "found": 0.975,
+          "not_found": 0.025,
+          "failed": 0.0,
+          "not_found_when_no_relevant_page": 0.1333,
+          "citation_precision": 0.6366,
+          "retried": 0.025,
+          "seconds_per_question": 16.3532,
+          "judged": 0,
+          "accuracy": null
+        }
+      },
+      "prompt_tokens": {
+        "min": 4005,
+        "mean": 5045.2,
+        "max": 7723
+      },
+      "seconds_per_question": {
+        "min": 8.42,
+        "mean": 15.3,
+        "max": 34.86
+      },
+      "new_tokens": {
+        "min": 19,
+        "mean": 70.6,
+        "max": 237
+      },
+      "replies_with_nan_or_inf": 0,
+      "out_of_memory": 0
+    }
+  }
+}
