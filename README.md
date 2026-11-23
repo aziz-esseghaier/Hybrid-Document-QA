@@ -1,6 +1,6 @@
 # Document Q&A
 
-Ask a question about English or French PDFs and get an answer that cites the pages it comes from. It handles charts, tables and scanned pages, because it reads every page as an image as well as text.
+Ask a question about English or French PDFs and get an answer that cites the pages it comes from. It handles charts, tables and scanned pages.
 
 Try the live demo at https://huggingface.co/spaces/vziz/doc-qa-demo.
 
