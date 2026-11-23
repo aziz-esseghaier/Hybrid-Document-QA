@@ -136,10 +136,11 @@ Gemma 4 31B grades each answer against the reference answers as correct, partial
 !python scripts/judge_answers.py --judge gemma4_31b --dataset v2_esg_reports --answers ANSWERS_DIR --out /kaggle/working/judgments
 ```
 
-Then, locally, compare the answer settings with 95% intervals:
+Then, locally, compare the answer settings on one dataset, or compute the dev accuracy of the chosen setting over every judged dataset. Both report 95% intervals.
 
 ```
 python scripts/compare_settings.py --dataset v2_esg_reports
+python scripts/answer_accuracy.py
 ```
 
 We chose this judge with `label_sheet.py` and `compare_judges.py`, by its agreement with reference grades on 50 answers.
