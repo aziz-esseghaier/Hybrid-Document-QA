@@ -145,6 +145,25 @@ python scripts/answer_accuracy.py
 
 We chose this judge with `label_sheet.py` and `compare_judges.py`, by its agreement with reference grades on 50 answers.
 
+### Test set
+
+`run_eval.py` runs the whole evaluation on the ViDoRe V3 test set, with every setting chosen on dev. It scores retrieval on every English and French question, and answers and grades a fixed random sample of 100 questions per dataset, each in both languages. The page text is the text V3 ships with each page. The run needs about 27 GPU hours, so it spans several Kaggle sessions. After each step it saves its results to a private Kaggle Dataset, and the next session starts from there.
+
+After the setup cell, run this cell with Save & Run All. Run the notebook again until the log ends with "Every step is done."
+
+```python
+%env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+!pip install -q bitsandbytes==0.50.2
+%run scripts/kaggle_setup.py --qdrant
+!python scripts/run_eval.py --text-dir /kaggle/working/text      # --dry-run lists the steps left
+```
+
+The answers and the judge's explanations quote the documents, so they go to `--text-dir` and stay out of `results/`. A session starts no new step after 11 hours, which `--hours` changes. Then, locally, compute the answer accuracy on the test set:
+
+```
+python scripts/answer_accuracy.py --role test
+```
+
 ### Demo
 
 ```

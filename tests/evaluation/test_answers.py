@@ -1,10 +1,19 @@
 """Tests for the answer metrics."""
 
-from doc_qa.evaluation.answers import AnswerRecord, citation_precision, summarize_answers
+from doc_qa.evaluation.answers import AnswerRecord, citation_precision, sample_clusters, summarize_answers
 
 
 def record(language="en", given=("a", "b"), found=True, cited=("a",), attempts=1, correct=None):
     return AnswerRecord(language, given, {"a": 2, "z": 1}, found, cited, attempts, 10.0, correct)
+
+
+def test_sample_keeps_translations_together_and_is_reproducible():
+    clusters = {f"q{i}{lang}": (f"p{i}",) for i in range(10) for lang in ("en", "fr")}
+    sample = sample_clusters(clusters, 3, seed=0)
+    assert len(sample) == 6 and {clusters[q] for q in sample} == {clusters[q[:-2] + "fr"] for q in sample}
+    assert sample == sample_clusters(dict(reversed(list(clusters.items()))), 3, seed=0)
+    assert sample != sample_clusters(clusters, 3, seed=1)
+    assert sample_clusters(clusters, 50, seed=0) == sorted(clusters)
 
 
 def test_citation_precision():

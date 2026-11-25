@@ -434,6 +434,44 @@ def iter_page_images(
     Returns:
         Iterator[tuple[str, bytes]]: (page id, image bytes), in file order.
     """
+    for page_id, value in _iter_page_values(bench, "image", page_ids, batch_size):
+        data = value["bytes"]
+        if data is None:
+            raise ValueError(f"{page_id}: image has no embedded bytes.")
+        yield page_id, data
+
+
+def iter_page_markdown(
+    bench: Benchmark, page_ids: Iterable[str] | None = None, batch_size: int = 256
+) -> Iterator[tuple[str, str]]:
+    """Stream the text that ViDoRe V3 ships with each page (its `markdown` column).
+
+    Args:
+        bench (Benchmark): A V3 dataset.
+        page_ids (Iterable[str] | None): Pages to yield; None = all.
+        batch_size (int): Rows read at once.
+
+    Returns:
+        Iterator[tuple[str, str]]: (page id, text), in file order; a page without text gives "".
+    """
+    for page_id, value in _iter_page_values(bench, "markdown", page_ids, batch_size):
+        yield page_id, value or ""
+
+
+def _iter_page_values(
+    bench: Benchmark, column: str, page_ids: Iterable[str] | None, batch_size: int
+) -> Iterator[tuple[str, Any]]:
+    """Stream one corpus column for the chosen pages.
+
+    Args:
+        bench (Benchmark): Dataset.
+        column (str): Corpus column.
+        page_ids (Iterable[str] | None): Pages to yield; None = all.
+        batch_size (int): Rows read at once.
+
+    Returns:
+        Iterator[tuple[str, Any]]: (page id, value), in file order.
+    """
     wanted = set(page_ids) if page_ids is not None else None
     rows_by_file: dict[Path, dict[int, str]] = defaultdict(dict)
     for page_id, (path, row) in bench.page_locations.items():
@@ -442,13 +480,10 @@ def iter_page_images(
 
     for path, rows in rows_by_file.items():
         offset = 0
-        for batch in pq.ParquetFile(path).iter_batches(batch_size=batch_size, columns=["image"]):
-            images = batch.column(0)
+        for batch in pq.ParquetFile(path).iter_batches(batch_size=batch_size, columns=[column]):
+            values = batch.column(0)
             for j in range(batch.num_rows):
                 page_id = rows.get(offset + j)
                 if page_id is not None:
-                    data = images[j].as_py()["bytes"]
-                    if data is None:
-                        raise ValueError(f"{page_id}: image has no embedded bytes.")
-                    yield page_id, data
+                    yield page_id, values[j].as_py()
             offset += batch.num_rows

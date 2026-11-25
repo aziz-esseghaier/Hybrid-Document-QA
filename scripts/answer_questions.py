@@ -4,9 +4,10 @@ Usage:
     python scripts/answer_questions.py --dataset v2_esg_reports --out ANSWERS_DIR [--config configs/answer.yaml]
 
 Settings are every combination of `pages` (pages given per question) and `page_tokens` (image size per page). Questions
-without a reference answer are skipped, since they cannot be judged. Each question is answered under all settings
-before the next, so a cut-off run leaves the settings comparable. Pages are the top of the chosen retrieval ranking,
-with OCR text from <DATA_ROOT>/derived/chunks/<dataset>/pages.jsonl (build_chunks.py).
+without a reference answer are skipped, since they cannot be judged. On a test dataset, only `test_sample` questions
+are answered, drawn at random with their translations. Each question is answered under all settings before the next,
+so a cut-off run leaves the settings comparable. Pages are the top of the retrieval ranking for the dataset's role,
+with page text from <DATA_ROOT>/derived/chunks/<dataset>/pages.jsonl (build_chunks.py).
 
 Writes <RESULTS_ROOT>/<name>_answers/<dataset>/: records_<pages>x<tokens>.jsonl (ids, cited pages, cost; no text),
 summary.json, config.yaml, run_info.json. The answers themselves contain document text, so they go to
@@ -28,10 +29,10 @@ import yaml
 from doc_qa.answer.model import answer_question, fit_pixels, load_answer_model
 from doc_qa.answer.output import cited_page_ids
 from doc_qa.answer.prompt import PageInput
-from doc_qa.core.config import REPO_ROOT, get_settings, load_yaml
+from doc_qa.core.config import get_settings, load_yaml, result_path
 from doc_qa.core.parallel import append_jsonl, read_jsonl
 from doc_qa.core.run_info import write_run_info
-from doc_qa.evaluation.answers import AnswerRecord, summarize_answers
+from doc_qa.evaluation.answers import AnswerRecord, sample_clusters, summarize_answers
 from doc_qa.evaluation.vidore import iter_page_images, load_benchmark
 from doc_qa.retrieval.visual import decode_image, spread
 
@@ -77,6 +78,25 @@ def summarize_setting(records: list[dict[str, Any]], relevance: dict[str, dict[s
     }
 
 
+def choose_questions(
+    query_ids: list[str], relevance: dict[str, dict[str, int]], sample: dict[str, int] | None
+) -> list[str]:
+    """Keep every question, or a random sample of them with their translations.
+
+    Args:
+        query_ids (list[str]): Questions that can be judged.
+        relevance (dict[str, dict[str, int]]): Graded relevance per query id; translations share their relevant pages.
+        sample (dict[str, int] | None): {questions, seed}, or None for all.
+
+    Returns:
+        list[str]: Query ids to answer, sorted.
+    """
+    if not sample:
+        return sorted(query_ids)
+    clusters = {q: tuple(sorted(p for p, grade in relevance[q].items() if grade > 0)) for q in query_ids}
+    return sample_clusters(clusters, sample["questions"], sample["seed"])
+
+
 def main() -> None:
     """Answer the questions under every setting and keep the summary up to date."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -100,14 +120,18 @@ def main() -> None:
         raise SystemExit(f"No page text for {args.dataset} (run ocr_store.py pull and build_chunks.py first).")
     ranked = {
         row["query_id"]: [page for page, _ in row["pages"]]
-        for row in read_jsonl([REPO_ROOT / cfg["rankings"].format(dataset=args.dataset)])
+        for row in read_jsonl([result_path(cfg["rankings"][spec["role"]].format(dataset=args.dataset))])
     }
+    if not ranked:
+        raise SystemExit(f"No {spec['role']} rankings for {args.dataset} (run eval_fusion.py first).")
 
     relevance: dict[str, dict[str, int]] = defaultdict(dict)
     for qrel in bench.qrels:
         relevance[qrel.query_id][qrel.page_id] = qrel.score
     judged = sorted(q for q in relevance if q in bench.queries and q in ranked)
-    query_ids = [q for q in judged if bench.queries[q].answers]
+    answerable = [q for q in judged if bench.queries[q].answers]
+    sample = cfg.get("test_sample") if spec["role"] == "test" else None
+    query_ids = choose_questions(answerable, relevance, sample)
     combos = list(itertools.product(sorted(cfg["pages"]), sorted(cfg["page_tokens"])))
     most_pages = max(cfg["pages"])
 
@@ -123,14 +147,15 @@ def main() -> None:
 
     done = {combo: {r["query_id"] for r in read_jsonl([records_file(combo)])} for combo in combos}
     todo = [q for q in query_ids if any(q not in done[combo] for combo in combos)]
-    print(f"{len(query_ids)} questions with a reference answer ({len(judged) - len(query_ids)} without skipped), "
-          f"{len(todo)} still to answer, settings: {[setting_name(*c) for c in combos]}", flush=True)
+    print(f"{len(query_ids)} questions to answer ({len(judged) - len(answerable)} without a reference answer skipped, "
+          f"sample {sample}), {len(todo)} still to answer, settings: {[setting_name(*c) for c in combos]}", flush=True)
 
     def save_summary() -> None:
         """Rewrite the summary from the records files."""
         summary = {
             "questions": len(query_ids),
-            "skipped_without_reference_answer": len(judged) - len(query_ids),
+            "skipped_without_reference_answer": len(judged) - len(answerable),
+            "sample": {**sample, "queries_before_sampling": len(answerable)} if sample else None,
             "settings": {
                 setting_name(*combo): summarize_setting(read_jsonl([records_file(combo)]), relevance)
                 for combo in combos

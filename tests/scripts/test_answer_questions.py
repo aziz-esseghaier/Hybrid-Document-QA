@@ -21,6 +21,13 @@ def test_setting_name():
     assert answer_questions.setting_name(5, 640) == "5x640"
 
 
+def test_choose_questions_samples_whole_clusters_on_request():
+    relevance = {"q1en": {"p1": 1, "p9": 0}, "q1fr": {"p1": 2}, "q2en": {"p2": 1}, "q2fr": {"p2": 1}}
+    assert answer_questions.choose_questions(["q2en", "q1en"], relevance, None) == ["q1en", "q2en"]
+    sample = answer_questions.choose_questions(list(relevance), relevance, {"questions": 1, "seed": 0})
+    assert sample in (["q1en", "q1fr"], ["q2en", "q2fr"])
+
+
 def test_summary_counts_failures_and_leaves_them_out_of_the_cost():
     records = [
         record("q1"),

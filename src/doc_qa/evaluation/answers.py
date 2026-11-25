@@ -4,9 +4,26 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Hashable, Sequence
 
 import numpy as np
+
+
+def sample_clusters(clusters: dict[str, Hashable], count: int, seed: int) -> list[str]:
+    """Draw questions at random by cluster, so that a question comes with its translations.
+
+    Args:
+        clusters (dict[str, Hashable]): Cluster per query id, e.g. the query's relevant pages.
+        count (int): Clusters to draw; all of them when there are fewer.
+        seed (int): Random seed.
+
+    Returns:
+        list[str]: Query ids of the drawn clusters, sorted.
+    """
+    names = sorted(set(clusters.values()), key=repr)
+    picks = np.random.default_rng(seed).choice(len(names), size=min(count, len(names)), replace=False)
+    chosen = {names[i] for i in picks}
+    return sorted(query_id for query_id, cluster in clusters.items() if cluster in chosen)
 
 
 @dataclass(frozen=True)

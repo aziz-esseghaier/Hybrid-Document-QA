@@ -1,15 +1,15 @@
-"""Answer accuracy on dev with the fixed judge and the chosen setting: per dataset and language, and overall.
+"""Answer accuracy with the fixed judge and the chosen setting: per dataset and language, and overall.
 
 Usage:
-    python scripts/answer_accuracy.py [--datasets v2_esg_reports ...] [--judges-config configs/judges.yaml]
-        [--answer-config configs/answer.yaml]
+    python scripts/answer_accuracy.py [--role dev|test] [--datasets v2_esg_reports ...]
+        [--judges-config configs/judges.yaml] [--answer-config configs/answer.yaml]
 
 Accuracy is the share of questions graded correct. The overall score is the mean over dataset-language groups, so each
 group weighs the same, with a 95% bootstrap interval that resamples questions within each dataset, keeping a
 question's translations together. Accuracy is also split by whether a relevant page was among the pages the answer
 model read, to separate retrieval misses from answering mistakes. Reads the judge's verdicts (judge_answers.py), the
-answer records (answer_questions.py) and the dev judgments (export_qrels.py). Writes
-<RESULTS_ROOT>/answer_accuracy/summary.json.
+answer records (answer_questions.py) and the judgments (export_qrels.py) of one dataset role, dev by default. Writes
+<RESULTS_ROOT>/answer_accuracy/summary.json for dev, answer_accuracy_test/ for test.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from doc_qa.core.config import get_settings, load_yaml
+from doc_qa.core.config import get_settings, load_yaml, role_name
 from doc_qa.core.parallel import read_jsonl
 from doc_qa.core.run_info import write_run_info
 from doc_qa.evaluation.metrics import cluster_bootstrap_ci
@@ -87,7 +87,9 @@ def group_summary(rows: Sequence[dict[str, Any]], resamples: int, seed: int) -> 
     }
 
 
-def load_rows(results_root: Path, dataset: str, judge: str, setting: str) -> list[dict[str, Any]]:
+def load_rows(
+    results_root: Path, dataset: str, judge: str, setting: str, qrels: str = "qrels"
+) -> list[dict[str, Any]]:
     """Join a dataset's verdicts, answer records and judgments into one row per question.
 
     Args:
@@ -95,6 +97,7 @@ def load_rows(results_root: Path, dataset: str, judge: str, setting: str) -> lis
         dataset (str): Dataset key.
         judge (str): Judge name.
         setting (str): Answer setting, e.g. "5x1280".
+        qrels (str): Folder of the judgments, "qrels" for dev or "qrels_test".
 
     Returns:
         list[dict[str, Any]]: {dataset, group, language, cluster, value, lenient, relevant_given} per judged question.
@@ -104,7 +107,7 @@ def load_rows(results_root: Path, dataset: str, judge: str, setting: str) -> lis
         r["query_id"]: r["given"]
         for r in read_jsonl([results_root / "answer_answers" / dataset / f"records_{setting}.jsonl"])
     }
-    relevance = {r["query_id"]: r["pages"] for r in read_jsonl([results_root / "qrels" / f"{dataset}.jsonl"])}
+    relevance = {r["query_id"]: r["pages"] for r in read_jsonl([results_root / qrels / f"{dataset}.jsonl"])}
     rows = []
     for verdict in verdicts:
         query_id = verdict["query_id"]
@@ -124,7 +127,8 @@ def load_rows(results_root: Path, dataset: str, judge: str, setting: str) -> lis
 def main() -> None:
     """Join the verdicts, compute the accuracies and write the summary."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--datasets", nargs="+", help="Default: every dataset the judge graded for the setting.")
+    parser.add_argument("--role", choices=["dev", "test"], default="dev")
+    parser.add_argument("--datasets", nargs="+", help="Default: every dataset of the role graded for the setting.")
     parser.add_argument("--judges-config", type=Path, default=Path("configs/judges.yaml"))
     parser.add_argument("--answer-config", type=Path, default=Path("configs/answer.yaml"))
     parser.add_argument("--resamples", type=int, default=10_000)
@@ -134,16 +138,22 @@ def main() -> None:
     settings = get_settings()
     judge = load_yaml(args.judges_config)["judge"]
     answer_cfg = load_yaml(args.answer_config)
+    specs = load_yaml(Path(answer_cfg["datasets_config"]))["datasets"]
     setting = f"{answer_cfg['pages'][0]}x{answer_cfg['page_tokens'][0]}"
     judge_dir = settings.results_root / f"judge_{judge}"
     judged = sorted(path.parent.name for path in judge_dir.glob(f"*/verdicts_{setting}.jsonl"))
-    datasets = args.datasets or judged
+    datasets = args.datasets or [d for d in judged if d in specs and specs[d]["role"] == args.role]
     if not datasets:
-        raise SystemExit(f"No verdicts of {judge} for setting {setting} (run judge_answers.py).")
+        raise SystemExit(f"No {args.role} verdicts of {judge} for setting {setting} (run judge_answers.py).")
+    if any(specs[d]["role"] != args.role for d in datasets):
+        raise SystemExit(f"Only {args.role} datasets can be summarized together.")
 
-    rows = [row for dataset in datasets for row in load_rows(settings.results_root, dataset, judge, setting)]
+    qrels = role_name("qrels", args.role)
+    rows = [row for dataset in datasets for row in load_rows(settings.results_root, dataset, judge, setting, qrels)]
     groups = sorted({r["group"] for r in rows})
-    summary: dict[str, Any] = {"judge": judge, "setting": setting, "datasets": datasets, "questions": len(rows)}
+    summary: dict[str, Any] = {
+        "role": args.role, "judge": judge, "setting": setting, "datasets": datasets, "questions": len(rows),
+    }
     summary["groups"] = {
         group: group_summary([r for r in rows if r["group"] == group], args.resamples, args.seed) for group in groups
     }
@@ -153,10 +163,10 @@ def main() -> None:
         summary["macro"][language] = macro_interval(rows, language_groups, args.resamples, args.seed)
     summary["micro_accuracy"] = round(float(np.mean([r["value"] for r in rows])), 4)
 
-    results_dir = settings.results_root / "answer_accuracy"
+    results_dir = settings.results_root / role_name("answer_accuracy", args.role)
     write_run_info(results_dir, seed=args.seed, extra={"judge": judge, "setting": setting, "datasets": datasets})
     (results_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    print(f"judge {judge}, setting {setting}, {len(rows)} questions")
+    print(f"{args.role}: judge {judge}, setting {setting}, {len(rows)} questions")
     header = f"{'group':<30}{'n':>5}{'accuracy [95%]':>24}{'C or P':>8}{'rel. given':>11}"
     print(header + f"{'acc | given':>12}{'acc | none':>11}")
     for group, row in summary["groups"].items():

@@ -8,7 +8,8 @@ by its mean NDCG@10 over the dataset-language groups and keeps the best. Checks 
 leaving each dataset out in turn, and compares the best setting with each branch alone (bootstrap intervals;
 translations of a question are resampled together). Writes <RESULTS_ROOT>/<results_name>/: summary.json,
 grid.jsonl, config.yaml, run_info.json, and <dataset>/rankings_fused.jsonl. configs/fusion_rerank.yaml scores the
-reranker the same way, as one more ranking; `restrict` keeps only the reranked pages within visual's top k.
+reranker the same way, as one more ranking; `restrict` keeps only the reranked pages within visual's top k. A grid
+of one setting scores a fixed setting, as configs/fusion_test.yaml does on the test set.
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ from typing import Any, Sequence
 import numpy as np
 import yaml
 
-from doc_qa.core.config import REPO_ROOT, get_settings, load_yaml
+from doc_qa.core.config import get_settings, load_yaml, result_path
 from doc_qa.core.parallel import read_jsonl, write_jsonl
 from doc_qa.core.run_info import write_run_info
 from doc_qa.evaluation.metrics import cluster_bootstrap_ci, evaluate, ndcg_at_k
@@ -44,12 +45,14 @@ def load_queries(cfg: dict[str, Any], specs: dict[str, Any]) -> list[dict[str, A
     """
     queries = []
     for dataset in cfg["datasets"]:
-        rows = read_jsonl([REPO_ROOT / cfg["qrels"].format(dataset=dataset)])
+        rows = read_jsonl([result_path(cfg["qrels"].format(dataset=dataset))])
         if not rows:
             raise SystemExit(f"No judgments for {dataset} (run export_qrels.py).")
         lists = {}
         for source, pattern in cfg["rankings"].items():
-            saved = read_jsonl([REPO_ROOT / pattern.format(dataset=dataset)])
+            saved = read_jsonl([result_path(pattern.format(dataset=dataset))])
+            if not saved:
+                raise SystemExit(f"No {source} ranking for {dataset}.")
             lists[source] = {row["query_id"]: [page for page, _ in row["pages"]] for row in saved}
         for row in rows:
             relevant = tuple(sorted(page for page, grade in row["pages"].items() if grade > 0))
@@ -249,7 +252,7 @@ def saved_metrics_match(source: Sequence[str], dataset: str, computed: dict[str,
         bool: True if NDCG@10 and Recall@100 match for every group.
     """
     path, method = source
-    saved = json.loads((REPO_ROOT / path.format(dataset=dataset)).read_text(encoding="utf-8"))[method]
+    saved = json.loads(result_path(path.format(dataset=dataset)).read_text(encoding="utf-8"))[method]
     return all(
         computed[group][metric] == values[metric]
         for group, values in saved.items()

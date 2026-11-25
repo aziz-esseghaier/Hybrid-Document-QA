@@ -1,0 +1,36 @@
+# Test set: the retrieval setting chosen on dev (configs/fusion_rerank_tomoro_top20.yaml), scored once, next to each
+# branch alone. Nothing is chosen here: the grid holds only the chosen setting.
+results_name: fusion_test
+datasets_config: configs/datasets.yaml
+datasets: [v3_computer_science, v3_energy, v3_finance_en, v3_finance_fr, v3_hr, v3_industrial, v3_pharmaceuticals,
+           v3_physics]
+qrels: results/qrels_test/{dataset}.jsonl
+rankings:
+  visual: results/visual_tomoro_eval/{dataset}/rankings_full.jsonl
+  rerank: results/rerank_tomoro_top20/{dataset}/rankings_rerank.jsonl   # scores for visual's top 20
+  dense: results/text_eval/{dataset}/rankings_dense.jsonl
+  bm25: results/text_eval/{dataset}/rankings_bm25.jsonl
+restrict:                     # ranking -> [other ranking, k]: keep only its pages in the other's top k
+  rerank: [visual, 20]
+rrf_k: 60
+page_limit: 100
+
+grid:                         # the product: visual 1 + rerank 1
+  visual: [1]
+  rerank: [1]
+
+baselines:
+  visual: {visual: 1}
+  rerank: {visual: 1, rerank: 1000}   # reranker order for the top 20, then visual order
+  dense: {dense: 1}
+  bm25: {bm25: 1}
+  text: {dense: 1, bm25: 1}           # text search: dense and BM25 merged with RRF
+compare_with: [visual, rerank, dense, bm25, text]
+saved_metrics:
+  visual: ["results/visual_tomoro_eval/{dataset}/metrics.json", full]
+  dense: ["results/text_eval/{dataset}/metrics.json", dense]
+  bm25: ["results/text_eval/{dataset}/metrics.json", bm25]
+  text: ["results/text_eval/{dataset}/metrics.json", rrf]
+recall_ks: [5, 10, 20, 30, 50, 100]
+bootstrap_resamples: 10000
+seed: 0

@@ -2,8 +2,27 @@
 
 from pathlib import Path
 
+import pyarrow as pa
+import pyarrow.parquet as pq
+
 from doc_qa.core.schemas import Benchmark, Document, Page, Qrel, Query
-from doc_qa.evaluation.vidore import apply_exclusions, clean_qrels, filter_languages, parse_answers, v1_ids
+from doc_qa.evaluation.vidore import (
+    apply_exclusions,
+    clean_qrels,
+    filter_languages,
+    iter_page_markdown,
+    parse_answers,
+    v1_ids,
+)
+
+
+def test_iter_page_markdown_reads_the_chosen_pages(tmp_path):
+    path = tmp_path / "test-0.parquet"
+    pq.write_table(pa.table({"corpus_id": [0, 1, 2], "markdown": ["first", None, "third"]}), path)
+    pages = {f"d/{i}": Page(f"d/{i}", "d/A", i) for i in range(3)}
+    bench = Benchmark("d", "test", {}, pages, {}, [], {f"d/{i}": (path, i) for i in range(3)})
+    assert dict(iter_page_markdown(bench)) == {"d/0": "first", "d/1": "", "d/2": "third"}
+    assert list(iter_page_markdown(bench, ["d/2"], batch_size=1)) == [("d/2", "third")]
 
 
 def toy_benchmark() -> Benchmark:

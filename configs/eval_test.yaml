@@ -1,0 +1,12 @@
+# Full evaluation on the test set: the pipeline chosen on dev, run once by scripts/run_eval.py.
+datasets_config: configs/datasets.yaml
+role: test                    # every dataset of this role
+text_source: markdown         # page text: the text ViDoRe V3 ships with each page (dev used OCR)
+state_dataset: eval-state-test  # private Kaggle Dataset that carries results and answers between sessions
+configs:
+  text: configs/text.yaml
+  visual: configs/visual_tomoro.yaml
+  rerank: configs/rerank_tomoro_top20.yaml
+  fusion: configs/fusion_test.yaml
+  answer: configs/answer.yaml
+  judges: configs/judges.yaml

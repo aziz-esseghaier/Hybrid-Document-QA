@@ -1,10 +1,11 @@
-"""Save the dev datasets' relevance judgments and query languages, so saved rankings can be scored without the data.
+"""Save relevance judgments and query languages, so saved rankings can be scored without the data.
 
 Usage:
-    python scripts/export_qrels.py [--only v2_esg_reports ...]
+    python scripts/export_qrels.py [--role dev|test] [--only v2_esg_reports ...]
 
-Writes <RESULTS_ROOT>/qrels/<dataset>.jsonl ({query_id, language, pages: {page_id: grade}}, one line per judged
-query) and run_info.json. Ids and grades only, no query text. Needs download_data.py first.
+Exports every dataset of the role (dev by default), or the chosen ones. Writes <RESULTS_ROOT>/qrels/<dataset>.jsonl
+for dev, qrels_test/ for test ({query_id, language, pages: {page_id: grade}}, one line per judged query) and
+run_info.json. Ids and grades only, no query text. Needs download_data.py first.
 """
 
 from __future__ import annotations
@@ -14,7 +15,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-from doc_qa.core.config import get_settings, load_yaml
+from doc_qa.core.config import get_settings, load_yaml, role_name
 from doc_qa.core.parallel import write_jsonl
 from doc_qa.core.run_info import write_run_info
 from doc_qa.core.schemas import Benchmark
@@ -40,16 +41,20 @@ def query_records(bench: Benchmark) -> list[dict[str, Any]]:
 
 
 def main() -> None:
-    """Export the judgments of every dev dataset, or of the chosen ones."""
+    """Export the judgments of every dataset of a role, or of the chosen ones."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--datasets-config", type=Path, default=Path("configs/datasets.yaml"))
-    parser.add_argument("--only", nargs="+", help="Dataset keys (default: every dev dataset).")
+    parser.add_argument("--role", choices=["dev", "test"], default="dev")
+    parser.add_argument("--only", nargs="+", help="Dataset keys of that role (default: all of them).")
     args = parser.parse_args()
 
     settings = get_settings()
     specs = load_yaml(args.datasets_config)["datasets"]
-    keys = args.only or [key for key, spec in specs.items() if spec["role"] == "dev"]
-    results_dir = settings.results_root / "qrels"
+    of_role = [key for key, spec in specs.items() if spec["role"] == args.role]
+    keys = args.only or of_role
+    if set(keys) - set(of_role):
+        raise SystemExit(f"Not {args.role} datasets: {sorted(set(keys) - set(of_role))}")
+    results_dir = settings.results_root / role_name("qrels", args.role)
     write_run_info(results_dir, extra={
         "datasets": {key: {"repo": specs[key]["repo"], "revision": specs[key]["revision"]} for key in keys},
     })

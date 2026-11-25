@@ -11,41 +11,49 @@ datasets:
     revision: d5cc75883d92e294f0c0fc2662551c9708a06ebc
     role: test
     format: v3
+    doc_language: en          # every document, per documents_metadata
   v3_energy:
     repo: vidore/vidore_v3_energy
     revision: caec06d3c73434d635f710f93bcd898331c59f20
     role: test
     format: v3
+    doc_language: fr
   v3_finance_en:
     repo: vidore/vidore_v3_finance_en
     revision: 7f432c176d82e27546501ad8064a713ac3071809
     role: test
     format: v3
+    doc_language: en
   v3_finance_fr:
     repo: vidore/vidore_v3_finance_fr
     revision: 1d808daa08032ffecdf62da151a7f7a8fe2bd0c9
     role: test
     format: v3
+    doc_language: fr
   v3_hr:
     repo: vidore/vidore_v3_hr
     revision: 0cdf0979f2c5a0fd3e335e6373b9da48a9fe3bc3
     role: test
     format: v3
+    doc_language: en
   v3_industrial:
     repo: vidore/vidore_v3_industrial
     revision: e26c864724f5dd71a3d7d739272d95637764cee9
     role: test
     format: v3
+    doc_language: en
   v3_pharmaceuticals:
     repo: vidore/vidore_v3_pharmaceuticals
     revision: 3abd4aa8a9445fb5538a78a19ba50bd57bd22b5c
     role: test
     format: v3
+    doc_language: en
   v3_physics:
     repo: vidore/vidore_v3_physics
     revision: a0de276f515acc044b72cae8de53a44bb5a8f1f5
     role: test
     format: v3
+    doc_language: fr
 
   # Dev: ViDoRe V2
   v2_esg_reports:

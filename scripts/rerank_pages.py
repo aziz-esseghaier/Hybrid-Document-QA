@@ -21,7 +21,7 @@ from typing import Any
 
 import yaml
 
-from doc_qa.core.config import REPO_ROOT, get_settings, load_yaml
+from doc_qa.core.config import get_settings, load_yaml, result_path
 from doc_qa.core.parallel import append_jsonl, batched, launch_workers, read_jsonl, write_jsonl
 from doc_qa.core.run_info import gpu_names, write_run_info
 from doc_qa.core.schemas import Benchmark
@@ -46,7 +46,9 @@ def load_inputs(dataset: str, cfg: dict[str, Any]) -> tuple[Benchmark, dict[str,
     texts = {row["page_id"]: row["text"] for row in read_jsonl([pages_file])}
     if not texts:
         raise SystemExit(f"No page text for {dataset} (run ocr_store.py pull and build_chunks.py first).")
-    saved = read_jsonl([REPO_ROOT / cfg["candidates_from"].format(dataset=dataset)])
+    saved = read_jsonl([result_path(cfg["candidates_from"].format(dataset=dataset))])
+    if not saved:
+        raise SystemExit(f"No visual ranking for {dataset} (run eval_visual.py first).")
     candidates = {row["query_id"]: [page for page, _ in row["pages"][: cfg["candidates"]]] for row in saved}
     return bench, texts, candidates
 

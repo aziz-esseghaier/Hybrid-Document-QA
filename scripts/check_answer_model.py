@@ -28,7 +28,7 @@ import yaml
 from doc_qa.answer.model import Generation, answer_question, fit_pixels, generate_reply, load_answer_model
 from doc_qa.answer.output import cited_page_ids
 from doc_qa.answer.prompt import PageInput, build_messages
-from doc_qa.core.config import REPO_ROOT, get_settings, load_yaml
+from doc_qa.core.config import get_settings, load_yaml, result_path
 from doc_qa.core.parallel import read_jsonl, write_jsonl
 from doc_qa.core.run_info import write_run_info
 from doc_qa.core.schemas import Qrel, Query
@@ -96,7 +96,7 @@ def main() -> None:
         raise SystemExit(f"No page text for {dataset} (run ocr_store.py pull and build_chunks.py first).")
     ranked = {
         row["query_id"]: [page for page, _ in row["pages"]]
-        for row in read_jsonl([REPO_ROOT / cfg["rankings"].format(dataset=dataset)])
+        for row in read_jsonl([result_path(cfg["rankings"][spec["role"]].format(dataset=dataset))])
     }
 
     chosen = choose_questions(bench.queries, bench.qrels, check["questions"], check["seed"])

@@ -7,7 +7,12 @@ dtype: float16                # T4 has no bf16
 attn_implementation: sdpa_repeat_kv  # T4 has no FlashAttention: plain "sdpa" fell back to the math kernel and ran out of memory
 sdpa_backend: EFFICIENT_ATTENTION    # only the memory-efficient kernel; a fall back fails loudly instead
 max_memory: {0: 11GiB, 1: 12GiB}  # weights per GPU (about 17.5 GB in fp16); the rest is left for long prompts
-rankings: results/fusion_rerank_tomoro_top20/{dataset}/rankings_fused.jsonl  # retrieval setting chosen on dev
+rankings:                     # the retrieval setting chosen on dev, by dataset role
+  dev: results/fusion_rerank_tomoro_top20/{dataset}/rankings_fused.jsonl
+  test: results/fusion_test/{dataset}/rankings_fused.jsonl
+test_sample:                  # test only: questions drawn at random per dataset, each with its translations
+  questions: 100
+  seed: 0
 max_text_chars: 4000          # OCR text kept per page (90% of ESG pages have under about 780 tokens)
 max_new_tokens: 512
 retries: 2                    # extra attempts when a reply breaks the rules

@@ -55,6 +55,37 @@ def get_settings() -> Settings:
     )
 
 
+def result_path(path: str | Path) -> Path:
+    """Locate a saved result: the copy under RESULTS_ROOT when there is one, else the repo's.
+
+    Args:
+        path (str | Path): Repo-relative path under results/, e.g. "results/qrels/v2_esg_reports.jsonl", or any
+            other path.
+
+    Returns:
+        Path: Absolute path.
+    """
+    path = Path(path)
+    if path.parts[:1] == ("results",):
+        local = get_settings().results_root.joinpath(*path.parts[1:])
+        if local.exists():
+            return local
+    return REPO_ROOT / path
+
+
+def role_name(base: str, role: str) -> str:
+    """Name a results folder for a dataset role: dev keeps the base name, other roles get a suffix.
+
+    Args:
+        base (str): Folder name, e.g. "qrels".
+        role (str): Dataset role, "dev" or "test".
+
+    Returns:
+        str: E.g. "qrels" for dev, "qrels_test" for test.
+    """
+    return base if role == "dev" else f"{base}_{role}"
+
+
 def load_yaml(path: Path) -> dict[str, Any]:
     """Load a YAML file.
 
