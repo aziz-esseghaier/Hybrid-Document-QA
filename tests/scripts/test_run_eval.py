@@ -125,4 +125,5 @@ def test_not_found_recognizes_a_missing_dataset():
 
     assert run_eval.not_found(ApiError("missing"))
     assert run_eval.not_found(Exception("404 Client Error: Not Found"))
+    assert run_eval.not_found(Exception('POST failed with: {"errors":["Not found"],"error":{"code":5}}'))
     assert not run_eval.not_found(Exception("403 Forbidden"))

@@ -327,10 +327,11 @@ def not_found(error: Exception) -> bool:
         error (Exception): Error raised by kagglehub.
 
     Returns:
-        bool: True for a 404.
+        bool: True for a 404 or a "Not found" reply.
     """
     status = getattr(getattr(error, "response", None), "status_code", None)
-    return status == 404 or "404" in str(error)
+    text = str(error).lower()
+    return status == 404 or "404" in text or "not found" in text
 
 
 class StateStore:
