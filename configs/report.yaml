@@ -1,0 +1,35 @@
+# Final report: the test results next to dev and the published numbers (scripts/final_report.py).
+datasets_config: configs/datasets.yaml
+test:
+  retrieval: results/fusion_test/summary.json                     # eval_fusion.py, configs/fusion_test.yaml
+  answers: results/answer_accuracy_test/summary.json              # answer_accuracy.py --role test
+  qrels: results/qrels_test/{dataset}.jsonl
+  visual_rankings: results/visual_tomoro_eval/{dataset}/rankings_full.jsonl
+dev:
+  retrieval: results/fusion_rerank_tomoro_top20/summary.json      # visual, reranker order and the pipeline
+  text: results/text_eval/{dataset}/metrics.json                  # BM25, dense and their RRF merge
+  answers: results/answer_accuracy/summary.json
+
+paper:                        # arXiv 2601.08620v2, Table 3, hybrid row (Gemini 3 Pro): % correct over all queries
+  answer_accuracy:
+    v3_computer_science: 85.1
+    v3_energy: 62.7
+    v3_finance_en: 65.0
+    v3_finance_fr: 52.8
+    v3_hr: 64.8
+    v3_industrial: 59.4
+    v3_pharmaceuticals: 65.9
+    v3_physics: 69.9
+  answer_accuracy_mean: 65.7  # mean of the 8 datasets
+  answer_accuracy_hard: 54.7  # hard queries only; V3 doesn't flag them
+
+model_card:                   # TomoroAI/tomoro-colqwen3-embed-4b card, ViDoRe V3 table: nDCG@5, English queries
+  ndcg@5_en:
+    v3_computer_science: 0.7419
+    v3_energy: 0.6023
+    v3_finance_en: 0.6753
+    v3_finance_fr: 0.4202
+    v3_hr: 0.6037
+    v3_industrial: 0.5787
+    v3_pharmaceuticals: 0.6612
+    v3_physics: 0.4640

@@ -158,11 +158,14 @@ After the setup cell, run this cell with Save & Run All. Run the notebook again 
 !python scripts/run_eval.py --text-dir /kaggle/working/text      # --dry-run lists the steps left
 ```
 
-The answers and the judge's explanations quote the documents, so they go to `--text-dir` and stay out of `results/`. A session starts no new step after 11 hours, which `--hours` changes. Then, locally, compute the answer accuracy on the test set:
+The answers and the judge's explanations quote the documents, so they go to `--text-dir` and stay out of `results/`. A session starts no new step after 11 hours, which `--hours` changes. Then, locally, compute the answer accuracy on the test set and write the final report:
 
 ```
 python scripts/answer_accuracy.py --role test
+python scripts/final_report.py
 ```
+
+`final_report.py` writes `results/final_report/report.md`. It puts the test scores next to dev and the ViDoRe V3 paper, and compares our visual retrieval with the retriever's model card.
 
 ### Demo
 
