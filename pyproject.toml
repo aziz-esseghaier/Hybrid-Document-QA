@@ -8,7 +8,8 @@ version = "0.1.0"
 description = "Question answering over English and French PDFs, with hybrid retrieval and page citations."
 readme = "README.md"
 requires-python = ">=3.10"
-# Ranges for packages preinstalled on Kaggle, exact pins otherwise. Exact versions go to run_info.json.
+# Ranges for packages preinstalled on Kaggle, exact pins otherwise. requirements-kaggle.txt pins the versions the
+# Kaggle runs used, and each run records its own in run_info.json.
 dependencies = [
     "fastembed==0.9.1",
     "httpx>=0.20",

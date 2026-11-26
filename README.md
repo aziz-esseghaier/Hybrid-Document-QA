@@ -31,6 +31,7 @@ tests/               unit tests
 results/             one folder per experiment: config, run record and scores, never document text
 docker-compose.yml   Qdrant for local use
 environment.yml      local conda environment
+requirements-kaggle.txt  exact package versions of the Kaggle runs
 ```
 
 ## How to run it
@@ -49,16 +50,16 @@ docker compose up -d          # Qdrant on http://localhost:6333
 
 ### Kaggle setup
 
-Every step that runs a model runs on Kaggle, with two T4 GPUs. In the notebook settings, turn Internet on and add the secrets `HF_TOKEN`, `KAGGLE_USERNAME` and `KAGGLE_API_TOKEN`. The Kaggle secrets let the scripts save their outputs to private Kaggle Datasets. Start every session with this cell:
+Every step that runs a model runs on Kaggle, with two T4 GPUs. In the notebook settings, turn Internet on, set the environment to "Pin to original environment" and add the secrets `HF_TOKEN`, `KAGGLE_USERNAME` and `KAGGLE_API_TOKEN`. The Kaggle secrets let the scripts save their outputs to private Kaggle Datasets. Start every session with this cell:
 
 ```python
 !git clone https://github.com/<user>/Hybrid-Document-QA.git /kaggle/temp/Hybrid-Document-QA
 %cd /kaggle/temp/Hybrid-Document-QA
-!pip install -q -e .
+!pip install -q -r requirements-kaggle.txt -e .
 %run scripts/kaggle_setup.py          # add --qdrant to start Qdrant
 ```
 
-Run `kaggle_setup.py` with `%run` so that later cells see its settings. Data goes to `/kaggle/temp`, which Kaggle wipes when the session ends. Results go to `/kaggle/working/results`.
+`requirements-kaggle.txt` pins the package versions of every run so far. Kaggle's image already has them, except bitsandbytes. Run `kaggle_setup.py` with `%run` so that later cells see its settings. Data goes to `/kaggle/temp`, which Kaggle wipes when the session ends. Results go to `/kaggle/working/results`.
 
 The commands below use the ESG reports. Any dataset key from `configs/datasets.yaml` works in place of `v2_esg_reports`.
 
@@ -78,7 +79,7 @@ The dev datasets ship page images only, so PaddleOCR-VL reads every page. It get
 !pip install -q virtualenv
 !python -m virtualenv -q /kaggle/temp/ocr-env
 !/kaggle/temp/ocr-env/bin/pip install -q paddlepaddle-gpu==3.2.1 -i https://www.paddlepaddle.org.cn/packages/stable/cu126/
-!/kaggle/temp/ocr-env/bin/pip install -q "paddleocr[doc-parser]>=3.6.0,<4" "sentencepiece==0.2.1" -e .
+!/kaggle/temp/ocr-env/bin/pip install -q "paddleocr[doc-parser]==3.7.0" "paddlex==3.7.2" "sentencepiece==0.2.1" -e .
 !/kaggle/temp/ocr-env/bin/python scripts/ocr_pages.py --dataset v2_esg_reports
 !python scripts/ocr_store.py push --dataset v2_esg_reports    # saves the text to a private Kaggle Dataset
 ```
@@ -132,7 +133,6 @@ The answers contain document text, so they go to `--out` and stay out of the rep
 Gemma 4 31B grades each answer against the reference answers as correct, partially correct or incorrect. Accuracy is the share it grades correct.
 
 ```python
-!pip install -q bitsandbytes==0.50.2
 !python scripts/judge_answers.py --judge gemma4_31b --dataset v2_esg_reports --answers ANSWERS_DIR --out /kaggle/working/judgments
 ```
 
@@ -153,7 +153,6 @@ After the setup cell, run this cell with Save & Run All. Run the notebook again 
 
 ```python
 %env PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-!pip install -q bitsandbytes==0.50.2
 %run scripts/kaggle_setup.py --qdrant
 !python scripts/run_eval.py --text-dir /kaggle/working/text      # --dry-run lists the steps left
 ```
