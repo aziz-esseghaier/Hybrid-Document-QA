@@ -2,8 +2,10 @@
 
 import importlib.util
 import json
+import os
 import sys
 import time
+import types
 from pathlib import Path
 
 import pytest
@@ -127,3 +129,20 @@ def test_not_found_recognizes_a_missing_dataset():
     assert run_eval.not_found(Exception("404 Client Error: Not Found"))
     assert run_eval.not_found(Exception('POST failed with: {"errors":["Not found"],"error":{"code":5}}'))
     assert not run_eval.not_found(Exception("403 Forbidden"))
+
+
+def test_restore_downloads_instead_of_attaching_to_the_notebook(tmp_path, monkeypatch):
+    saved = tmp_path / "saved"
+    (saved / "results").mkdir(parents=True)
+    (saved / "results" / run_eval.MANIFEST).write_text(json.dumps({"saved_at": "t", "note": "n"}))
+    seen = {}
+
+    def dataset_download(handle):
+        seen["cache_disabled"] = os.environ.get("DISABLE_KAGGLE_CACHE")
+        return str(saved)
+
+    monkeypatch.setitem(sys.modules, "kagglehub", types.SimpleNamespace(dataset_download=dataset_download))
+    monkeypatch.delenv("DISABLE_KAGGLE_CACHE", raising=False)
+    store = run_eval.StateStore("user/state", {"results": tmp_path / "r", "text": tmp_path / "t"})
+    assert store.restore()
+    assert seen["cache_disabled"] == "1"

@@ -353,6 +353,9 @@ class StateStore:
         """
         import kagglehub
 
+        # Download with the API token instead of attaching the Dataset to the notebook, which Kaggle refuses in
+        # Save & Run All sessions ("New Datasets cannot be attached in non-interactive sessions").
+        os.environ["DISABLE_KAGGLE_CACHE"] = "1"
         try:
             folder = Path(kagglehub.dataset_download(self.handle))
         except Exception as error:
