@@ -147,7 +147,7 @@ We chose this judge with `label_sheet.py` and `compare_judges.py`, by its agreem
 
 ### Test set
 
-`run_eval.py` runs the whole evaluation on the ViDoRe V3 test set, with every setting chosen on dev. It scores retrieval on every English and French question, and answers and grades a fixed random sample of 100 questions per dataset, each in both languages. The page text is the text V3 ships with each page. The run needs about 27 GPU hours, so it spans several Kaggle sessions. After each step it saves its results to a private Kaggle Dataset, and the next session starts from there.
+`run_eval.py` runs the whole evaluation on the ViDoRe V3 test set, with every setting chosen on dev. It scores retrieval on every English and French question, and answers and grades a fixed random sample of about 100 questions per dataset, each in both languages. Questions that share the same relevant pages are drawn together. The page text is the text V3 ships with each page. The run needs about 27 GPU hours, so it spans several Kaggle sessions. After each step it saves its results to a private Kaggle Dataset, and the next session starts from there.
 
 After the setup cell, run this cell with Save & Run All. Run the notebook again until the log ends with "Every step is done."
 
