@@ -219,8 +219,8 @@ NOTES = """## How these numbers differ from the paper's
 pipeline uses Gemini 3 Pro with the top 5 page images plus the top 5 texts from a text retriever.
 - Gemma 4 31B judges our answers and only "correct" counts. GPT 5.2 judges the paper's. The paper doesn't say how it \
 counts a partially correct answer, so the C or P column shows the most lenient reading.
-- We grade a fixed random sample of 100 questions per dataset, each in English and French. The paper grades every \
-question and doesn't say in which languages.
+- We grade a fixed random sample of about 100 questions per dataset, each in English and French. The paper grades \
+every question and doesn't say in which languages.
 - The paper's 54.7% covers only its hard queries, which the dataset doesn't flag. The table uses its accuracy over \
 all queries.
 - Test page text is the text ViDoRe V3 ships with each page. Dev page text came from OCR.
